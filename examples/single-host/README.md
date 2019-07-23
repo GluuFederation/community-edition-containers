@@ -24,10 +24,10 @@ This is an example of running Gluu Server Enterprise Edition on a single VM.
 
         mkdir docker-gluu-server
         cd docker-gluu-server
-        wget https://raw.githubusercontent.com/GluuFederation/gluu-docker/4.0.0/examples/single-host/run_all.sh
-        wget https://raw.githubusercontent.com/GluuFederation/gluu-docker/4.0.0/examples/single-host/docker-compose.yml
-        wget https://raw.githubusercontent.com/GluuFederation/gluu-docker/4.0.0/examples/single-host/docker-compose.override.yml
-        wget https://raw.githubusercontent.com/GluuFederation/gluu-docker/4.0.0/examples/single-host/vault_gluu_policy.hcl
+        wget https://raw.githubusercontent.com/GluuFederation/enterprise-edition/4.0.0/examples/single-host/run_all.sh
+        wget https://raw.githubusercontent.com/GluuFederation/enterprise-edition/4.0.0/examples/single-host/docker-compose.yml
+        wget https://raw.githubusercontent.com/GluuFederation/enterprise-edition/4.0.0/examples/single-host/docker-compose.override.yml
+        wget https://raw.githubusercontent.com/GluuFederation/enterprise-edition/4.0.0/examples/single-host/vault_gluu_policy.hcl
         chmod +x run_all.sh
 
 1)  Run the following command inside the `/path/to/docker-gluu-server/` directory and follow the prompts:
