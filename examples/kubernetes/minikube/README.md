@@ -35,7 +35,7 @@
     Example:
 
         {
-            "hostname": "kube.gluu.local",
+            "hostname": "demoexample.gluu.org",
             "country_code": "US",
             "state": "TX",
             "city": "Austin",
