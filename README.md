@@ -32,7 +32,7 @@ Images are hosted at Docker Hub:
 - [cr-rotate](https://hub.docker.com/r/gluufederation/cr-rotate)
 - [upgrade](https://hub.docker.com/r/gluufederation/upgrade)
 
-## Examples
+## Deployments
 
 [Docker Single Node](./examples/single-host/)
 
