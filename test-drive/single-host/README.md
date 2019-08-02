@@ -2,8 +2,8 @@
 
 This is an example of running the Gluu Server Enterprise Edition demo on a single VM. It's just two steps:
 
-1. Get the run bash script   
-1. Run it!   
+1. Get the run bash script
+1. Run it!
 
 ## Requirements:
 
@@ -69,7 +69,7 @@ This is an example of running the Gluu Server Enterprise Edition demo on a singl
 
 ## Uninstall gluu demo
 
-To uninstall the demo, follow these instructions: 
+To uninstall the demo, follow these instructions:
 
 1. In the same directory where `run_all.sh` was placed, here `gluu-demo` run:
 
@@ -111,7 +111,7 @@ First: [consul](https://www.consul.io/), which is our key value store, as well a
 
 Second: [config-init](https://github.com/GluuFederation/docker-config-init/tree/4.0.0), which will load all the necessary keys, configuration settings, templates and other requirements, into consul. This container will run to completion and then exit and remove itself. All services hereinafter will use consul to pull their necessary configuration.
 
-Next is our OpenDJ container. OpenDJ will install and configure itself inside the container, as well as create volumes inside the current directory as `/volumes/` for necessary persistent data, like db, schema, etc..
+Next is our WrenDS (a fork of OpenDJ) container. WrenDS will install and configure itself inside the container, as well as create volumes inside the current directory as `/volumes/` for necessary persistent data, like db, schema, etc..
 
 After that oxAuth, NGINX, then oxTrust, which relies on the `/.well-known/openid-configuration/` to properly set it's own configuration. These containers can be restarted at any time from that point on.
 
@@ -136,12 +136,12 @@ Currently all images, with the exception of the `consul` and `registrator` conta
 - **Locked out of your gluu demo? This is how Vault can be manually unlocked**
 
    1. Get Unseal key from `vault_key_token.txt`
-   
+
    1. log into vault container: `docker exec -it vault sh`
-   
+
    1. Run this command : `vault operator unseal`
-   
-   1. Wait for about 10 mins for the containers to get back to work. 
+
+   1. Wait for about 10 mins for the containers to get back to work.
 
 ## Documentation
 

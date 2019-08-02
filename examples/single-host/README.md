@@ -109,7 +109,7 @@ This is an example of running Gluu Server Enterprise Edition on a single VM.
 
     Secondly, [config-init](https://github.com/GluuFederation/docker-config-init/tree/4.0.0), which will load all of the necessary keys, configuration settings, templates and other requirements, into consul. This container will run to completion and then exit and remove itself. All services hereinafter will use consul to pull their necessary configuration.
 
-    Next is our OpenDJ container. OpenDJ will install and configure itself inside the container as well as create volumes inside of the current directory as `/volumes/` for necessary persistent data, like db, schema, etc..
+    Next is our WrenDS (a fork of OpenDJ) container. WrenDS will install and configure itself inside the container as well as create volumes inside of the current directory as `/volumes/` for necessary persistent data, like db, schema, etc..
 
     After that oxAuth, NGINX, then oxTrust, which relies on the `/.well-known/openid-configuration/` to properly set it's own configuration. These containers can be restarted at any time from that point on.
 

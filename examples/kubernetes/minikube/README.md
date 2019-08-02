@@ -75,7 +75,7 @@ Deploy Redis pod:
     cd ../redis
     kubectl apply -f redis.yaml
 
-### OpenDJ (LDAP)
+### WrenDS (LDAP)
 
 1.  Go to `ldap` directory:
 
