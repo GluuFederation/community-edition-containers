@@ -75,7 +75,7 @@ services:
       - ./vault_secret_id.txt:/etc/certs/vault_secret_id
 
   ldap:
-    image: gluufederation/opendj:4.0.0_dev
+    image: gluufederation/wrends:4.0.0_dev
     environment:
       - GLUU_CONFIG_CONSUL_HOST=consul
       - GLUU_SECRET_VAULT_HOST=vault
@@ -307,7 +307,7 @@ services:
   #   mem_limit: 500M
   #   labels:
   #     - "SERVICE_IGNORE=yes"
-  
+
   # couchbase:
   #   image: couchbase:6.0.1
   #   volumes:
