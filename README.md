@@ -7,7 +7,7 @@
 Repositories for supported images are shown below:
 
 - [config-init](http://github.com/GluuFederation/docker-config-init)
-- [wrends](http://github.com/GluuFederation/docker-wrends)
+- [opendj/wrends](http://github.com/GluuFederation/docker-opendj)
 - [oxauth](http://github.com/GluuFederation/docker-oxauth)
 - [oxtrust](http://github.com/GluuFederation/docker-oxtrust)
 - [nginx](http://github.com/GluuFederation/docker-nginx)
