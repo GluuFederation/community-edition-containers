@@ -83,7 +83,7 @@ services:
       - GLUU_LDAP_INIT_HOST=ldap
       - GLUU_LDAP_INIT_PORT=1636
       - GLUU_OXTRUST_CONFIG_GENERATION=true
-      - GLUU_CACHE_TYPE=NATIVE_PERSISTENCE
+      - GLUU_CACHE_TYPE=IN_MEMORY
       # - GLUU_CACHE_TYPE=REDIS  # don't forget to enable redis service
       # - GLUU_REDIS_URL=redis:6379
       # - GLUU_REDIS_TYPE=STANDALONE
@@ -317,5 +317,29 @@ services:
   #   container_name: couchbase
   #   restart: unless-stopped
   #   mem_limit: 4096M
+  #   labels:
+  #     - "SERVICE_IGNORE=yes"
+
+  # radius:
+  #   image: gluufederation/radius:4.0.0_dev
+  #   environment:
+  #     - GLUU_CONFIG_CONSUL_HOST=consul
+  #     - GLUU_SECRET_VAULT_HOST=vault
+  #     - GLUU_OXAUTH_BACKEND=oxauth:8080
+  #     # options: ldap/couchbase/hybrid
+  #     - GLUU_PERSISTENCE_TYPE=ldap
+  #     # options: default/user/site/cache/statistic; used only if GLUU_PERSISTENCE_TYPE is hybrid
+  #     - GLUU_PERSISTENCE_LDAP_MAPPING=default
+  #     # used only if GLUU_PERSISTENCE_TYPE is ldap or hybrid
+  #     - GLUU_LDAP_URL=ldap:1636
+  #     # used only if GLUU_PERSISTENCE_TYPE is couchbase or hybrid
+  #     - GLUU_COUCHBASE_URL=couchbase
+  #   extra_hosts:
+  #     - "${DOMAIN}:${HOST_IP}"
+  #   container_name: radius
+  #   volumes:
+  #     - ./vault_role_id.txt:/etc/certs/vault_role_id
+  #     - ./vault_secret_id.txt:/etc/certs/vault_secret_id
+  #   restart: unless-stopped
   #   labels:
   #     - "SERVICE_IGNORE=yes"
