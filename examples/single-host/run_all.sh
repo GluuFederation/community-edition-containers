@@ -15,20 +15,11 @@ DOCKER=${DOCKER:-docker}
 
 # @TODO: remove this function when we have .zip/.tar.gz for distribution
 get_files(){
-    has_gcp=$(cat gcp_kms_creds.json|wc -l)
-
-    # we're in test-drive
-    if [ "$has_gcp" = "0" ]; then
-        folder="test-drive"
-    else
-        folder="examples"
-    fi
-
     if [ ! -f docker-compose.yml ]; then
-        wget -q https://raw.githubusercontent.com/GluuFederation/community-edition-containers/4.0.0/$folder/single-host/docker-compose.yml -O ./docker-compose.yml
+        wget -q https://raw.githubusercontent.com/GluuFederation/community-edition-containers/4.0.0/examples/single-host/docker-compose.yml -O ./docker-compose.yml
     fi
     if [ ! -f vault_gluu_policy.hcl ]; then
-        wget -q https://raw.githubusercontent.com/GluuFederation/community-edition-containers/4.0.0/$folder/single-host/vault_gluu_policy.hcl -O ./vault_gluu_policy.hcl
+        wget -q https://raw.githubusercontent.com/GluuFederation/community-edition-containers/4.0.0/examples/single-host/vault_gluu_policy.hcl -O ./vault_gluu_policy.hcl
     fi
 }
 
@@ -245,6 +236,10 @@ prepare_config_secret() {
     "org_name": "$ORG_NAME"
 }
 EOL
+        fi
+
+        if [ -f generate.json ]; then
+            DOMAIN=$(cat generate.json |  awk ' /'hostname'/ {print $2} ' | sed 's/[",]//g')
         fi
 
         # mount generate.json to mark for new config and secret
