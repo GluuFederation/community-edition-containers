@@ -13,16 +13,6 @@ CITY=""
 DOCKER_COMPOSE=${DOCKER_COMPOSE:-docker-compose}
 DOCKER=${DOCKER:-docker}
 
-# @TODO: remove this function when we have .zip/.tar.gz for distribution
-get_files(){
-    if [ ! -f docker-compose.yml ]; then
-        wget -q https://raw.githubusercontent.com/GluuFederation/community-edition-containers/4.0.0/examples/single-host/docker-compose.yml -O ./docker-compose.yml
-    fi
-    if [ ! -f vault_gluu_policy.hcl ]; then
-        wget -q https://raw.githubusercontent.com/GluuFederation/community-edition-containers/4.0.0/examples/single-host/vault_gluu_policy.hcl -O ./vault_gluu_policy.hcl
-    fi
-}
-
 mask_password(){
     password=''
     while IFS= read -r -s -n1 char; do
@@ -379,8 +369,6 @@ touch gcp_kms_stanza.hcl
 touch gcp_kms_creds.json
 touch couchbase_chain.pem
 touch couchbase_pkey.key
-
-get_files
 
 gather_ip
 until confirm_ip; do : ; done
