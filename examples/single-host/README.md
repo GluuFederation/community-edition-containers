@@ -2,33 +2,41 @@
 
 This is an example of running Gluu Server Enterprise Edition on a single VM.
 
-## Requirements:
+## Deploying Gluu Server:
 
 1)  Follow the [Docker installation instructions](https://docs.docker.com/install/linux/docker-ce/ubuntu/#install-using-the-repository) or use the [convenient installation script](https://docs.docker.com/install/linux/docker-ce/ubuntu/#install-using-the-convenience-script)
 
 1)  [docker-compose](https://docs.docker.com/compose/install/#install-compose).
 
-1)  Obtain Google Cloud Platform KMS credentials JSON file, save it as `gcp_kms_creds.json`.
+1)  Determine which Vault unseal process fits the operation policy:
 
-1)  Create `gcp_kms_stanza.hcl`:
+    a)  By default, this deployment doesn't use Vault [auto-unseal](https://www.vaultproject.io/docs/concepts/seal.html#auto-unseal) feature.
+        If this process is selected, you can proceed to next step to obtain files for deployment.
 
-        seal "gcpckms" {
-            credentials = "/vault/config/creds.json"
-            project     = "<PROJECT_NAME>"
-            region      = "<REGION_NAME>"
-            key_ring    = "<KEYRING_NAME>"
-            crypto_key  = "<KEY_NAME>"
-        }
+    b)  If Vault auto-unseal is selected, choose one of the seal stanza as seen [here](https://www.vaultproject.io/docs/configuration/seal/index.html).
+        In this example, Google Cloud Platform (GCP) KMS is going to be used. Here's an example on how to obtain [GCP KMS credentials](https://shadow-soft.com/vault-auto-unseal/) JSON file, and save it as `gcp_kms_creds.json`.
+
+        Afterwards, create `gcp_kms_stanza.hcl`:
+
+            seal "gcpckms" {
+                credentials = "/vault/config/creds.json"
+                project     = "<PROJECT_NAME>"
+                region      = "<REGION_NAME>"
+                key_ring    = "<KEYRING_NAME>"
+                crypto_key  = "<KEY_NAME>"
+            }
 
 1)  Obtain files for deployment:
 
-        mkdir docker-gluu-server
-        cd docker-gluu-server
-        wget https://raw.githubusercontent.com/GluuFederation/community-edition-containers/4.0.0/examples/single-host/run_all.sh
-        wget https://raw.githubusercontent.com/GluuFederation/community-edition-containers/4.0.0/examples/single-host/docker-compose.yml
-        wget https://raw.githubusercontent.com/GluuFederation/community-edition-containers/4.0.0/examples/single-host/docker-compose.override.yml
-        wget https://raw.githubusercontent.com/GluuFederation/community-edition-containers/4.0.0/examples/single-host/vault_gluu_policy.hcl
+        wget https://github.com/GluuFederation/community-edition-containers/archive/4.0.0.zip \
+            && unzip 4.0.0.zip
+        cd community-edition-containers-4.0.0/examples/single-host
         chmod +x run_all.sh
+
+    If auto-unseal is enabled:
+
+        cp /path/to/gcp_kms_creds.json .
+        cp /path/to/gcp_kms_stanza.hcl .
 
 1)  Run the following command inside the `/path/to/docker-gluu-server/` directory and follow the prompts:
 
@@ -75,45 +83,7 @@ This is an example of running Gluu Server Enterprise Edition on a single VM.
 
         docker-compose logs -f
 
-1)  On initial deployment, since Vault has not been configured yet, the `run_all.sh` will generate root token and key to interact with Vault API, saved as `vault_key_token.txt`. Secure this file as it contains recovery key and root token.
-
-## FAQ
-
-1) What network is Gluu Server Enterprise Edition running on?
-
-    In this script, it launches consul using the `docker-compose up consul` command, where docker-compose creates a custom bridge network, based on the name of your current directory. So, for example, the network would be named `dockergluuserver_bridge`. You can assign a custom network in the `docker-compose.yaml`. Please see [the Docker-compose official documentation](https://docs.docker.com/compose/networking/#specify-custom-networks) for further understanding.
-
-    All other containers in the docker-compose file are connected to that same network as well. The only container not included in the `docker-compose.yaml` file is the `config-init`. We left them disconnected as it must finish loading the necessary configuration files into consul before any other container can launch. As can be seen in the following `docker run` command, it connects to the same network as consul with the `--network container:consul` option.
-
-        docker run --rm \
-            --network container:consul \
-            -e GLUU_CONFIG_ADAPTER=consul \
-            -e GLUU_CONSUL_HOST=consul \
-            gluufederation/config-init:4.0.0_dev \
-            generate \
-            --ldap-type "${GLUU_LDAP_TYPE}" \
-            --domain $domain \
-            --admin-pw $adminPw \
-            --org-name "$orgName" \
-            --email $email \
-            --country-code $countryCode \
-            --state $state \
-            --city $city
-    - Note this command is to create the initial configuration and is slightly different than the `load` or `dump` option of config-init.
-
-1) What is the launch process for the containers?
-
-    There are a couple containers which have to be launched first to successfully launch the dependent Gluu Server containers.
-
-    Firstly, [consul](https://www.consul.io/), which is our key value store, as well as service discovery container.
-
-    Secondly, [config-init](https://github.com/GluuFederation/docker-config-init/tree/4.0.0), which will load all of the necessary keys, configuration settings, templates and other requirements, into consul. This container will run to completion and then exit and remove itself. All services hereinafter will use consul to pull their necessary configuration.
-
-    Next is our WrenDS (a fork of OpenDJ) container. WrenDS will install and configure itself inside the container as well as create volumes inside of the current directory as `/volumes/` for necessary persistent data, like db, schema, etc..
-
-    After that oxAuth, NGINX, then oxTrust, which relies on the `/.well-known/openid-configuration/` to properly set it's own configuration. These containers can be restarted at any time from that point on.
-
-    Currently all of the images, with the exception of the `consul` and `registrator` containers, have wait-for-it scripts designed to prevent them from trying to start, before the necessary launch procedure is accomplished. This mitigates failure during the build process.
+__NOTE__: On initial deployment, since Vault has not been configured yet, the `run_all.sh` will generate root token and key to interact with Vault API, saved as `vault_key_token.txt`. Secure this file as it contains recovery key and root token.
 
 ## Documentation
 
