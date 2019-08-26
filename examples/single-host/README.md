@@ -15,7 +15,6 @@ This is an example of running Gluu Server Enterprise Edition on a single VM.
 
     b)  If Vault auto-unseal is selected, choose one of the seal stanza as seen [here](https://www.vaultproject.io/docs/configuration/seal/index.html).
         In this example, Google Cloud Platform (GCP) KMS is going to be used. Here's an example on how to obtain [GCP KMS credentials](https://shadow-soft.com/vault-auto-unseal/) JSON file, and save it as `gcp_kms_creds.json`.
-
         Afterwards, create `gcp_kms_stanza.hcl`:
 
             seal "gcpckms" {
