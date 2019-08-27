@@ -156,7 +156,7 @@ prepare_config_secret() {
     if [[ -z $DOMAIN ]]; then
         echo "[W] Configuration not found in Consul"
 
-         if [[ -f $CONFIG_DIR/config.json  ]]; then
+        if [[ -f $CONFIG_DIR/config.json  ]]; then
             read -rp "[I] Load previously saved configuration in local disk? [Y/n]" load_choice
 
             if [[ $load_choice != "n" && $load_choice != "N" ]]; then
