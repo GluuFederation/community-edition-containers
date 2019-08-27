@@ -10,10 +10,10 @@ This is an example of running Gluu Server Enterprise Edition on a single VM.
 
 1)  Determine which Vault unseal process fits the operation policy:
 
-    a)  By default, this deployment doesn't use Vault [auto-unseal](https://www.vaultproject.io/docs/concepts/seal.html#auto-unseal) feature.
+    1)  By default, this deployment doesn't use Vault [auto-unseal](https://www.vaultproject.io/docs/concepts/seal.html#auto-unseal) feature.
         If this process is selected, proceed to next step to obtain files for deployment.
 
-    b)  If Vault auto-unseal is selected, choose one of the seal stanza as seen [here](https://www.vaultproject.io/docs/configuration/seal/index.html).
+    1)  If Vault auto-unseal is selected, choose one of the seal stanza as seen [here](https://www.vaultproject.io/docs/configuration/seal/index.html).
         In this example, Google Cloud Platform (GCP) KMS is going to be used. Here's an example on how to obtain [GCP KMS credentials](https://shadow-soft.com/vault-auto-unseal/) JSON file, and save it as `gcp_kms_creds.json`. Here's an example of `gcp_kms_creds.json`:
 
             {
