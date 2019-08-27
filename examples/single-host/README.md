@@ -16,32 +16,28 @@ This is an example of running Gluu Server Enterprise Edition on a single VM.
     b)  If Vault auto-unseal is selected, choose one of the seal stanza as seen [here](https://www.vaultproject.io/docs/configuration/seal/index.html).
         In this example, Google Cloud Platform (GCP) KMS is going to be used. Here's an example on how to obtain [GCP KMS credentials](https://shadow-soft.com/vault-auto-unseal/) JSON file, and save it as `gcp_kms_creds.json`. Here's an example of `gcp_kms_creds.json`:
 
-        ```
-        {
-            "type": "service_account",
-            "project_id": "project",
-            "private_key_id": "1234abcd",
-            "private_key": "-----BEGIN PRIVATE KEY-----\nabcdEFGH==\n-----END PRIVATE KEY-----\n",
-            "client_email": "sa@project.iam.gserviceaccount.com",
-            "client_id": "1234567890",
-            "auth_uri": "https://accounts.google.com/o/oauth2/auth",
-            "token_uri": "https://oauth2.googleapis.com/token",
-            "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
-            "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/sa%40project.iam.gserviceaccount.com"
-        }
-        ```
+            {
+                "type": "service_account",
+                "project_id": "project",
+                "private_key_id": "1234abcd",
+                "private_key": "-----BEGIN PRIVATE KEY-----\nabcdEFGH==\n-----END PRIVATE KEY-----\n",
+                "client_email": "sa@project.iam.gserviceaccount.com",
+                "client_id": "1234567890",
+                "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+                "token_uri": "https://oauth2.googleapis.com/token",
+                "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+                "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/sa%40project.iam.gserviceaccount.com"
+            }
 
         Afterwards, create `gcp_kms_stanza.hcl`:
 
-        ```
-        seal "gcpckms" {
-            credentials = "/vault/config/creds.json"
-            project     = "<PROJECT_NAME>"
-            region      = "<REGION_NAME>"
-            key_ring    = "<KEYRING_NAME>"
-            crypto_key  = "<KEY_NAME>"
-        }
-        ```
+            seal "gcpckms" {
+                credentials = "/vault/config/creds.json"
+                project     = "<PROJECT_NAME>"
+                region      = "<REGION_NAME>"
+                key_ring    = "<KEYRING_NAME>"
+                crypto_key  = "<KEY_NAME>"
+            }
 
 1)  Obtain files for deployment:
 
