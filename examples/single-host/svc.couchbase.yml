@@ -1,0 +1,15 @@
+# use v2.x API to allow `mem_limit` option
+version: "2.4"
+
+services:
+  couchbase:
+    image: couchbase:6.0.1
+    volumes:
+      - ./volumes/couchbase/var:/opt/couchbase/var
+      - ./couchbase_chain.pem:/opt/couchbase/var/lib/couchbase/inbox/chain.pem
+      - ./couchbase_pkey.key:/opt/couchbase/var/lib/couchbase/inbox/pkey.key
+    container_name: couchbase
+    restart: unless-stopped
+    mem_limit: 4096M
+    labels:
+      - "SERVICE_IGNORE=yes"
