@@ -2,42 +2,82 @@
 
 This is an example of running Gluu Server Enterprise Edition on a single VM.
 
-## Deploying Gluu Server:
+## Deploying Gluu Server
 
 1)  Follow the [Docker installation instructions](https://docs.docker.com/install/linux/docker-ce/ubuntu/#install-using-the-repository) or use the [convenient installation script](https://docs.docker.com/install/linux/docker-ce/ubuntu/#install-using-the-convenience-script)
 
 1)  [docker-compose](https://docs.docker.com/compose/install/#install-compose)
 
-1)  Determine which Vault unseal process fits the operation policy:
+1)  By default, the following services will be enabled:
 
-    1)  By default, this deployment doesn't use Vault [auto-unseal](https://www.vaultproject.io/docs/concepts/seal.html#auto-unseal) feature.
-        If this process is selected, proceed to next step to obtain files for deployment.
+    - `consul`
+    - `registrator`
+    - `vault`
+    - `nginx`
+    - `ldap`
+    - `oxauth`
+    - `oxtrust`
+    - `oxpassport`
+    - `oxshibboleth`
 
-    1)  If Vault auto-unseal is selected, choose one of the seal stanza as seen [here](https://www.vaultproject.io/docs/configuration/seal/index.html).
-        In this example, Google Cloud Platform (GCP) KMS is going to be used. Here's an example on how to obtain [GCP KMS credentials](https://shadow-soft.com/vault-auto-unseal/) JSON file, and save it as `gcp_kms_creds.json`. Here's an example of `gcp_kms_creds.json`:
+    Additional services that are supported (by default they are disabled):
 
-            {
-                "type": "service_account",
-                "project_id": "project",
-                "private_key_id": "1234abcd",
-                "private_key": "-----BEGIN PRIVATE KEY-----\nabcdEFGH==\n-----END PRIVATE KEY-----\n",
-                "client_email": "sa@project.iam.gserviceaccount.com",
-                "client_id": "1234567890",
-                "auth_uri": "https://accounts.google.com/o/oauth2/auth",
-                "token_uri": "https://oauth2.googleapis.com/token",
-                "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
-                "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/sa%40project.iam.gserviceaccount.com"
-            }
+    - `redis`
+    - `radius`
+    - `couchbase`
+    - `vault` (with auto-unseal)
+    - `oxd_server`
+    - `key_rotation`
+    - `cr_rotate`
 
-        Afterwards, create `gcp_kms_stanza.hcl`:
+    To enable additional services listed above, create `settings.sh` (if not exist yet) with the following contents:
 
-            seal "gcpckms" {
-                credentials = "/vault/config/creds.json"
-                project     = "<PROJECT_NAME>"
-                region      = "<REGION_NAME>"
-                key_ring    = "<KEYRING_NAME>"
-                crypto_key  = "<KEY_NAME>"
-            }
+    ```
+    #!/bin/env bash
+    set -e
+
+    SVC_COUCHBASE="yes"
+    SVC_CR_ROTATE="yes"
+    SVC_KEY_ROTATION="yes"
+    SVC_OXD_SERVER="yes"
+    SVC_RADIUS="yes"
+    SVC_REDIS="yes"
+    SVC_VAULT_AUTOUNSEAL="yes"
+    ENABLE_OVERRIDE="yes"
+    ```
+
+    To disable them, change `yes` to `no` for each setting.
+
+    A special setting `ENABLE_OVERRIDE` is provided to load any overrides for all services listed in `override.yml` (create the file it not exist). For reference on multiple Compose file, please take a look at https://docs.docker.com/compose/extends/#multiple-compose-files.
+
+1)  If `SVC_VAULT_AUTOUNSEAL` is enabled, choose one of the seal stanza as seen [here](https://www.vaultproject.io/docs/configuration/seal/index.html). In this example, Google Cloud Platform (GCP) KMS is going to be used. Here's an example on how to obtain [GCP KMS credentials](https://shadow-soft.com/vault-auto-unseal/) JSON file, and save it as `gcp_kms_creds.json`. Here's an example of `gcp_kms_creds.json`:
+
+    ```
+    {
+        "type": "service_account",
+        "project_id": "project",
+        "private_key_id": "1234abcd",
+        "private_key": "-----BEGIN PRIVATE KEY-----\nabcdEFGH==\n-----END PRIVATE KEY-----\n",
+        "client_email": "sa@project.iam.gserviceaccount.com",
+        "client_id": "1234567890",
+        "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+        "token_uri": "https://oauth2.googleapis.com/token",
+        "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+        "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/sa%40project.iam.gserviceaccount.com"
+    }
+    ```
+
+    Afterwards, create `gcp_kms_stanza.hcl`:
+
+    ```
+    seal "gcpckms" {
+        credentials = "/vault/config/creds.json"
+        project     = "<PROJECT_NAME>"
+        region      = "<REGION_NAME>"
+        key_ring    = "<KEYRING_NAME>"
+        crypto_key  = "<KEY_NAME>"
+    }
+    ```
 
 1)  Obtain files for deployment:
 
@@ -48,14 +88,14 @@ This is an example of running Gluu Server Enterprise Edition on a single VM.
     chmod +x run_all.sh
     ```
 
-    If auto-unseal is enabled:
+    If `SVC_VAULT_AUTOUNSEAL` is enabled:
 
     ```
     cp /path/to/gcp_kms_creds.json .
     cp /path/to/gcp_kms_stanza.hcl .
     ```
 
-1)  Run the following command inside the `/path/to/docker-gluu-server/` directory and follow the prompts:
+1)  Run the following script:
 
     ```
     ./run_all.sh
@@ -106,6 +146,14 @@ This is an example of running Gluu Server Enterprise Edition on a single VM.
     ```
 
 **NOTE**: On initial deployment, since Vault has not been configured yet, the `run_all.sh` will generate root token and key to interact with Vault API, saved as `vault_key_token.txt`. Secure this file as it contains recovery key and root token.
+
+## Removing Gluu Server
+
+Run the following command to delete all objects during the deployment:
+
+```
+docker-compose down --remove-orphans
+```
 
 ## Documentation
 

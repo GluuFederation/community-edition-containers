@@ -10,8 +10,85 @@ ORG_NAME=""
 COUNTRY_CODE=""
 STATE=""
 CITY=""
-DOCKER_COMPOSE=${DOCKER_COMPOSE:-docker-compose}
-DOCKER=${DOCKER:-docker}
+DOCKER_COMPOSE=${DOCKER_COMPOSE:-$(which docker-compose)}
+DOCKER=${DOCKER:-$(which docker)}
+
+# ========================
+# additional service flags
+# ========================
+
+# setting "yes" will load `svc.couchbase.yml`
+SVC_COUCHBASE="no"
+
+# setting "yes" will load `svc.cr_rotate.yml`
+SVC_CR_ROTATE="no"
+
+# setting "yes" will load `svc.key_rotation.yml`
+SVC_KEY_ROTATION="no"
+
+# setting "yes" will load `svc.oxd_server.yml`
+SVC_OXD_SERVER="no"
+
+# setting "yes" will load `svc.radius.yml`
+SVC_RADIUS="no"
+
+# setting "yes" will load `svc.redis.yml`
+SVC_REDIS="no"
+
+# setting "yes" will load `svc.vault_autounseal.yml`
+SVC_VAULT_AUTOUNSEAL="no"
+
+# setting "yes" will load `override.yml` (if file exists)
+ENABLE_OVERRIDE="no"
+
+# override the setting above if `settings.sh` can be loaded
+if [ -f settings.sh ]; then
+    . settings.sh
+fi
+
+# =========
+# functions
+# =========
+
+run_compose() {
+    files="-f docker-compose.yml"
+
+    if [ "$SVC_COUCHBASE" = "yes" ]; then
+        files="$files -f svc.couchbase.yml"
+    fi
+
+    if [ "$SVC_CR_ROTATE" = "yes" ]; then
+        files="$files -f svc.cr_rotate.yml"
+    fi
+
+    if [ "$SVC_KEY_ROTATION" = "yes" ]; then
+        files="$files -f svc.key_rotation.yml"
+    fi
+
+    if [ "$SVC_OXD_SERVER" = "yes" ]; then
+        files="$files -f svc.oxd_server.yml"
+    fi
+
+    if [ "$SVC_RADIUS" = "yes" ]; then
+        files="$files -f svc.radius.yml"
+    fi
+
+    if [ "$SVC_REDIS" = "yes" ]; then
+        files="$files -f svc.redis.yml"
+    fi
+
+    if [ "$SVC_VAULT_AUTOUNSEAL" = "yes" ]; then
+        files="$files -f svc.vault_autounseal.yml"
+    fi
+
+    if [ "$ENABLE_OVERRIDE" = "yes" ]; then
+        if [ -f override.yml ]; then
+            files="$files -f override.yml"
+        fi
+    fi
+
+    $DOCKER_COMPOSE $files up --remove-orphans -d $@
+}
 
 mask_password(){
     password=''
@@ -120,19 +197,19 @@ check_docker_compose() {
 }
 
 load_services() {
-    echo "[I] Deploying containers"
-    DOMAIN=$DOMAIN HOST_IP=$HOST_IP $DOCKER_COMPOSE up -d
+    echo "[I] Deploying services"
+    DOMAIN=$DOMAIN HOST_IP=$HOST_IP run_compose
 }
 
 prepare_config_secret() {
     echo "[I] Preparing cluster-wide config and secret"
 
     if [[ -z $($DOCKER ps --filter name=consul -q) ]]; then
-        $DOCKER_COMPOSE up -d consul
+        run_compose consul
     fi
 
     if [[ -z $($DOCKER ps --filter name=vault -q) ]]; then
-        $DOCKER_COMPOSE up -d vault
+        run_compose vault
         setup_vault
     fi
 
@@ -321,11 +398,8 @@ unseal_vault() {
     if [ "${vault_sealed}" = "false" ]; then
         echo "[I] Vault already unsealed"
     else
-        has_gcp=$(cat gcp_kms_creds.json|wc -l)
-        if [ "$has_gcp" = "0" ]; then
-            echo "[I] Unsealing Vault manually"
-            $DOCKER exec vault vault operator unseal "$(get_unseal_key)"
-        fi
+        echo "[I] Unsealing Vault manually"
+        $DOCKER exec vault vault operator unseal "$(get_unseal_key)"
     fi
 }
 

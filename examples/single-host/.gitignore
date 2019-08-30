@@ -11,3 +11,5 @@ log4j2.*
 couchbase_chain.pem
 couchbase_pkey.key
 generate.json
+settings.sh
+override.yml
