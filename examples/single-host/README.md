@@ -140,7 +140,7 @@ Continue with the above settings? [Y/n]y
 The startup process may take some time. Keep track of the deployment by using the following command:
 
 ```
-docker-compose logs -f
+./run_all.sh logs -f
 ```
 
 **NOTE**: On initial deployment, since Vault has not been configured yet, the `run_all.sh` will generate root token and key to interact with Vault API, saved as `vault_key_token.txt`. Secure this file as it contains recovery key and root token.
@@ -150,7 +150,7 @@ docker-compose logs -f
 Run the following command to delete all objects during the deployment:
 
 ```
-docker-compose down --remove-orphans
+./run_all.sh down
 ```
 
 ## Documentation
