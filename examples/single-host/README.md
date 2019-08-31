@@ -8,47 +8,40 @@ This is an example of running Gluu Server Enterprise Edition on a single VM.
 
 1)  [docker-compose](https://docs.docker.com/compose/install/#install-compose)
 
-1)  By default, the following services will be enabled:
+1)  Supported services:
 
-    - `consul`
-    - `registrator`
-    - `vault`
-    - `nginx`
-    - `ldap`
-    - `oxauth`
-    - `oxtrust`
-    - `oxpassport`
-    - `oxshibboleth`
+    | Service             | Setting Name           | Mandatory | Enabled |
+    | ------------------- | ---------------------- | --------- | ------- |
+    | `consul`            | -                      | yes       | always  |
+    | `registrator`       | -                      | yes       | always  |
+    | `vault`             | -                      | yes       | always  |
+    | `nginx`             | -                      | yes       | always  |
+    | `oxauth`            | -                      | yes       | always  |
+    | `oxtrust`           | -                      | yes       | always  |
+    | `ldap`              | `SVC_LDAP`             | no        | yes     |
+    | `oxpassport`        | `SVC_OXPASSPORT`       | no        | yes     |
+    | `oxshibboleth`      | `SVC_OXSHIBBOLETH`     | no        | yes     |
+    | `redis`             | `SVC_REDIS`            | no        | no      |
+    | `radius`            | `SVC_RADIUS`           | no        | no      |
+    | `couchbase`         | `SVC_COUCHBASE`        | no        | no      |
+    | `vault` auto-unseal | `SVC_VAULT_AUTOUNSEAL` | no        | no      |
+    | `oxd_server`        | `SVC_OXD_SERVER`       | no        | no      |
+    | `key_rotation`      | `SVC_KEY_ROTATION`     | no        | no      |
+    | `cr_rotate`         | `SVC_CR_ROTATE`        | no        | no      |
 
-    Additional services that are supported (by default they are disabled):
-
-    - `redis`
-    - `radius`
-    - `couchbase`
-    - `vault` (with auto-unseal)
-    - `oxd_server`
-    - `key_rotation`
-    - `cr_rotate`
-
-    To enable additional services listed above, create `settings.sh` (if not exist yet) with the following contents:
+    To enable/disable non-mandatory services listed above, create `settings.sh` (if not exist) and set the value to `"yes"` to enable or set to any value to disable the service. Here's an example:
 
     ```
     #!/bin/env bash
     set -e
 
-    SVC_COUCHBASE="yes"
-    SVC_CR_ROTATE="yes"
-    SVC_KEY_ROTATION="yes"
-    SVC_OXD_SERVER="yes"
-    SVC_RADIUS="yes"
-    SVC_REDIS="yes"
-    SVC_VAULT_AUTOUNSEAL="yes"
-    ENABLE_OVERRIDE="yes"
+    SVC_LDAP="yes"              # will be enabled
+    SVC_OXPASSPORT="no"         # will be disabled
+    SVC_OXSHIBBOLETH=""         # will be disabled
+    SVC_VAULT_AUTOUNSEAL="yes"  # enable autounseal with GCP KMS API
     ```
 
-    To disable them, change `yes` to `no` for each setting.
-
-    A special setting `ENABLE_OVERRIDE` is provided to load any overrides for all services listed in `override.yml` (create the file it not exist). For reference on multiple Compose file, please take a look at https://docs.docker.com/compose/extends/#multiple-compose-files.
+    If `docker-compose.override.yml` exists, this file will be added as the last Compose file. For reference on multiple Compose file, please take a look at https://docs.docker.com/compose/extends/#multiple-compose-files.
 
 1)  If `SVC_VAULT_AUTOUNSEAL` is enabled, choose one of the seal stanza as seen [here](https://www.vaultproject.io/docs/configuration/seal/index.html). In this example, Google Cloud Platform (GCP) KMS is going to be used. Here's an example on how to obtain [GCP KMS credentials](https://shadow-soft.com/vault-auto-unseal/) JSON file, and save it as `gcp_kms_creds.json`. Here's an example of `gcp_kms_creds.json`:
 

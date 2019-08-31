@@ -1,0 +1,28 @@
+# use v2.x API to allow `mem_limit` option
+version: "2.4"
+
+services:
+  ldap:
+    image: gluufederation/wrends:4.0.0_dev
+    environment:
+      - GLUU_CONFIG_CONSUL_HOST=consul
+      - GLUU_SECRET_VAULT_HOST=vault
+      # the value must match service name `ldap` because other containers
+      # use this value as LDAP hostname
+      - GLUU_CERT_ALT_NAME=ldap
+      - GLUU_LDAP_ADVERTISE_ADDR=ldap
+      - GLUU_PERSISTENCE_TYPE=ldap
+      - GLUU_PERSISTENCE_LDAP_MAPPING=default
+    container_name: ldap
+    volumes:
+      - ./volumes/opendj/config:/opt/opendj/config
+      - ./volumes/opendj/ldif:/opt/opendj/ldif
+      - ./volumes/opendj/logs:/opt/opendj/logs
+      - ./volumes/opendj/db:/opt/opendj/db
+      - ./volumes/opendj/backup:/opt/opendj/bak
+      - ./vault_role_id.txt:/etc/certs/vault_role_id
+      - ./vault_secret_id.txt:/etc/certs/vault_secret_id
+      # - ./101-ox.ldif:/opt/opendj/config/schema/101-ox.ldif
+    restart: unless-stopped
+    labels:
+      - "SERVICE_IGNORE=yes"

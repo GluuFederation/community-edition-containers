@@ -17,6 +17,15 @@ DOCKER=${DOCKER:-$(which docker)}
 # additional service flags
 # ========================
 
+# setting "yes" will load `svc.ldap.yml`
+SVC_LDAP="yes"
+
+# setting "yes" will load `svc.oxpassport.yml`
+SVC_OXPASSPORT="yes"
+
+# setting "yes" will load `svc.oxshibboleth.yml`
+SVC_OXSHIBBOLETH="yes"
+
 # setting "yes" will load `svc.couchbase.yml`
 SVC_COUCHBASE="no"
 
@@ -38,8 +47,9 @@ SVC_REDIS="no"
 # setting "yes" will load `svc.vault_autounseal.yml`
 SVC_VAULT_AUTOUNSEAL="no"
 
-# setting "yes" will load `override.yml` (if file exists)
-ENABLE_OVERRIDE="no"
+# PERSISTENCE_TYPE="ldap"
+
+# PERSISTENCE_LDAP_MAPPING="default"
 
 # override the setting above if `settings.sh` can be loaded
 if [ -f settings.sh ]; then
@@ -52,6 +62,18 @@ fi
 
 run_compose() {
     files="-f docker-compose.yml"
+
+    if [ "$SVC_LDAP" = "yes" ]; then
+        files="$files -f svc.ldap.yml"
+    fi
+
+    if [ "$SVC_OXPASSPORT" = "yes" ]; then
+        files="$files -f svc.oxpassport.yml"
+    fi
+
+    if [ "$SVC_OXSHIBBOLETH" = "yes" ]; then
+        files="$files -f svc.oxshibboleth.yml"
+    fi
 
     if [ "$SVC_COUCHBASE" = "yes" ]; then
         files="$files -f svc.couchbase.yml"
@@ -81,10 +103,8 @@ run_compose() {
         files="$files -f svc.vault_autounseal.yml"
     fi
 
-    if [ "$ENABLE_OVERRIDE" = "yes" ]; then
-        if [ -f override.yml ]; then
-            files="$files -f override.yml"
-        fi
+    if [ -f docker-compose.override.yml ]; then
+        files="$files -f docker-compose.override.yml"
     fi
 
     $DOCKER_COMPOSE $files up --remove-orphans -d $@
@@ -229,6 +249,7 @@ prepare_config_secret() {
         retry=$((retry+1))
         sleep 5
     done
+
     # if there's no config in Consul, check from previously saved config
     if [[ -z $DOMAIN ]]; then
         echo "[W] Configuration not found in Consul"
@@ -430,6 +451,26 @@ setup_vault() {
     enable_approle
 }
 
+init_db_entries() {
+    if [ ! -f volumes/db_initialized ]; then
+        echo "[I] Adding entries to databases"
+
+        $DOCKER run \
+            --rm \
+            --network container:consul \
+            -e GLUU_CONFIG_CONSUL_HOST=consul \
+            -e GLUU_SECRET_VAULT_HOST=vault \
+            -e GLUU_PERSISTENCE_TYPE=$PERSISTENCE_TYPE \
+            -e GLUU_PERSISTENCE_LDAP_MAPPING=$PERSISTENCE_LDAP_MAPPING \
+            -e GLUU_LDAP_URL=ldap:1636 \
+            -e GLUU_COUCHBASE_URL=couchbase \
+            -v $PWD/vault_role_id.txt:/etc/certs/vault_role_id \
+            -v $PWD/vault_secret_id.txt:/etc/certs/vault_secret_id \
+            gluufederation/persistence:$GLUU_VERSION
+        touch volumes/db_initialized
+    fi
+}
+
 # ==========
 # entrypoint
 # ==========
@@ -449,4 +490,5 @@ until confirm_ip; do : ; done
 
 prepare_config_secret
 load_services
+init_db_entries
 check_health

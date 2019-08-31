@@ -1,0 +1,31 @@
+# use v2.x API to allow `mem_limit` option
+version: "2.4"
+
+services:
+  oxshibboleth:
+    image: gluufederation/oxshibboleth:4.0.0_dev
+    environment:
+      - GLUU_CONFIG_CONSUL_HOST=consul
+      - GLUU_SECRET_VAULT_HOST=vault
+      # options: ldap/couchbase/hybrid
+      - GLUU_PERSISTENCE_TYPE=ldap
+      # options: default/user/site/cache/statistic; used only if GLUU_PERSISTENCE_TYPE is hybrid
+      - GLUU_PERSISTENCE_LDAP_MAPPING=default
+      # used only if GLUU_PERSISTENCE_TYPE is ldap or hybrid
+      - GLUU_LDAP_URL=ldap:1636
+      # used only if GLUU_PERSISTENCE_TYPE is couchbase or hybrid
+      - GLUU_COUCHBASE_URL=couchbase
+    extra_hosts:
+      - "${DOMAIN}:${HOST_IP}"
+    container_name: oxshibboleth
+    volumes:
+      - ./volumes/shared-shibboleth-idp:/opt/shared-shibboleth-idp
+      - ./vault_role_id.txt:/etc/certs/vault_role_id
+      - ./vault_secret_id.txt:/etc/certs/vault_secret_id
+    mem_limit: 1024M
+    restart: unless-stopped
+    labels:
+      - "SERVICE_NAME=oxshibboleth"
+      - "SERVICE_8086_CHECK_HTTP=/idp"
+      - "SERVICE_8086_CHECK_INTERVAL=15s"
+      - "SERVICE_8086_CHECK_TIMEOUT=5s"
