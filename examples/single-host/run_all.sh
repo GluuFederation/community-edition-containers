@@ -47,9 +47,9 @@ SVC_REDIS="no"
 # setting "yes" will load `svc.vault_autounseal.yml`
 SVC_VAULT_AUTOUNSEAL="no"
 
-# PERSISTENCE_TYPE="ldap"
+PERSISTENCE_TYPE="ldap"
 
-# PERSISTENCE_LDAP_MAPPING="default"
+PERSISTENCE_LDAP_MAPPING="default"
 
 # override the setting above if `settings.sh` can be loaded
 if [ -f settings.sh ]; then
@@ -60,54 +60,66 @@ fi
 # functions
 # =========
 
-run_compose() {
-    files="-f docker-compose.yml"
+get_compose_files() {
+    files="docker-compose.yml"
 
     if [ "$SVC_LDAP" = "yes" ]; then
-        files="$files -f svc.ldap.yml"
+        files="$files:svc.ldap.yml"
     fi
 
     if [ "$SVC_OXPASSPORT" = "yes" ]; then
-        files="$files -f svc.oxpassport.yml"
+        files="$files:svc.oxpassport.yml"
     fi
 
     if [ "$SVC_OXSHIBBOLETH" = "yes" ]; then
-        files="$files -f svc.oxshibboleth.yml"
+        files="$files:svc.oxshibboleth.yml"
     fi
 
     if [ "$SVC_COUCHBASE" = "yes" ]; then
-        files="$files -f svc.couchbase.yml"
+        files="$files:svc.couchbase.yml"
     fi
 
     if [ "$SVC_CR_ROTATE" = "yes" ]; then
-        files="$files -f svc.cr_rotate.yml"
+        files="$files:svc.cr_rotate.yml"
     fi
 
     if [ "$SVC_KEY_ROTATION" = "yes" ]; then
-        files="$files -f svc.key_rotation.yml"
+        files="$files:svc.key_rotation.yml"
     fi
 
     if [ "$SVC_OXD_SERVER" = "yes" ]; then
-        files="$files -f svc.oxd_server.yml"
+        files="$files:svc.oxd_server.yml"
     fi
 
     if [ "$SVC_RADIUS" = "yes" ]; then
-        files="$files -f svc.radius.yml"
+        files="$files:svc.radius.yml"
     fi
 
     if [ "$SVC_REDIS" = "yes" ]; then
-        files="$files -f svc.redis.yml"
+        files="$files:svc.redis.yml"
     fi
 
     if [ "$SVC_VAULT_AUTOUNSEAL" = "yes" ]; then
-        files="$files -f svc.vault_autounseal.yml"
+        files="$files:svc.vault_autounseal.yml"
     fi
 
     if [ -f docker-compose.override.yml ]; then
-        files="$files -f docker-compose.override.yml"
+        files="$files:docker-compose.override.yml"
     fi
 
-    $DOCKER_COMPOSE $files up --remove-orphans -d $@
+    echo "$files"
+}
+
+compose_logs() {
+    COMPOSE_FILE=$(get_compose_files) $DOCKER_COMPOSE logs "$@"
+}
+
+compose_down() {
+    COMPOSE_FILE=$(get_compose_files) $DOCKER_COMPOSE down --remove-orphans
+}
+
+compose_up() {
+    COMPOSE_FILE=$(get_compose_files) $DOCKER_COMPOSE up --remove-orphans -d "$@"
 }
 
 mask_password(){
@@ -218,18 +230,18 @@ check_docker_compose() {
 
 load_services() {
     echo "[I] Deploying services"
-    DOMAIN=$DOMAIN HOST_IP=$HOST_IP run_compose
+    DOMAIN=$DOMAIN HOST_IP=$HOST_IP compose_up
 }
 
 prepare_config_secret() {
     echo "[I] Preparing cluster-wide config and secret"
 
     if [[ -z $($DOCKER ps --filter name=consul -q) ]]; then
-        run_compose consul
+        compose_up consul
     fi
 
     if [[ -z $($DOCKER ps --filter name=vault -q) ]]; then
-        run_compose vault
+        compose_up vault
         setup_vault
     fi
 
@@ -485,10 +497,25 @@ touch gcp_kms_creds.json
 touch couchbase_chain.pem
 touch couchbase_pkey.key
 
-gather_ip
-until confirm_ip; do : ; done
+case $1 in
+    "up"|"")
+        gather_ip
+        until confirm_ip; do : ; done
 
-prepare_config_secret
-load_services
-init_db_entries
-check_health
+        prepare_config_secret
+        load_services
+        init_db_entries
+        check_health
+        ;;
+    down)
+        compose_down
+        ;;
+    logs)
+        shift
+        compose_logs "$@"
+        ;;
+    *)
+        echo "[E] Unsupported command; please choose 'up', 'down', or 'logs'"
+        exit 1
+        ;;
+esac
