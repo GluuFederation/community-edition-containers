@@ -10,8 +10,8 @@ ORG_NAME=""
 COUNTRY_CODE=""
 STATE=""
 CITY=""
-DOCKER_COMPOSE=${DOCKER_COMPOSE:-$(which docker-compose)}
-DOCKER=${DOCKER:-$(which docker)}
+DOCKER_COMPOSE=${DOCKER_COMPOSE:-docker-compose}
+DOCKER=${DOCKER:-docker}
 
 # ========================
 # additional service flags
@@ -106,12 +106,12 @@ get_compose_files() {
 #     compose_logs -f --tail=100 consul
 #
 compose_logs() {
-    COMPOSE_FILE=$(get_compose_files) $DOCKER_COMPOSE logs "$@"
+    COMPOSE_FILE=$(get_compose_files) PERSISTENCE_TYPE=$PERSISTENCE_TYPE PERSISTENCE_LDAP_MAPPING=$PERSISTENCE_LDAP_MAPPING $DOCKER_COMPOSE logs "$@"
 }
 
 # A helper to run `docker-compose down` command.
 compose_down() {
-    COMPOSE_FILE=$(get_compose_files) $DOCKER_COMPOSE down --remove-orphans
+    COMPOSE_FILE=$(get_compose_files) PERSISTENCE_TYPE=$PERSISTENCE_TYPE PERSISTENCE_LDAP_MAPPING=$PERSISTENCE_LDAP_MAPPING $DOCKER_COMPOSE down --remove-orphans
 }
 
 # A helper to run `docker-compose up` command.
@@ -122,7 +122,12 @@ compose_down() {
 #     compose_up consul
 #
 compose_up() {
-    COMPOSE_FILE=$(get_compose_files) $DOCKER_COMPOSE up --remove-orphans -d "$@"
+    COMPOSE_FILE=$(get_compose_files) PERSISTENCE_TYPE=$PERSISTENCE_TYPE PERSISTENCE_LDAP_MAPPING=$PERSISTENCE_LDAP_MAPPING $DOCKER_COMPOSE up --remove-orphans -d "$@"
+}
+
+# A helper to run `docker-compose config` command.
+compose_config() {
+    COMPOSE_FILE=$(get_compose_files) PERSISTENCE_TYPE=$PERSISTENCE_TYPE PERSISTENCE_LDAP_MAPPING=$PERSISTENCE_LDAP_MAPPING $DOCKER_COMPOSE config
 }
 
 mask_password(){
@@ -516,6 +521,9 @@ case $1 in
     logs)
         shift
         compose_logs "$@"
+        ;;
+    config)
+        compose_config
         ;;
     *)
         echo "[E] Unsupported command; please choose 'up', 'down', or 'logs'"

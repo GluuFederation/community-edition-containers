@@ -7,13 +7,9 @@ services:
     environment:
       - GLUU_CONFIG_CONSUL_HOST=consul
       - GLUU_SECRET_VAULT_HOST=vault
-      # options: ldap/couchbase/hybrid
-      - GLUU_PERSISTENCE_TYPE=ldap
-      # options: default/user/site/cache/statistic; used only if GLUU_PERSISTENCE_TYPE is hybrid
-      - GLUU_PERSISTENCE_LDAP_MAPPING=default
-      # used only if GLUU_PERSISTENCE_TYPE is ldap or hybrid
+      - GLUU_PERSISTENCE_TYPE=${PERSISTENCE_TYPE}
+      - GLUU_PERSISTENCE_LDAP_MAPPING=${PERSISTENCE_LDAP_MAPPING}
       - GLUU_LDAP_URL=ldap:1636
-      # used only if GLUU_PERSISTENCE_TYPE is couchbase or hybrid
       - GLUU_COUCHBASE_URL=couchbase
     extra_hosts:
       - "${DOMAIN}:${HOST_IP}"

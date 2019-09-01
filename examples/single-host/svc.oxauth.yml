@@ -7,8 +7,8 @@ services:
     environment:
       - GLUU_CONFIG_CONSUL_HOST=consul
       - GLUU_SECRET_VAULT_HOST=vault
-      - GLUU_PERSISTENCE_TYPE=ldap
-      - GLUU_PERSISTENCE_LDAP_MAPPING=default
+      - GLUU_PERSISTENCE_TYPE=${PERSISTENCE_TYPE}
+      - GLUU_PERSISTENCE_LDAP_MAPPING=${PERSISTENCE_LDAP_MAPPING}
       - GLUU_LDAP_URL=ldap:1636
       - GLUU_COUCHBASE_URL=couchbase
     extra_hosts:

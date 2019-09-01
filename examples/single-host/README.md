@@ -49,16 +49,28 @@ List of supported services:
 To enable/disable non-mandatory services listed above, create `settings.sh` (if not exist) and set the value to `"yes"` to enable or set to any value to disable the service. Here's an example:
 
 ```
-#!/bin/env bash
-set -e
-
 SVC_LDAP="yes"              # will be enabled
 SVC_OXPASSPORT="no"         # will be disabled
 SVC_OXSHIBBOLETH=""         # will be disabled
-SVC_VAULT_AUTOUNSEAL="yes"  # enable autounseal with GCP KMS API
+SVC_VAULT_AUTOUNSEAL="yes"  # enable Vault auto-unseal with GCP KMS API
 ```
 
 If `docker-compose.override.yml` exists, this file will be added as the last Compose file. For reference on multiple Compose file, please take a look at https://docs.docker.com/compose/extends/#multiple-compose-files.
+
+### Choosing Persistence Backends
+
+List of supported persistence backends:
+
+- `PERSISTENCE_TYPE`: choose one of `ldap`, `couchbase`, or `hybrid` (default to `ldap`)
+
+- `PERSISTENCE_LDAP_MAPPING`: choose one of `default`, `user`, `site`, `statistic`, `cache`, `authorization`, `token`, or `client` (default to `default`); only effective if `PERSISTENCE_TYPE` is `hybrid`
+
+To choose persistence backend, create `settings.sh` (if not exist) and set the corresponding option as seen above. Here's an example:
+
+```
+PERSISTENCE_TYPE="couchbase"    # Couchbase will be selected
+PERSISTENCE_LDAP_MAPPING="user" # store user mapping in LDAP
+```
 
 ### Using Vault auto-unseal
 
