@@ -33,8 +33,8 @@ List of supported services:
 | `registrator`       | -                      | yes       | always  |
 | `vault`             | -                      | yes       | always  |
 | `nginx`             | -                      | yes       | always  |
-| `oxauth`            | -                      | yes       | always  |
-| `oxtrust`           | -                      | yes       | always  |
+| `oxauth`            | -                      | no        | yes     |
+| `oxtrust`           | -                      | no        | yes     |
 | `ldap`              | `SVC_LDAP`             | no        | yes     |
 | `oxpassport`        | `SVC_OXPASSPORT`       | no        | yes     |
 | `oxshibboleth`      | `SVC_OXSHIBBOLETH`     | no        | yes     |

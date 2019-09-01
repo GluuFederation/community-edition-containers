@@ -17,42 +17,24 @@ DOCKER=${DOCKER:-$(which docker)}
 # additional service flags
 # ========================
 
-# setting "yes" will load `svc.ldap.yml`
 SVC_LDAP="yes"
-
-# setting "yes" will load `svc.oxpassport.yml`
+SVC_OXAUTH="yes"
+SVC_OXTRUST="yes"
 SVC_OXPASSPORT="yes"
-
-# setting "yes" will load `svc.oxshibboleth.yml`
 SVC_OXSHIBBOLETH="yes"
-
-# setting "yes" will load `svc.couchbase.yml`
 SVC_COUCHBASE="no"
-
-# setting "yes" will load `svc.cr_rotate.yml`
 SVC_CR_ROTATE="no"
-
-# setting "yes" will load `svc.key_rotation.yml`
 SVC_KEY_ROTATION="no"
-
-# setting "yes" will load `svc.oxd_server.yml`
 SVC_OXD_SERVER="no"
-
-# setting "yes" will load `svc.radius.yml`
 SVC_RADIUS="no"
-
-# setting "yes" will load `svc.redis.yml`
 SVC_REDIS="no"
-
-# setting "yes" will load `svc.vault_autounseal.yml`
 SVC_VAULT_AUTOUNSEAL="no"
 
 PERSISTENCE_TYPE="ldap"
-
 PERSISTENCE_LDAP_MAPPING="default"
 
 # override the setting above if `settings.sh` can be loaded
-if [ -f settings.sh ]; then
+if [[ -f settings.sh ]]; then
     . settings.sh
 fi
 
@@ -60,64 +42,85 @@ fi
 # functions
 # =========
 
+# Get a list of Compose files based on enabled services.
+# The returned output conforms to DOCKER_COMPOSE format
+# instead of using `-f abc.yml`.
+#
+# Example:
+#
+#     DOCKER_COMPOSE=$(get_compose_files) docker-compose up
+#
 get_compose_files() {
+    # default manifest
     files="docker-compose.yml"
 
-    if [ "$SVC_LDAP" = "yes" ]; then
-        files="$files:svc.ldap.yml"
-    fi
+    # enable ldap
+    [[ "$SVC_LDAP" = "yes" ]] && files="$files:svc.ldap.yml"
 
-    if [ "$SVC_OXPASSPORT" = "yes" ]; then
-        files="$files:svc.oxpassport.yml"
-    fi
+    # enable oxauth
+    [[ "$SVC_OXAUTH" = "yes" ]] && files="$files:svc.oxauth.yml"
 
-    if [ "$SVC_OXSHIBBOLETH" = "yes" ]; then
-        files="$files:svc.oxshibboleth.yml"
-    fi
+    # enable oxtrust
+    [[ "$SVC_OXTRUST" = "yes" ]] && files="$files:svc.oxtrust.yml"
 
-    if [ "$SVC_COUCHBASE" = "yes" ]; then
-        files="$files:svc.couchbase.yml"
-    fi
+    # enable oxpassport
+    [[ "$SVC_OXPASSPORT" = "yes" ]] && files="$files:svc.oxpassport.yml"
 
-    if [ "$SVC_CR_ROTATE" = "yes" ]; then
-        files="$files:svc.cr_rotate.yml"
-    fi
+    # enable oxshibboleth
+    [[ "$SVC_OXSHIBBOLETH" = "yes" ]] && files="$files:svc.oxshibboleth.yml"
 
-    if [ "$SVC_KEY_ROTATION" = "yes" ]; then
-        files="$files:svc.key_rotation.yml"
-    fi
+    # enable couchbase
+    [[ "$SVC_COUCHBASE" = "yes" ]] && files="$files:svc.couchbase.yml"
 
-    if [ "$SVC_OXD_SERVER" = "yes" ]; then
-        files="$files:svc.oxd_server.yml"
-    fi
+    # enable cr_rotate
+    [[ "$SVC_CR_ROTATE" = "yes" ]] && files="$files:svc.cr_rotate.yml"
 
-    if [ "$SVC_RADIUS" = "yes" ]; then
-        files="$files:svc.radius.yml"
-    fi
+    # enable key_rotation
+    [[ "$SVC_KEY_ROTATION" = "yes" ]] && files="$files:svc.key_rotation.yml"
 
-    if [ "$SVC_REDIS" = "yes" ]; then
-        files="$files:svc.redis.yml"
-    fi
+    # enable oxd_server
+    [[ "$SVC_OXD_SERVER" = "yes" ]] && files="$files:svc.oxd_server.yml"
 
-    if [ "$SVC_VAULT_AUTOUNSEAL" = "yes" ]; then
-        files="$files:svc.vault_autounseal.yml"
-    fi
+    # enable radius
+    [[ "$SVC_RADIUS" = "yes" ]] && files="$files:svc.radius.yml"
 
-    if [ -f docker-compose.override.yml ]; then
-        files="$files:docker-compose.override.yml"
-    fi
+    # enable redis
+    [[ "$SVC_REDIS" = "yes" ]] && files="$files:svc.redis.yml"
 
+    #  enable vault auto-unseal
+    [[ "$SVC_VAULT_AUTOUNSEAL" = "yes" ]] && files="$files:svc.vault_autounseal.yml"
+
+    # a special manifest to override all manifests mentioned above
+    [[ -f docker-compose.override.yml ]] && files="$files:docker-compose.override.yml"
+
+    # return the output
     echo "$files"
 }
 
+# A helper to run `docker-compose logs` command.
+#
+# Example:
+#
+#     compose_logs
+#     compose_logs -f --tail=100
+#     compose_logs -f --tail=100 consul
+#
 compose_logs() {
     COMPOSE_FILE=$(get_compose_files) $DOCKER_COMPOSE logs "$@"
 }
 
+# A helper to run `docker-compose down` command.
 compose_down() {
     COMPOSE_FILE=$(get_compose_files) $DOCKER_COMPOSE down --remove-orphans
 }
 
+# A helper to run `docker-compose up` command.
+#
+# Example:
+#
+#     compose_up
+#     compose_up consul
+#
 compose_up() {
     COMPOSE_FILE=$(get_compose_files) $DOCKER_COMPOSE up --remove-orphans -d "$@"
 }
