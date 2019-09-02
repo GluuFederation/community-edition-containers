@@ -56,13 +56,13 @@ spec:
             name: oxpassport-cm
         livenessProbe:
           httpGet:
-            path: /passport
+            path: /passport/token
             port: 8090
           initialDelaySeconds: 30
           periodSeconds: 30
         readinessProbe:
           httpGet:
-            path: /passport
+            path: /passport/token
             port: 8090
           initialDelaySeconds: 25
           periodSeconds: 25
