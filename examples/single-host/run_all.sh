@@ -475,6 +475,15 @@ init_db_entries() {
     if [ ! -f volumes/db_initialized ]; then
         echo "[I] Adding entries to databases"
 
+        case $PERSISTENCE_TYPE in
+            couchbase|hybrid)
+                $DOCKER exec vault \
+                    vault read -field=value secret/gluu/couchbase_chain_cert > couchbase_chain.pem
+                $DOCKER exec vault \
+                    vault read -field=value secret/gluu/couchbase_node_key > couchbase_pkey.key
+                ;;
+        esac
+
         $DOCKER run \
             --rm \
             --network container:consul \
@@ -486,8 +495,8 @@ init_db_entries() {
             -e GLUU_COUCHBASE_URL=couchbase \
             -v $PWD/vault_role_id.txt:/etc/certs/vault_role_id \
             -v $PWD/vault_secret_id.txt:/etc/certs/vault_secret_id \
-            gluufederation/persistence:$GLUU_VERSION
-        touch volumes/db_initialized
+            gluufederation/persistence:$GLUU_VERSION \
+        && touch volumes/db_initialized
     fi
 }
 
