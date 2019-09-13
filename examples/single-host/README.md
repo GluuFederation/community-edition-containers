@@ -40,7 +40,6 @@ List of supported services:
 | `oxshibboleth`      | `SVC_OXSHIBBOLETH`     | no        | yes     |
 | `redis`             | `SVC_REDIS`            | no        | no      |
 | `radius`            | `SVC_RADIUS`           | no        | no      |
-| `couchbase`         | `SVC_COUCHBASE`        | no        | no      |
 | `vault` auto-unseal | `SVC_VAULT_AUTOUNSEAL` | no        | no      |
 | `oxd_server`        | `SVC_OXD_SERVER`       | no        | no      |
 | `key_rotation`      | `SVC_KEY_ROTATION`     | no        | no      |
@@ -70,7 +69,14 @@ To choose persistence backend, create `settings.sh` (if not exist) and set the c
 ```
 PERSISTENCE_TYPE="couchbase"    # Couchbase will be selected
 PERSISTENCE_LDAP_MAPPING="user" # store user mapping in LDAP
+COUCBASE_USER="admin"           # Couchbase user
+COUCHBASE_URL="192.168.100.4"   # Host or IP address of Couchbase
 ```
+
+If `couchbase` or `hybrid` is selected, there are 2 additional steps required to satisfy dependencies:
+
+- put Couchbase cluster certificate into `couchbase.crt` file
+- put Couchbase password into `couchbase_password` file
 
 ### Using Vault auto-unseal
 

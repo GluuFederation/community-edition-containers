@@ -22,7 +22,6 @@ SVC_OXAUTH="yes"
 SVC_OXTRUST="yes"
 SVC_OXPASSPORT="yes"
 SVC_OXSHIBBOLETH="yes"
-SVC_COUCHBASE="no"
 SVC_CR_ROTATE="no"
 SVC_KEY_ROTATION="no"
 SVC_OXD_SERVER="no"
@@ -32,6 +31,8 @@ SVC_VAULT_AUTOUNSEAL="no"
 
 PERSISTENCE_TYPE="ldap"
 PERSISTENCE_LDAP_MAPPING="default"
+COUCHBASE_USER="admin"
+COUCHBASE_URL="localhost"
 
 # override the setting above if `settings.sh` can be loaded
 if [[ -f settings.sh ]]; then
@@ -69,9 +70,6 @@ get_compose_files() {
     # enable oxshibboleth
     [[ "$SVC_OXSHIBBOLETH" = "yes" ]] && files="$files:svc.oxshibboleth.yml"
 
-    # enable couchbase
-    [[ "$SVC_COUCHBASE" = "yes" ]] && files="$files:svc.couchbase.yml"
-
     # enable cr_rotate
     [[ "$SVC_CR_ROTATE" = "yes" ]] && files="$files:svc.cr_rotate.yml"
 
@@ -106,12 +104,22 @@ get_compose_files() {
 #     compose_logs -f --tail=100 consul
 #
 compose_logs() {
-    COMPOSE_FILE=$(get_compose_files) PERSISTENCE_TYPE=$PERSISTENCE_TYPE PERSISTENCE_LDAP_MAPPING=$PERSISTENCE_LDAP_MAPPING $DOCKER_COMPOSE logs "$@"
+    COMPOSE_FILE=$(get_compose_files) \
+        PERSISTENCE_TYPE=$PERSISTENCE_TYPE \
+        PERSISTENCE_LDAP_MAPPING=$PERSISTENCE_LDAP_MAPPING \
+        COUCHBASE_USER=$COUCHBASE_USER \
+        COUCHBASE_URL=$COUCHBASE_URL \
+        $DOCKER_COMPOSE logs "$@"
 }
 
 # A helper to run `docker-compose down` command.
 compose_down() {
-    COMPOSE_FILE=$(get_compose_files) PERSISTENCE_TYPE=$PERSISTENCE_TYPE PERSISTENCE_LDAP_MAPPING=$PERSISTENCE_LDAP_MAPPING $DOCKER_COMPOSE down --remove-orphans
+    COMPOSE_FILE=$(get_compose_files) \
+        PERSISTENCE_TYPE=$PERSISTENCE_TYPE \
+        PERSISTENCE_LDAP_MAPPING=$PERSISTENCE_LDAP_MAPPING \
+        COUCHBASE_USER=$COUCHBASE_USER \
+        COUCHBASE_URL=$COUCHBASE_URL \
+        $DOCKER_COMPOSE down --remove-orphans
 }
 
 # A helper to run `docker-compose up` command.
@@ -122,12 +130,22 @@ compose_down() {
 #     compose_up consul
 #
 compose_up() {
-    COMPOSE_FILE=$(get_compose_files) PERSISTENCE_TYPE=$PERSISTENCE_TYPE PERSISTENCE_LDAP_MAPPING=$PERSISTENCE_LDAP_MAPPING $DOCKER_COMPOSE up --remove-orphans -d "$@"
+    COMPOSE_FILE=$(get_compose_files) \
+        PERSISTENCE_TYPE=$PERSISTENCE_TYPE \
+        PERSISTENCE_LDAP_MAPPING=$PERSISTENCE_LDAP_MAPPING \
+        COUCHBASE_USER=$COUCHBASE_USER \
+        COUCHBASE_URL=$COUCHBASE_URL \
+        $DOCKER_COMPOSE up --remove-orphans -d "$@"
 }
 
 # A helper to run `docker-compose config` command.
 compose_config() {
-    COMPOSE_FILE=$(get_compose_files) PERSISTENCE_TYPE=$PERSISTENCE_TYPE PERSISTENCE_LDAP_MAPPING=$PERSISTENCE_LDAP_MAPPING $DOCKER_COMPOSE config
+    COMPOSE_FILE=$(get_compose_files) \
+        PERSISTENCE_TYPE=$PERSISTENCE_TYPE \
+        PERSISTENCE_LDAP_MAPPING=$PERSISTENCE_LDAP_MAPPING \
+        COUCHBASE_USER=$COUCHBASE_USER \
+        COUCHBASE_URL=$COUCHBASE_URL \
+        $DOCKER_COMPOSE config
 }
 
 mask_password(){
@@ -475,15 +493,6 @@ init_db_entries() {
     if [ ! -f volumes/db_initialized ]; then
         echo "[I] Adding entries to databases"
 
-        case $PERSISTENCE_TYPE in
-            couchbase|hybrid)
-                $DOCKER exec vault \
-                    vault read -field=value secret/gluu/couchbase_chain_cert > couchbase_chain.pem
-                $DOCKER exec vault \
-                    vault read -field=value secret/gluu/couchbase_node_key > couchbase_pkey.key
-                ;;
-        esac
-
         $DOCKER run \
             --rm \
             --network container:consul \
@@ -492,9 +501,12 @@ init_db_entries() {
             -e GLUU_PERSISTENCE_TYPE=$PERSISTENCE_TYPE \
             -e GLUU_PERSISTENCE_LDAP_MAPPING=$PERSISTENCE_LDAP_MAPPING \
             -e GLUU_LDAP_URL=ldap:1636 \
-            -e GLUU_COUCHBASE_URL=couchbase \
+            -e GLUU_COUCHBASE_URL=$COUCHBASE_URL \
+            -e GLUU_COUCHBASE_USER=$COUCHBASE_USER \
             -v $PWD/vault_role_id.txt:/etc/certs/vault_role_id \
             -v $PWD/vault_secret_id.txt:/etc/certs/vault_secret_id \
+            -v $PWD/couchbase.crt:/etc/certs/couchbase.crt \
+            -v $PWD/couchbase_password:/etc/gluu/conf/couchbase_password \
             gluufederation/persistence:$GLUU_VERSION \
         && touch volumes/db_initialized
     fi
@@ -511,8 +523,8 @@ touch vault_role_id.txt
 touch vault_secret_id.txt
 touch gcp_kms_stanza.hcl
 touch gcp_kms_creds.json
-touch couchbase_chain.pem
-touch couchbase_pkey.key
+touch couchbase.crt
+touch couchbase_password
 
 case $1 in
     "up"|"")

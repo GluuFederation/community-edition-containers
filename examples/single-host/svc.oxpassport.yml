@@ -18,5 +18,5 @@ services:
     labels:
       - "SERVICE_NAME=oxpassport"
       - "SERVICE_8090_CHECK_HTTP=/passport/token"
-      - "SERVICE_8090_CHECK_INTERVAL=15s"
-      - "SERVICE_8090_CHECK_TIMEOUT=5s"
+      - "SERVICE_8090_CHECK_INTERVAL=60s"
+      - "SERVICE_8090_CHECK_TIMEOUT=20s"
