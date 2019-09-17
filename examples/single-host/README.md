@@ -1,6 +1,6 @@
-# Gluu Server Enterprise Edition Single-host Setup ![CDNJS](https://img.shields.io/badge/UNDERCONSTRUCTION-red.svg?style=for-the-badge)
+# Gluu Server Community Edition Single-host/Test-drive Setup ![CDNJS](https://img.shields.io/badge/UNDERCONSTRUCTION-red.svg?style=for-the-badge)
 
-This is an example of running Gluu Server Enterprise Edition on a single VM.
+This is an example of running Gluu Server Community Edition on a single VM.
 
 ## Requirements
 
@@ -174,3 +174,20 @@ Run the following command to delete all objects during the deployment:
 ## Documentation
 
 Please refer to the [Gluu Server Enterprise Edition Documentation](https://gluu.org/docs/de/4.0.0) for further reading on Docker image implementations.
+
+
+- **How to use ldapsearch**
+
+```
+docker exec -ti ldap /opt/opendj/bin/ldapsearch -h localhost -p 1636 -Z -X -D "cn=directory manager" -b "o=gluu" -s base -T "objectClass=*"
+```
+
+- **Locked out of your Gluu demo? This is how Vault can be manually unlocked**
+
+   1. Get Unseal key from `vault_key_token.txt`
+   
+   1. Log into vault container: `docker exec -it vault sh`
+   
+   1. Run this command : `vault operator unseal`
+   
+   1. Wait for about 10 mins for the containers to get back to work. 
