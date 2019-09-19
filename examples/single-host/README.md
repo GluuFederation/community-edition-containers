@@ -23,7 +23,7 @@ This is an example of running Gluu Server Community Edition on a single VM.
 
 ---
 
-**Obtain files for deployment:
+**Obtain files for deployment:**
 
     ```
     wget https://github.com/GluuFederation/community-edition-containers/archive/4.0.0.zip \
