@@ -4,6 +4,12 @@ This is an example of running Gluu Server Community Edition on a single VM.
 
 ## Requirements
 
+- [Install on Linux](#Linux Requirements)
+
+- [Install on OS X (Mac)](#OS X (Mac) Requirements)
+
+### Linux Requirements
+
 1)  Follow the [Docker installation instructions](https://docs.docker.com/install/linux/docker-ce/ubuntu/#install-using-the-repository) or use the [convenient installation script](https://docs.docker.com/install/linux/docker-ce/ubuntu/#install-using-the-convenience-script)
 
 1)  Install [docker-compose](https://docs.docker.com/compose/install/#install-compose)
@@ -16,6 +22,13 @@ This is an example of running Gluu Server Community Edition on a single VM.
     cd community-edition-containers-4.0.0/examples/single-host
     chmod +x run_all.sh
     ```
+### OS X (Mac) Requirements
+
+1)  Meet the [system requirements](https://docs.docker.com/docker-for-mac/install/)
+
+1)  Install [Docker Desktop for Mac](https://hub.docker.com/editions/community/docker-ce-desktop-mac)
+
+
 
 ## Pre-Installation Notes
 
