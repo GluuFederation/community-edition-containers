@@ -164,17 +164,21 @@ done
 
 check_health(){
     echo -n "[I] Launching "
-    timeout="10 minute"
-    endtime=$(date -ud "$timeout" +%s)
-    while [[ $(date -u +%s) -le $endtime ]]; do
+    let "timeout = 300"
+    while [[ $timeout -gt 0 ]]; do
         nginx_ip=$($DOCKER inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' nginx)
-        status_code=$(timeout 5s curl -o /dev/null --silent -k --head --write-out '%{http_code}\n' https://"$nginx_ip" || true)
+        status_code=$(curl -o /dev/null --silent -k --head --write-out '%{http_code}\n' https://"$nginx_ip" || true)
+		if [ "$status_code" -eq "000" ] &>/dev/null
+        then
+            status_code=$(curl -o /dev/null --silent -k --head --write-out '%{http_code}\n' https://"$HOST_IP" || true)
+        fi
         if [ "$status_code" -eq "302" ] &>/dev/null
         then
                 printf "\n[I] Gluu Server installed successfully; please visit https://%s\n" "$DOMAIN"
                 break
         fi
         sleep 5
+		let "timeout = $timeout - 5"
         echo -n "."
     done
 }
@@ -276,7 +280,7 @@ prepare_config_secret() {
     while [[ $retry -le 3 ]]; do
         sleep 5
         consul_ip=$($DOCKER inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' consul)
-        DOMAIN=$(curl "$consul_ip":8500/v1/kv/gluu/config/hostname?raw -s) || echo ""
+        DOMAIN=$(curl "$consul_ip":8500/v1/kv/gluu/config/hostname?raw -s || echo "") 
 
         if [[ $DOMAIN != "" ]]; then
             break
