@@ -13,6 +13,141 @@ CITY=""
 DOCKER_COMPOSE=${DOCKER_COMPOSE:-docker-compose}
 DOCKER=${DOCKER:-docker}
 
+# ========================
+# additional service flags
+# ========================
+
+SVC_LDAP="yes"
+SVC_OXAUTH="yes"
+SVC_OXTRUST="yes"
+SVC_OXPASSPORT="yes"
+SVC_OXSHIBBOLETH="yes"
+SVC_CR_ROTATE="no"
+SVC_KEY_ROTATION="no"
+SVC_OXD_SERVER="no"
+SVC_RADIUS="no"
+SVC_REDIS="no"
+SVC_VAULT_AUTOUNSEAL="no"
+
+PERSISTENCE_TYPE="ldap"
+PERSISTENCE_LDAP_MAPPING="default"
+COUCHBASE_USER="admin"
+COUCHBASE_URL="localhost"
+
+# override the setting above if `settings.sh` can be loaded
+if [[ -f settings.sh ]]; then
+    . settings.sh
+fi
+
+# =========
+# functions
+# =========
+
+# Get a list of Compose files based on enabled services.
+# The returned output conforms to DOCKER_COMPOSE format
+# instead of using `-f abc.yml`.
+#
+# Example:
+#
+#     DOCKER_COMPOSE=$(get_compose_files) docker-compose up
+#
+get_compose_files() {
+    # default manifest
+    files="docker-compose.yml"
+
+    # enable ldap
+    [[ "$SVC_LDAP" = "yes" ]] && files="$files:svc.ldap.yml"
+
+    # enable oxauth
+    [[ "$SVC_OXAUTH" = "yes" ]] && files="$files:svc.oxauth.yml"
+
+    # enable oxtrust
+    [[ "$SVC_OXTRUST" = "yes" ]] && files="$files:svc.oxtrust.yml"
+
+    # enable oxpassport
+    [[ "$SVC_OXPASSPORT" = "yes" ]] && files="$files:svc.oxpassport.yml"
+
+    # enable oxshibboleth
+    [[ "$SVC_OXSHIBBOLETH" = "yes" ]] && files="$files:svc.oxshibboleth.yml"
+
+    # enable cr_rotate
+    [[ "$SVC_CR_ROTATE" = "yes" ]] && files="$files:svc.cr_rotate.yml"
+
+    # enable key_rotation
+    [[ "$SVC_KEY_ROTATION" = "yes" ]] && files="$files:svc.key_rotation.yml"
+
+    # enable oxd_server
+    [[ "$SVC_OXD_SERVER" = "yes" ]] && files="$files:svc.oxd_server.yml"
+
+    # enable radius
+    [[ "$SVC_RADIUS" = "yes" ]] && files="$files:svc.radius.yml"
+
+    # enable redis
+    [[ "$SVC_REDIS" = "yes" ]] && files="$files:svc.redis.yml"
+
+    #  enable vault auto-unseal
+    [[ "$SVC_VAULT_AUTOUNSEAL" = "yes" ]] && files="$files:svc.vault_autounseal.yml"
+
+    # a special manifest to override all manifests mentioned above
+    [[ -f docker-compose.override.yml ]] && files="$files:docker-compose.override.yml"
+
+    # return the output
+    echo "$files"
+}
+
+# A helper to run `docker-compose logs` command.
+#
+# Example:
+#
+#     compose_logs
+#     compose_logs -f --tail=100
+#     compose_logs -f --tail=100 consul
+#
+compose_logs() {
+    COMPOSE_FILE=$(get_compose_files) \
+        PERSISTENCE_TYPE=$PERSISTENCE_TYPE \
+        PERSISTENCE_LDAP_MAPPING=$PERSISTENCE_LDAP_MAPPING \
+        COUCHBASE_USER=$COUCHBASE_USER \
+        COUCHBASE_URL=$COUCHBASE_URL \
+        $DOCKER_COMPOSE logs "$@"
+}
+
+# A helper to run `docker-compose down` command.
+compose_down() {
+    COMPOSE_FILE=$(get_compose_files) \
+        PERSISTENCE_TYPE=$PERSISTENCE_TYPE \
+        PERSISTENCE_LDAP_MAPPING=$PERSISTENCE_LDAP_MAPPING \
+        COUCHBASE_USER=$COUCHBASE_USER \
+        COUCHBASE_URL=$COUCHBASE_URL \
+        $DOCKER_COMPOSE down --remove-orphans
+}
+
+# A helper to run `docker-compose up` command.
+#
+# Example:
+#
+#     compose_up
+#     compose_up consul
+#
+compose_up() {
+    COMPOSE_FILE=$(get_compose_files) \
+        PERSISTENCE_TYPE=$PERSISTENCE_TYPE \
+        PERSISTENCE_LDAP_MAPPING=$PERSISTENCE_LDAP_MAPPING \
+        COUCHBASE_USER=$COUCHBASE_USER \
+        COUCHBASE_URL=$COUCHBASE_URL \
+        $DOCKER_COMPOSE up --remove-orphans -d "$@"
+}
+
+# A helper to run `docker-compose config` command.
+compose_config() {
+    COMPOSE_FILE=$(get_compose_files) \
+        PERSISTENCE_TYPE=$PERSISTENCE_TYPE \
+        PERSISTENCE_LDAP_MAPPING=$PERSISTENCE_LDAP_MAPPING \
+        COUCHBASE_USER=$COUCHBASE_USER \
+        COUCHBASE_URL=$COUCHBASE_URL \
+        $DOCKER_COMPOSE config
+}
+
 mask_password(){
     password=''
     while IFS= read -r -s -n1 char; do
@@ -120,19 +255,19 @@ check_docker_compose() {
 }
 
 load_services() {
-    echo "[I] Deploying containers"
-    DOMAIN=$DOMAIN HOST_IP=$HOST_IP $DOCKER_COMPOSE up -d
+    echo "[I] Deploying services"
+    DOMAIN=$DOMAIN HOST_IP=$HOST_IP compose_up
 }
 
 prepare_config_secret() {
     echo "[I] Preparing cluster-wide config and secret"
 
     if [[ -z $($DOCKER ps --filter name=consul -q) ]]; then
-        $DOCKER_COMPOSE up -d consul
+        compose_up consul
     fi
 
     if [[ -z $($DOCKER ps --filter name=vault -q) ]]; then
-        $DOCKER_COMPOSE up -d vault
+        compose_up vault
         setup_vault
     fi
 
@@ -152,6 +287,7 @@ prepare_config_secret() {
         retry=$((retry+1))
         sleep 5
     done
+
     # if there's no config in Consul, check from previously saved config
     if [[ -z $DOMAIN ]]; then
         echo "[W] Configuration not found in Consul"
@@ -321,11 +457,8 @@ unseal_vault() {
     if [ "${vault_sealed}" = "false" ]; then
         echo "[I] Vault already unsealed"
     else
-        has_gcp=$(cat gcp_kms_creds.json|wc -l)
-        if [ "$has_gcp" = "0" ]; then
-            echo "[I] Unsealing Vault manually"
-            $DOCKER exec vault vault operator unseal "$(get_unseal_key)"
-        fi
+        echo "[I] Unsealing Vault manually"
+        $DOCKER exec vault vault operator unseal "$(get_unseal_key)"
     fi
 }
 
@@ -356,6 +489,29 @@ setup_vault() {
     enable_approle
 }
 
+init_db_entries() {
+    if [ ! -f volumes/db_initialized ]; then
+        echo "[I] Adding entries to databases"
+
+        $DOCKER run \
+            --rm \
+            --network container:consul \
+            -e GLUU_CONFIG_CONSUL_HOST=consul \
+            -e GLUU_SECRET_VAULT_HOST=vault \
+            -e GLUU_PERSISTENCE_TYPE=$PERSISTENCE_TYPE \
+            -e GLUU_PERSISTENCE_LDAP_MAPPING=$PERSISTENCE_LDAP_MAPPING \
+            -e GLUU_LDAP_URL=ldap:1636 \
+            -e GLUU_COUCHBASE_URL=$COUCHBASE_URL \
+            -e GLUU_COUCHBASE_USER=$COUCHBASE_USER \
+            -v $PWD/vault_role_id.txt:/etc/certs/vault_role_id \
+            -v $PWD/vault_secret_id.txt:/etc/certs/vault_secret_id \
+            -v $PWD/couchbase.crt:/etc/certs/couchbase.crt \
+            -v $PWD/couchbase_password:/etc/gluu/conf/couchbase_password \
+            gluufederation/persistence:$GLUU_VERSION \
+        && touch volumes/db_initialized
+    fi
+}
+
 # ==========
 # entrypoint
 # ==========
@@ -367,12 +523,31 @@ touch vault_role_id.txt
 touch vault_secret_id.txt
 touch gcp_kms_stanza.hcl
 touch gcp_kms_creds.json
-touch couchbase_chain.pem
-touch couchbase_pkey.key
+touch couchbase.crt
+touch couchbase_password
 
-gather_ip
-until confirm_ip; do : ; done
+case $1 in
+    "up"|"")
+        gather_ip
+        until confirm_ip; do : ; done
 
-prepare_config_secret
-load_services
-check_health
+        prepare_config_secret
+        load_services
+        init_db_entries
+        check_health
+        ;;
+    down)
+        compose_down
+        ;;
+    logs)
+        shift
+        compose_logs "$@"
+        ;;
+    config)
+        compose_config
+        ;;
+    *)
+        echo "[E] Unsupported command; please choose 'up', 'down', or 'logs'"
+        exit 1
+        ;;
+esac

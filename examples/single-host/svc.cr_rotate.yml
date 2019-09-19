@@ -1,0 +1,25 @@
+# use v2.x API to allow `mem_limit` option
+version: "2.4"
+
+services:
+  cr_rotate:
+    image: gluufederation/cr-rotate:4.0.0_dev
+    environment:
+      - GLUU_CONFIG_CONSUL_HOST=consul
+      - GLUU_SECRET_VAULT_HOST=vault
+      - GLUU_PERSISTENCE_TYPE=${PERSISTENCE_TYPE}
+      - GLUU_PERSISTENCE_LDAP_MAPPING=${PERSISTENCE_LDAP_MAPPING}
+      - GLUU_LDAP_URL=ldap:1636
+      - GLUU_CR_ROTATION_CHECK=60
+      - GLUU_COUCHBASE_URL=${COUCHBASE_URL}
+      - GLUU_COUCHBASE_USER=${COUCHBASE_USER}
+    volumes:
+      - ./vault_role_id.txt:/etc/certs/vault_role_id
+      - ./vault_secret_id.txt:/etc/certs/vault_secret_id
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ./couchbase.crt:/etc/certs/couchbase.crt
+      - ./couchbase_password:/etc/gluu/conf/couchbase_password
+    container_name: cr-rotate
+    restart: unless-stopped
+    labels:
+      - "SERVICE_IGNORE=yes"

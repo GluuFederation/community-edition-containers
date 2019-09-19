@@ -1,0 +1,22 @@
+# use v2.x API to allow `mem_limit` option
+version: "2.4"
+
+services:
+  oxpassport:
+    image: gluufederation/oxpassport:4.0.0_dev
+    environment:
+      - GLUU_CONFIG_CONSUL_HOST=consul
+      - GLUU_SECRET_VAULT_HOST=vault
+      # - PASSPORT_LOG_LEVEL=debug
+    extra_hosts:
+      - "${DOMAIN}:${HOST_IP}"
+    volumes:
+      - ./vault_role_id.txt:/etc/certs/vault_role_id
+      - ./vault_secret_id.txt:/etc/certs/vault_secret_id
+    container_name: oxpassport
+    restart: unless-stopped
+    labels:
+      - "SERVICE_NAME=oxpassport"
+      - "SERVICE_8090_CHECK_HTTP=/passport/token"
+      - "SERVICE_8090_CHECK_INTERVAL=60s"
+      - "SERVICE_8090_CHECK_TIMEOUT=20s"
