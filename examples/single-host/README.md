@@ -14,7 +14,16 @@ This is an example of running Gluu Server Community Edition on a single VM.
 
 1)  Install [docker-compose](https://docs.docker.com/compose/install/#install-compose)
 
-1)  Obtain files for deployment:
+
+### OS X (Mac) Requirements
+
+1)  Meet the [system requirements](https://docs.docker.com/docker-for-mac/install/)
+
+1)  Install [Docker Desktop for Mac](https://hub.docker.com/editions/community/docker-ce-desktop-mac)
+
+---
+
+**Obtain files for deployment:
 
     ```
     wget https://github.com/GluuFederation/community-edition-containers/archive/4.0.0.zip \
@@ -22,13 +31,6 @@ This is an example of running Gluu Server Community Edition on a single VM.
     cd community-edition-containers-4.0.0/examples/single-host
     chmod +x run_all.sh
     ```
-### OS X (Mac) Requirements
-
-1)  Meet the [system requirements](https://docs.docker.com/docker-for-mac/install/)
-
-1)  Install [Docker Desktop for Mac](https://hub.docker.com/editions/community/docker-ce-desktop-mac)
-
-
 
 ## Pre-Installation Notes
 
