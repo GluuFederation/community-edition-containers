@@ -4,9 +4,9 @@ This is an example of running Gluu Server Community Edition on a single VM.
 
 ## Requirements
 
-- [Install on Linux](#Linux Requirements)
+- [Install on Linux](#linux-requirements)
 
-- [Install on OS X (Mac)](#OS X (Mac) Requirements)
+- [Install on OS X (Mac)](#os-x-(mac)-requirements)
 
 ### Linux Requirements
 
