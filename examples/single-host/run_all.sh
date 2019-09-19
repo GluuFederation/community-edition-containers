@@ -57,7 +57,7 @@ gather_ip() {
     if [[ $machine == Linux ]]; then
         HOST_IP=$(ip route get 8.8.8.8 | awk -F"src " 'NR==1{split($2,a," ");print a[1]}')
     elif [[ $machine == Mac ]]; then
-        HOST_IP=$(route get default | grep gateway | awk '{print $2}')
+        HOST_IP=$(ipconfig getifaddr en0)
     else
         echo "Cannot determine IP address."
         read -rp "Please input the hosts external IP Address: " HOST_IP
@@ -141,7 +141,7 @@ prepare_config_secret() {
     while [[ $retry -le 3 ]]; do
         sleep 5
         consul_ip=$($DOCKER inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' consul)
-        DOMAIN=$(curl "$consul_ip":8500/v1/kv/gluu/config/hostname?raw -s)
+        DOMAIN=$(curl "$consul_ip":8500/v1/kv/gluu/config/hostname?raw -s) || echo ""
 
         if [[ $DOMAIN != "" ]]; then
             break
