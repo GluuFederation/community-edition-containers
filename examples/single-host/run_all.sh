@@ -204,12 +204,9 @@ gather_ip() {
 }
 
 valid_ip() {
-	# Set up local variables
 	local ip=${1:-1.2.3.4}
 	local IFS=.; local -a a=($ip)
-	# Start with a regex format test
 	[[ $ip =~ ^[0-9]+(\.[0-9]+){3}$ ]] || return 1
-	# Test values of quads
 	local quad
 	for quad in {0..3}; do
 	[[ "${a[$quad]}" -gt 255 ]] && return 1
