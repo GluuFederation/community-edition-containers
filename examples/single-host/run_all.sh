@@ -204,19 +204,17 @@ gather_ip() {
 }
 
 valid_ip() {
-    local  ip=$1
-    local  stat=1
-
-    if [[ $ip =~ ^[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}$ ]]; then
-        OIFS=$IFS
-        IFS='.'
-        ip=("$ip")
-        IFS=$OIFS
-        [[ ${ip[0]} -le 255 && ${ip[1]} -le 255 \
-            && ${ip[2]} -le 255 && ${ip[3]} -le 255 ]]
-        stat=$?
-    fi
-    return $stat
+	# Set up local variables
+	local ip=${1:-1.2.3.4}
+	local IFS=.; local -a a=($ip)
+	# Start with a regex format test
+	[[ $ip =~ ^[0-9]+(\.[0-9]+){3}$ ]] || return 1
+	# Test values of quads
+	local quad
+	for quad in {0..3}; do
+	[[ "${a[$quad]}" -gt 255 ]] && return 1
+	done
+	return 0
 }
 
 confirm_ip() {
