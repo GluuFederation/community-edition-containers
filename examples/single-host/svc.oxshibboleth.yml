@@ -27,5 +27,5 @@ services:
     labels:
       - "SERVICE_NAME=oxshibboleth"
       - "SERVICE_8086_CHECK_HTTP=/idp"
-      - "SERVICE_8086_CHECK_INTERVAL=60s"
-      - "SERVICE_8086_CHECK_TIMEOUT=20s"
+      - "SERVICE_8086_CHECK_INTERVAL=30s"
+      - "SERVICE_8086_CHECK_TIMEOUT=30s"

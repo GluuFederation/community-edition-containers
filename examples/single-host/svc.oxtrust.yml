@@ -32,6 +32,6 @@ services:
     labels:
       - "SERVICE_NAME=oxtrust"
       - "SERVICE_8080_CHECK_HTTP=/identity/restv1/scim-configuration"
-      - "SERVICE_8080_CHECK_INTERVAL=120s"
-      - "SERVICE_8080_CHECK_TIMEOUT=60s"
+      - "SERVICE_8080_CHECK_INTERVAL=30s"
+      - "SERVICE_8080_CHECK_TIMEOUT=30s"
       - "APP_NAME=oxtrust"
