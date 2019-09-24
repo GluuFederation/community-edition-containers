@@ -34,6 +34,8 @@ PERSISTENCE_LDAP_MAPPING="default"
 COUCHBASE_USER="admin"
 COUCHBASE_URL="localhost"
 
+ENABLE_OVERRIDE="no"
+
 # override the setting above if `settings.sh` can be loaded
 if [[ -f settings.sh ]]; then
     . settings.sh
@@ -89,7 +91,9 @@ get_compose_files() {
     [[ "$SVC_VAULT_AUTOUNSEAL" = "yes" ]] && files="$files:svc.vault_autounseal.yml"
 
     # a special manifest to override all manifests mentioned above
-    [[ -f docker-compose.override.yml ]] && files="$files:docker-compose.override.yml"
+    if [[ "$ENABLE_OVERRIDE" = "yes" ]]; then
+        [[ -f docker-compose.override.yml ]] && files="$files:docker-compose.override.yml"
+    fi
 
     # return the output
     echo "$files"
@@ -275,7 +279,7 @@ prepare_config_secret() {
     while [[ $retry -le 3 ]]; do
         sleep 5
         consul_ip=$($DOCKER inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' consul)
-        DOMAIN=$(curl "$consul_ip":8500/v1/kv/gluu/config/hostname?raw -s || echo "") 
+        DOMAIN=$(curl "$consul_ip":8500/v1/kv/gluu/config/hostname?raw -s || echo "")
 
         if [[ $DOMAIN != "" ]]; then
             break

@@ -25,12 +25,12 @@ This is an example of running Gluu Server Community Edition on a single VM.
 
 **Obtain files for deployment:**
 
-    ```
-    wget https://github.com/GluuFederation/community-edition-containers/archive/4.0.0.zip \
-        && unzip 4.0.0.zip
-    cd community-edition-containers-4.0.0/examples/single-host
-    chmod +x run_all.sh
-    ```
+```
+wget https://github.com/GluuFederation/community-edition-containers/archive/4.0.0.zip \
+    && unzip 4.0.0.zip
+cd community-edition-containers-4.0.0/examples/single-host
+chmod +x run_all.sh
+```
 
 ## Pre-Installation Notes
 
@@ -69,7 +69,23 @@ SVC_OXSHIBBOLETH=""         # will be disabled
 SVC_VAULT_AUTOUNSEAL="yes"  # enable Vault auto-unseal with GCP KMS API
 ```
 
-If `docker-compose.override.yml` exists, this file will be added as the last Compose file. For reference on multiple Compose file, please take a look at https://docs.docker.com/compose/extends/#multiple-compose-files.
+To override manifests (i.e. changing oxAuth service definition), add `ENABLE_OVERRIDE=yes` in `settings.sh`, for example:
+
+```
+ENABLE_OVERRIDE="yes"
+```
+
+Then define overrides in `docker-compose.override.yml` (create the file if not exists):
+
+```
+version: "2.4"
+
+services:
+  oxauth:
+    container_name: my-oxauth
+```
+
+For reference on multiple Compose file, please take a look at https://docs.docker.com/compose/extends/#multiple-compose-files.
 
 ### Choosing Persistence Backends
 
@@ -200,9 +216,9 @@ docker exec -ti ldap /opt/opendj/bin/ldapsearch -h localhost -p 1636 -Z -X -D "c
 - **Locked out of your Gluu demo? This is how Vault can be manually unlocked**
 
    1. Get Unseal key from `vault_key_token.txt`
-   
+
    1. Log into vault container: `docker exec -it vault sh`
-   
+
    1. Run this command : `vault operator unseal`
-   
-   1. Wait for about 10 mins for the containers to get back to work. 
+
+   1. Wait for about 10 mins for the containers to get back to work.
