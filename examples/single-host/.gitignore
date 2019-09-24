@@ -17,3 +17,4 @@ generate.json
 settings.sh
 override.yml
 docker-compose.override.yml
+*.xml
