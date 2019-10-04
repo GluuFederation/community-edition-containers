@@ -38,14 +38,6 @@ Images are hosted at Docker Hub:
 
 - The directory contains `README.md` as a guide to deploy a basic single node Gluu server using docker-compose. ALl services are broken down one service to one container.
 
-[Minikube](./examples/kubernetes/minikube)
-
-- The directory contains `README.md` as a guide to deploy a basic Gluu server stack on Minikube.
-
-[Test-drive Gluu](./test-drive)
-
-- The directory contains `README.md` as a guide to test drive Gluu in a matter of mins.
-
 ## Issues
 
 If you find any issues, please post them on the customer support portal, [support.gluu.org](https://support.gluu.org).
