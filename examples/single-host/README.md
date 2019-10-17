@@ -4,4 +4,4 @@ This is an example of running Gluu Server Community Edition on a single VM.
 
 ## Documentation
 
-Please refer to https://gluu.org/docs/de/4.0.0 for further reading on Docker image implementations.
+Please refer to https://gluu.org/docs/de/4.0/example/singlehost/ for details.
