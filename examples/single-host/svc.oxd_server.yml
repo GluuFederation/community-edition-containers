@@ -3,7 +3,7 @@ version: "2.4"
 
 services:
   oxd_server:
-    image: gluufederation/oxd-server:4.0.0_dev
+    image: gluufederation/oxd-server:4.0.0_01
     environment:
       - USE_CLIENT_AUTHENTICATION_FOR_PAT=true
       - TRUST_ALL_CERTS=false

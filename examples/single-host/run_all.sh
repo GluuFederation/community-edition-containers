@@ -2,7 +2,6 @@
 set -e
 
 CONFIG_DIR=$PWD/volumes/config-init/db
-GLUU_VERSION=4.0.0_dev
 DOMAIN=""
 ADMIN_PW=""
 EMAIL=""
@@ -310,7 +309,7 @@ prepare_config_secret() {
                         -v "$PWD"/vault_secret_id.txt:/etc/certs/vault_secret_id \
                         -e GLUU_CONFIG_CONSUL_HOST=consul \
                         -e GLUU_SECRET_VAULT_HOST=vault \
-                        gluufederation/config-init:$GLUU_VERSION load
+                        gluufederation/config-init:4.0.0_01 load
                 fi
             fi
         fi
@@ -381,7 +380,7 @@ EOL
             -v "$PWD"/generate.json:/opt/config-init/db/generate.json \
             -e GLUU_CONFIG_CONSUL_HOST=consul \
             -e GLUU_SECRET_VAULT_HOST=vault \
-            gluufederation/config-init:$GLUU_VERSION load
+            gluufederation/config-init:4.0.0_01 load
         rm generate.json
     fi
 }
@@ -510,7 +509,7 @@ init_db_entries() {
             -v $PWD/vault_secret_id.txt:/etc/certs/vault_secret_id \
             -v $PWD/couchbase.crt:/etc/certs/couchbase.crt \
             -v $PWD/couchbase_password:/etc/gluu/conf/couchbase_password \
-            gluufederation/persistence:$GLUU_VERSION \
+            gluufederation/persistence:4.0.0_01 \
         && touch volumes/db_initialized
     fi
 }
