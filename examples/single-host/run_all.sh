@@ -21,12 +21,13 @@ SVC_OXAUTH="yes"
 SVC_OXTRUST="yes"
 SVC_OXPASSPORT="yes"
 SVC_OXSHIBBOLETH="yes"
-SVC_CR_ROTATE="no"
-SVC_KEY_ROTATION="no"
-SVC_OXD_SERVER="no"
-SVC_RADIUS="no"
+SVC_CR_ROTATE="yes"
+SVC_KEY_ROTATION="yes"
+SVC_OXD_SERVER="yes"
+SVC_RADIUS="yes"
 SVC_REDIS="no"
 SVC_VAULT_AUTOUNSEAL="no"
+SVC_CASA="yes"
 
 PERSISTENCE_TYPE="ldap"
 PERSISTENCE_LDAP_MAPPING="default"
@@ -88,6 +89,9 @@ get_compose_files() {
 
     #  enable vault auto-unseal
     [[ "$SVC_VAULT_AUTOUNSEAL" = "yes" ]] && files="$files:svc.vault_autounseal.yml"
+
+    #  enable casa
+    [[ "$SVC_CASA" = "yes" ]] && files="$files:svc.casa.yml"
 
     # a special manifest to override all manifests mentioned above
     if [[ "$ENABLE_OVERRIDE" = "yes" ]]; then
@@ -527,6 +531,7 @@ touch gcp_kms_stanza.hcl
 touch gcp_kms_creds.json
 touch couchbase.crt
 touch couchbase_password
+touch casa.json
 
 case $1 in
     "up"|"")

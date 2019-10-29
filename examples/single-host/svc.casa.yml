@@ -1,35 +1,27 @@
 # use v2.x API to allow `mem_limit` option
 version: "2.4"
-
 services:
-  oxauth:
-    image: gluufederation/oxauth:4.0.0_01
+  casa:
+    image: gluufederation/casa:4.0.0_dev
     environment:
       - GLUU_CONFIG_CONSUL_HOST=consul
       - GLUU_SECRET_VAULT_HOST=vault
+      - GLUU_OXAUTH_BACKEND=oxauth:8080
       - GLUU_PERSISTENCE_TYPE=${PERSISTENCE_TYPE}
       - GLUU_PERSISTENCE_LDAP_MAPPING=${PERSISTENCE_LDAP_MAPPING}
       - GLUU_LDAP_URL=ldap:1636
       - GLUU_COUCHBASE_URL=${COUCHBASE_URL}
       - GLUU_COUCHBASE_USER=${COUCHBASE_USER}
+      - GLUU_OXD_SERVER_URL=oxd_server:8443
     extra_hosts:
       - "${DOMAIN}:${HOST_IP}"
-    container_name: oxauth
+    container_name: casa
     volumes:
-      - ./volumes/oxauth/custom/pages:/opt/gluu/jetty/oxauth/custom/pages
-      - ./volumes/oxauth/custom/static:/opt/gluu/jetty/oxauth/custom/static
-      - ./volumes/oxauth/custom/libs:/opt/gluu/jetty/oxauth/custom/libs
-      - ./volumes/oxauth/custom/i18n:/opt/gluu/jetty/oxauth/custom/i18n
-      - ./volumes/oxauth/logs:/opt/gluu/jetty/oxauth/logs
       - ./vault_role_id.txt:/etc/certs/vault_role_id
       - ./vault_secret_id.txt:/etc/certs/vault_secret_id
       - ./couchbase.crt:/etc/certs/couchbase.crt
-      - ./couchbase_password:/etc/gluu/conf/couchbase_password
       - ./casa.json:/etc/gluu/conf/casa.json
-    mem_limit: 1536M
+      - ./couchbase_password:/etc/gluu/conf/couchbase_password
     restart: unless-stopped
     labels:
-      - "SERVICE_NAME=oxauth"
-      - "SERVICE_8080_CHECK_HTTP=/oxauth/.well-known/openid-configuration"
-      - "SERVICE_8080_CHECK_INTERVAL=30s"
-      - "SERVICE_8080_CHECK_TIMEOUT=30s"
+      - "SERVICE_NAME=casa"
