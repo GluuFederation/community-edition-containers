@@ -3,7 +3,7 @@ version: "2.4"
 
 services:
   key_rotation:
-    image: gluufederation/key-rotation:4.0.0_01
+    image: gluufederation/key-rotation:4.0.1_01
     environment:
       - GLUU_CONFIG_CONSUL_HOST=consul
       - GLUU_SECRET_VAULT_HOST=vault

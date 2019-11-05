@@ -1,7 +1,6 @@
 config/*
 volumes/*
 gcp_kms_stanza.hcl
-gcp_kms_creds.json
 vault_role_id.txt
 vault_secret_id.txt
 vault_key_token.txt
@@ -14,7 +13,7 @@ couchbase_pkey.key
 couchbase.crt
 couchbase_password
 couchbase.yml
-generate.json
+*.json
 settings.sh
 override.yml
 docker-compose.override.yml
