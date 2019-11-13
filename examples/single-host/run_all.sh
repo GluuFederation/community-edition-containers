@@ -265,6 +265,12 @@ load_services() {
     DOMAIN=$DOMAIN HOST_IP=$HOST_IP compose_up
 }
 
+get_network_name() {
+    network=${COMPOSE_PROJECT_NAME:-$(basename $PWD)}
+    network="${network}_default"
+    echo $network
+}
+
 prepare_config_secret() {
     echo "[I] Preparing cluster-wide config and secret"
 
@@ -307,13 +313,14 @@ prepare_config_secret() {
                 if [[ ! -z "$DOMAIN" ]]; then
                     $DOCKER run \
                         --rm \
-                        --network container:consul \
+                        --network $(get_network_name) \
+                        --name config-init \
                         -v "$CONFIG_DIR":/opt/config-init/db/ \
                         -v "$PWD"/vault_role_id.txt:/etc/certs/vault_role_id \
                         -v "$PWD"/vault_secret_id.txt:/etc/certs/vault_secret_id \
                         -e GLUU_CONFIG_CONSUL_HOST=consul \
                         -e GLUU_SECRET_VAULT_HOST=vault \
-                        gluufederation/config-init:4.0.1_01 load
+                        gluufederation/config-init:4.0.1_02 load
                 fi
             fi
         fi
@@ -377,14 +384,15 @@ EOL
         # mount generate.json to mark for new config and secret
         $DOCKER run \
             --rm \
-            --network container:consul \
+            --network $(get_network_name) \
+            --name config-init \
             -v "$CONFIG_DIR":/opt/config-init/db/ \
             -v "$PWD"/vault_role_id.txt:/etc/certs/vault_role_id \
             -v "$PWD"/vault_secret_id.txt:/etc/certs/vault_secret_id \
             -v "$PWD"/generate.json:/opt/config-init/db/generate.json \
             -e GLUU_CONFIG_CONSUL_HOST=consul \
             -e GLUU_SECRET_VAULT_HOST=vault \
-            gluufederation/config-init:4.0.1_01 load
+            gluufederation/config-init:4.0.1_02 load
         rm generate.json
     fi
 }
@@ -501,7 +509,8 @@ init_db_entries() {
 
         $DOCKER run \
             --rm \
-            --network container:consul \
+            --network $(get_network_name) \
+            --name persistence \
             -e GLUU_CONFIG_CONSUL_HOST=consul \
             -e GLUU_SECRET_VAULT_HOST=vault \
             -e GLUU_PERSISTENCE_TYPE=$PERSISTENCE_TYPE \
@@ -513,7 +522,7 @@ init_db_entries() {
             -v $PWD/vault_secret_id.txt:/etc/certs/vault_secret_id \
             -v $PWD/couchbase.crt:/etc/certs/couchbase.crt \
             -v $PWD/couchbase_password:/etc/gluu/conf/couchbase_password \
-            gluufederation/persistence:4.0.1_01 \
+            gluufederation/persistence:4.0.1_02 \
         && touch volumes/db_initialized
     fi
 }

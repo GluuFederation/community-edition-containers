@@ -3,7 +3,7 @@ version: "2.4"
 
 services:
   consul:
-    image: consul
+    image: consul:1.6
     command: agent -server -bootstrap -ui
     hostname: consul-1
     environment:
@@ -40,8 +40,8 @@ services:
       - "SERVICE_IGNORE=yes"
 
   registrator:
-    image: gluufederation/registrator:dev
-    command: registrator -internal -cleanup -resync 30 -retry-attempts 5 -retry-interval 10 consul://consul:8500
+    image: gliderlabs/registrator:master
+    command: -internal -cleanup -resync 30 -retry-attempts 5 -retry-interval 10 consul://consul:8500
     container_name: registrator
     volumes:
       - /var/run/docker.sock:/tmp/docker.sock
@@ -50,7 +50,7 @@ services:
       - consul
 
   nginx:
-    image: gluufederation/nginx:4.0.1_01
+    image: gluufederation/nginx:4.0.1_02
     environment:
       - GLUU_CONFIG_CONSUL_HOST=consul
       - GLUU_SECRET_VAULT_HOST=vault
