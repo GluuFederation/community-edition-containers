@@ -1,11 +1,7 @@
 # Gluu Server Community Edition Containers
 
-[Gluu Server Community Edition Documentation](https://gluu.org/docs/ce/4.0.0)
+[Gluu Server Community Edition Documentation](https://gluu.org/docs/ce/4.0)
 
-## Examples
+## NOTE
 
-1. [Docker Single Node](./examples/single-host/) using Compose
-
-## Issues
-
-If you find any issues, please post them on the customer support portal, [support.gluu.org](https://support.gluu.org).
+This branch has been moved to [4.0](https://github.com/GluuFederation/community-edition-containers/tree/4.0).
