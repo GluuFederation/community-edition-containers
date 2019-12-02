@@ -3,7 +3,7 @@ version: "2.4"
 
 services:
   oxshibboleth:
-    image: gluufederation/oxshibboleth:4.0.1_02
+    image: gluufederation/oxshibboleth:4.0.1_03
     environment:
       - GLUU_CONFIG_CONSUL_HOST=consul
       - GLUU_SECRET_VAULT_HOST=vault

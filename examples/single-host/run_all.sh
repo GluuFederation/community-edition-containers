@@ -31,8 +31,18 @@ SVC_CASA="no"
 
 PERSISTENCE_TYPE="ldap"
 PERSISTENCE_LDAP_MAPPING="default"
+PERSISTENCE_VERSION="4.0.1_04"
+CONFIG_INIT_VERSION="4.0.1_04"
+
 COUCHBASE_USER="admin"
 COUCHBASE_URL="localhost"
+
+OXTRUST_API_ENABLED="false"
+OXTRUST_API_TEST_MODE="false"
+PASSPORT_ENABLED="false"
+CASA_ENABLED="false"
+RADIUS_ENABLED="false"
+SAML_ENABLED="false"
 
 ENABLE_OVERRIDE="no"
 
@@ -175,7 +185,7 @@ check_health(){
     while [[ $timeout -gt 0 ]]; do
         nginx_ip=$($DOCKER inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' nginx)
         status_code=$(curl -o /dev/null --silent -k --head --write-out '%{http_code}\n' https://"$nginx_ip" || true)
-		if [ "$status_code" -eq "000" ] &>/dev/null
+        if [ "$status_code" -eq "000" ] &>/dev/null
         then
             status_code=$(curl -o /dev/null --silent -k --head --write-out '%{http_code}\n' https://"$HOST_IP" || true)
         fi
@@ -185,7 +195,7 @@ check_health(){
                 break
         fi
         sleep 5
-		let "timeout = $timeout - 5"
+        let "timeout = $timeout - 5"
         echo -n "."
     done
 }
@@ -211,14 +221,14 @@ gather_ip() {
 }
 
 valid_ip() {
-	local ip=${1:-1.2.3.4}
-	local IFS=.; local -a a=($ip)
-	[[ $ip =~ ^[0-9]+(\.[0-9]+){3}$ ]] || return 1
-	local quad
-	for quad in {0..3}; do
-	[[ "${a[$quad]}" -gt 255 ]] && return 1
-	done
-	return 0
+    local ip=${1:-1.2.3.4}
+    local IFS=.; local -a a=($ip)
+    [[ $ip =~ ^[0-9]+(\.[0-9]+){3}$ ]] || return 1
+    local quad
+    for quad in {0..3}; do
+        [[ "${a[$quad]}" -gt 255 ]] && return 1
+    done
+    return 0
 }
 
 confirm_ip() {
@@ -315,12 +325,12 @@ prepare_config_secret() {
                         --rm \
                         --network $(get_network_name) \
                         --name config-init \
-                        -v "$CONFIG_DIR":/opt/config-init/db/ \
-                        -v "$PWD"/vault_role_id.txt:/etc/certs/vault_role_id \
-                        -v "$PWD"/vault_secret_id.txt:/etc/certs/vault_secret_id \
+                        -v $CONFIG_DIR:/opt/config-init/db/ \
+                        -v $PWD/vault_role_id.txt:/etc/certs/vault_role_id \
+                        -v $PWD/vault_secret_id.txt:/etc/certs/vault_secret_id \
                         -e GLUU_CONFIG_CONSUL_HOST=consul \
                         -e GLUU_SECRET_VAULT_HOST=vault \
-                        gluufederation/config-init:4.0.1_04 load
+                        gluufederation/config-init:$CONFIG_INIT_VERSION load
                 fi
             fi
         fi
@@ -386,13 +396,13 @@ EOL
             --rm \
             --network $(get_network_name) \
             --name config-init \
-            -v "$CONFIG_DIR":/opt/config-init/db/ \
-            -v "$PWD"/vault_role_id.txt:/etc/certs/vault_role_id \
-            -v "$PWD"/vault_secret_id.txt:/etc/certs/vault_secret_id \
-            -v "$PWD"/generate.json:/opt/config-init/db/generate.json \
+            -v $CONFIG_DIR:/opt/config-init/db/ \
+            -v $PWD/vault_role_id.txt:/etc/certs/vault_role_id \
+            -v $PWD/vault_secret_id.txt:/etc/certs/vault_secret_id \
+            -v $PWD/generate.json:/opt/config-init/db/generate.json \
             -e GLUU_CONFIG_CONSUL_HOST=consul \
             -e GLUU_SECRET_VAULT_HOST=vault \
-            gluufederation/config-init:4.0.1_04 load
+            gluufederation/config-init:$CONFIG_INIT_VERSION load
         rm generate.json
     fi
 }
@@ -518,11 +528,17 @@ init_db_entries() {
             -e GLUU_LDAP_URL=ldap:1636 \
             -e GLUU_COUCHBASE_URL=$COUCHBASE_URL \
             -e GLUU_COUCHBASE_USER=$COUCHBASE_USER \
+            -e GLUU_OXTRUST_API_ENABLED=$OXTRUST_API_ENABLED \
+            -e GLUU_OXTRUST_API_TEST_MODE=$OXTRUST_API_TEST_MODE \
+            -e GLUU_PASSPORT_ENABLED=$PASSPORT_ENABLED \
+            -e GLUU_CASA_ENABLED=$CASA_ENABLED \
+            -e GLUU_RADIUS_ENABLED=$RADIUS_ENABLED \
+            -e GLUU_SAML_ENABLED=$SAML_ENABLED \
             -v $PWD/vault_role_id.txt:/etc/certs/vault_role_id \
             -v $PWD/vault_secret_id.txt:/etc/certs/vault_secret_id \
             -v $PWD/couchbase.crt:/etc/certs/couchbase.crt \
             -v $PWD/couchbase_password:/etc/gluu/conf/couchbase_password \
-            gluufederation/persistence:4.0.1_04 \
+            gluufederation/persistence:$PERSISTENCE_VERSION \
         && touch volumes/db_initialized
     fi
 }
