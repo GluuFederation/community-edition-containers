@@ -14,7 +14,8 @@ couchbase.crt
 couchbase_password
 couchbase.yml
 *.json
-settings.sh
+settings.*
 override.yml
 docker-compose.override.yml
 *.xml
+.python-version
