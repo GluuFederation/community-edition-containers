@@ -9,9 +9,11 @@ import socket
 import time
 
 import click
+import stdiomask
 from compose.cli.command import get_project
 from compose.cli.main import TopLevelCommand
 from compose.config.config import yaml
+from docker.types import HostConfig
 
 CONFIG_DIR = "volumes/config-init/db"
 
@@ -121,7 +123,7 @@ class Secret(object):
             f.write(role_id.decode())
 
         with open("vault_secret_id.txt", "w") as f:
-            secret_id = self.container.exec("vault read -field=secret_id auth/approle/role/gluu/secret-id")
+            secret_id = self.container.exec("vault write -f -field=secret_id auth/approle/role/gluu/secret-id")
             f.write(secret_id.decode())
 
     def setup(self):
@@ -156,6 +158,7 @@ class Config(object):
             )
             if not value.startswith(b"Error"):
                 hostname = value.strip().decode()
+                break
 
             click.echo("[W] Unable to get config in Consul; retrying ...")
             retry += 1
@@ -398,8 +401,6 @@ class App(object):
                 click.echo("Password must be at least 6 characters and include one uppercase letter, ")
 
         def prompt_password():
-            import stdiomask
-
             while True:
                 passwd = stdiomask.getpass(prompt="Enter password: ")
                 if not PASSWD_RGX.match(passwd):
@@ -451,24 +452,22 @@ class App(object):
         if os.path.isfile(f"{CONFIG_DIR}/config.json"):
             if click.confirm("Load previously saved configuration in local disk?", default=True):
                 hostname = config.hostname_from_file(f"{CONFIG_DIR}/config.json")
-                if hostname:
-                    self.settings["DOMAIN"] = hostname
-                    self.run_config_init()
+                self.settings["DOMAIN"] = hostname
+                self.run_config_init()
+                return
 
         # prompt inputs for generating new config and secret
         if not hostname and not os.path.isfile("generate.json"):
             params = self.generate_params("generate.json")
-            hostname = params["hostname"]
-            self.settings["DOMAIN"] = hostname
-            self.run_config_init(True)
+            self.settings["DOMAIN"] = params["hostname"]
 
-            # cleanup
-            with contextlib.suppress(FileNotFoundError):
-                os.unlink("generate.json")
+        self.run_config_init(True)
+
+        # cleanup
+        with contextlib.suppress(FileNotFoundError):
+            os.unlink("generate.json")
 
     def run_config_init(self, generate=False):
-        from docker.types import HostConfig
-
         workdir = os.path.abspath(os.path.dirname(__file__))
 
         volumes = [
