@@ -19,3 +19,4 @@ override.yml
 docker-compose.override.yml
 *.xml
 .python-version
+db_initialized
