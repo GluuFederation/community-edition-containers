@@ -259,7 +259,7 @@ class App(object):
             tlc = TopLevelCommand(project)
             yield tlc
         except Exception:
-            pass
+            raise
 
     def get_settings(self):
         """Get merged settings (default and custom settings from local Python file).
