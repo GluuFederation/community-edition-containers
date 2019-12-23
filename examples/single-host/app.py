@@ -290,7 +290,7 @@ class App(object):
     def logs(self, follow, tail, services=None):
         with self.top_level_cmd() as tlc:
             tlc.logs({
-                "SERVICE": " ".join(services or []),
+                "SERVICE": services or [],
                 "--tail": tail,
                 "--follow": follow,
                 "--timestamps": False,
@@ -325,7 +325,7 @@ class App(object):
                 "--abort-on-container-exit": False,
                 "--remove-orphans": True,
                 "--detach": True,
-                "--no-recreate": True,
+                "--no-recreate": False,
                 "--force-recreate": False,
                 "--build": False,
                 "--no-build": True,
