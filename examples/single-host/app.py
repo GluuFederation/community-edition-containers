@@ -187,8 +187,6 @@ class App(object):
         "COUNTRY_CODE": "",
         "STATE": "",
         "CITY": "",
-        # "DOCKER_COMPOSE": "docker-compose",
-        # "DOCKER": "docker",
         "SVC_LDAP": True,
         "SVC_OXAUTH": True,
         "SVC_OXTRUST": True,
@@ -523,26 +521,31 @@ class App(object):
         self.healthcheck()
 
     def healthcheck(self):
-        # TODO: progressbar
         import requests
         import urllib3
         urllib3.disable_warnings()
 
-        click.echo("[I] Launching; please wait ...")
-
-        elapsed = 0
-        while elapsed <= 300:
-            with contextlib.suppress(requests.exceptions.ConnectionError):
-                req = requests.head(
-                    f"https://{self.settings['HOST_IP']}",
-                    verify=False,
-                )
-                if req.ok:
-                    click.echo(f"[I] Gluu Server installed successfully; please visit https://{self.settings['DOMAIN']}")
-                    break
-
-            time.sleep(5)
-            elapsed += 5
+        with click.progressbar(length=300,
+                               show_eta=False,
+                               show_percent=False,
+                               fill_char=".",
+                               empty_char="",
+                               width=0,
+                               bar_template="%(label)s %(bar)s %(info)s",
+                               label="[I] Launching Gluu Server") as pbar:
+            elapsed = 0
+            while elapsed <= 300:
+                with contextlib.suppress(requests.exceptions.ConnectionError):
+                    req = requests.head(
+                        f"https://{self.settings['HOST_IP']}",
+                        verify=False,
+                    )
+                    if req.ok:
+                        click.echo(f"\n[I] Gluu Server installed successfully; please visit https://{self.settings['DOMAIN']}")
+                        break
+                    time.sleep(5)
+                    elapsed += 5
+                    pbar.update(4)
 
     def touch_files(self):
         files = [
