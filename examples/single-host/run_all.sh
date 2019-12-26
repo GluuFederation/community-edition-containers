@@ -16,23 +16,23 @@ DOCKER=${DOCKER:-docker}
 # additional service flags
 # ========================
 
-SVC_LDAP="yes"
-SVC_OXAUTH="yes"
-SVC_OXTRUST="yes"
-SVC_OXPASSPORT="no"
-SVC_OXSHIBBOLETH="no"
-SVC_CR_ROTATE="no"
-SVC_KEY_ROTATION="no"
-SVC_OXD_SERVER="no"
-SVC_RADIUS="no"
-SVC_REDIS="no"
-SVC_VAULT_AUTOUNSEAL="no"
-SVC_CASA="no"
+SVC_LDAP="true"
+SVC_OXAUTH="true"
+SVC_OXTRUST="true"
+SVC_OXPASSPORT="false"
+SVC_OXSHIBBOLETH="false"
+SVC_CR_ROTATE="false"
+SVC_KEY_ROTATION="false"
+SVC_OXD_SERVER="false"
+SVC_RADIUS="false"
+SVC_REDIS="false"
+SVC_VAULT_AUTOUNSEAL="false"
+SVC_CASA="false"
 
 PERSISTENCE_TYPE="ldap"
 PERSISTENCE_LDAP_MAPPING="default"
-PERSISTENCE_VERSION="4.0.1_04"
-CONFIG_INIT_VERSION="4.0.1_04"
+PERSISTENCE_VERSION="4.0.1_06"
+CONFIG_INIT_VERSION="4.0.1_06"
 
 COUCHBASE_USER="admin"
 COUCHBASE_URL="localhost"
@@ -43,8 +43,10 @@ PASSPORT_ENABLED="false"
 CASA_ENABLED="false"
 RADIUS_ENABLED="false"
 SAML_ENABLED="false"
+SCIM_ENABLED="false"
+SCIM_TEST_MODE="false"
 
-ENABLE_OVERRIDE="no"
+ENABLE_OVERRIDE="false"
 
 # override the setting above if `settings.sh` can be loaded
 if [[ -f settings.sh ]]; then
@@ -68,43 +70,43 @@ get_compose_files() {
     files="docker-compose.yml"
 
     # enable ldap
-    [[ "$SVC_LDAP" = "yes" ]] && files="$files:svc.ldap.yml"
+    [[ "$SVC_LDAP" = "true" ]] || [[ "$SVC_LDAP" = "yes" ]] && files="$files:svc.ldap.yml"
 
     # enable oxauth
-    [[ "$SVC_OXAUTH" = "yes" ]] && files="$files:svc.oxauth.yml"
+    [[ "$SVC_OXAUTH" = "true" ]] || [[ "$SVC_OXAUTH" = "yes" ]] && files="$files:svc.oxauth.yml"
 
     # enable oxtrust
-    [[ "$SVC_OXTRUST" = "yes" ]] && files="$files:svc.oxtrust.yml"
+    [[ "$SVC_OXTRUST" = "true" ]] || [[ "$SVC_OXTRUST" = "yes" ]] && files="$files:svc.oxtrust.yml"
 
     # enable oxpassport
-    [[ "$SVC_OXPASSPORT" = "yes" ]] && files="$files:svc.oxpassport.yml"
+    [[ "$SVC_OXPASSPORT" = "true" ]] || [[ "$SVC_OXPASSPORT" = "yes" ]] && files="$files:svc.oxpassport.yml"
 
     # enable oxshibboleth
-    [[ "$SVC_OXSHIBBOLETH" = "yes" ]] && files="$files:svc.oxshibboleth.yml"
+    [[ "$SVC_OXSHIBBOLETH" = "true" ]] || [[ "$SVC_OXSHIBBOLETH" = "yes" ]] && files="$files:svc.oxshibboleth.yml"
 
     # enable cr_rotate
-    [[ "$SVC_CR_ROTATE" = "yes" ]] && files="$files:svc.cr_rotate.yml"
+    [[ "$SVC_CR_ROTATE" = "true" ]] || [[ "$SVC_CR_ROTATE" = "yes" ]] && files="$files:svc.cr_rotate.yml"
 
     # enable key_rotation
-    [[ "$SVC_KEY_ROTATION" = "yes" ]] && files="$files:svc.key_rotation.yml"
+    [[ "$SVC_KEY_ROTATION" = "true" ]] || [[ "$SVC_KEY_ROTATION" = "yes" ]] && files="$files:svc.key_rotation.yml"
 
     # enable oxd_server
-    [[ "$SVC_OXD_SERVER" = "yes" ]] && files="$files:svc.oxd_server.yml"
+    [[ "$SVC_OXD_SERVER" = "true" ]] || [[ "$SVC_OXD_SERVER" = "yes" ]] && files="$files:svc.oxd_server.yml"
 
     # enable radius
-    [[ "$SVC_RADIUS" = "yes" ]] && files="$files:svc.radius.yml"
+    [[ "$SVC_RADIUS" = "true" ]] || [[ "$SVC_RADIUS" = "yes" ]] && files="$files:svc.radius.yml"
 
     # enable redis
-    [[ "$SVC_REDIS" = "yes" ]] && files="$files:svc.redis.yml"
+    [[ "$SVC_REDIS" = "true" ]] || [[ "$SVC_REDIS" = "yes" ]] && files="$files:svc.redis.yml"
 
     #  enable vault auto-unseal
-    [[ "$SVC_VAULT_AUTOUNSEAL" = "yes" ]] && files="$files:svc.vault_autounseal.yml"
+    [[ "$SVC_VAULT_AUTOUNSEAL" = "true" ]] || [[ "$SVC_VAULT_AUTOUNSEAL" = "yes" ]] && files="$files:svc.vault_autounseal.yml"
 
     #  enable casa
-    [[ "$SVC_CASA" = "yes" ]] && files="$files:svc.casa.yml"
+    [[ "$SVC_CASA" = "true" ]] || [[ "$SVC_CASA" = "yes" ]] && files="$files:svc.casa.yml"
 
     # a special manifest to override all manifests mentioned above
-    if [[ "$ENABLE_OVERRIDE" = "yes" ]]; then
+    if [[ "$ENABLE_OVERRIDE" = "true" ]] || [[ "$ENABLE_OVERRIDE" = "yes" ]]; then
         [[ -f docker-compose.override.yml ]] && files="$files:docker-compose.override.yml"
     fi
 
@@ -514,7 +516,12 @@ setup_vault() {
 }
 
 init_db_entries() {
-    if [ ! -f volumes/db_initialized ]; then
+    # backward-compat
+    if [[ -f volumes/db_initialized ]]; then
+        mv volumes/db_initialized db_initialized
+    fi
+
+    if [[ ! -f db_initialized ]]; then
         echo "[I] Adding entries to databases"
 
         $DOCKER run \
@@ -534,12 +541,14 @@ init_db_entries() {
             -e GLUU_CASA_ENABLED=$CASA_ENABLED \
             -e GLUU_RADIUS_ENABLED=$RADIUS_ENABLED \
             -e GLUU_SAML_ENABLED=$SAML_ENABLED \
+            -e GLUU_SCIM_ENABLED=$SCIM_ENABLED \
+            -e GLUU_SCIM_TEST_MODE=$SCIM_TEST_MODE \
             -v $PWD/vault_role_id.txt:/etc/certs/vault_role_id \
             -v $PWD/vault_secret_id.txt:/etc/certs/vault_secret_id \
             -v $PWD/couchbase.crt:/etc/certs/couchbase.crt \
             -v $PWD/couchbase_password:/etc/gluu/conf/couchbase_password \
             gluufederation/persistence:$PERSISTENCE_VERSION \
-        && touch volumes/db_initialized
+        && touch db_initialized
     fi
 }
 
