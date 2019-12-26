@@ -139,9 +139,11 @@ class Secret(object):
             time.sleep(5)
             self.unseal()
 
+        time.sleep(5)
         with self.login():
             time.sleep(5)
             self.write_policy()
+            time.sleep(5)
             self.enable_approle()
 
 
@@ -211,6 +213,8 @@ class App(object):
         "CASA_ENABLED": False,
         "RADIUS_ENABLED": False,
         "SAML_ENABLED": False,
+        "SCIM_ENABLED": False,
+        "SCIM_TEST_MODE": False,
         "ENABLE_OVERRIDE": False,
     }
 
@@ -273,7 +277,10 @@ class App(object):
                 exec(compile(f.read(), filename, "exec"), custom_settings)
 
         # make sure only uppercased settings are loaded
-        custom_settings = {k: v for k, v in custom_settings.items() if k.isupper()}
+        custom_settings = {
+            k: v for k, v in custom_settings.items()
+            if k.isupper() and k in settings
+        }
 
         settings.update(custom_settings)
         return settings
@@ -594,6 +601,8 @@ class App(object):
                         "GLUU_CASA_ENABLED": self.settings["CASA_ENABLED"],
                         "GLUU_RADIUS_ENABLED": self.settings["RADIUS_ENABLED"],
                         "GLUU_SAML_ENABLED": self.settings["SAML_ENABLED"],
+                        "GLUU_SCIM_ENABLED": self.settings["SCIM_ENABLED"],
+                        "GLUU_SCIM_TEST_MODE": self.settings["SCIM_TEST_MODE"],
                     },
                     host_config=HostConfig(
                         version="1.25",
