@@ -183,12 +183,6 @@ class App(object):
     default_settings = {
         "HOST_IP": "",
         "DOMAIN": "",
-        "ADMIN_PW": "",
-        "EMAIL": "",
-        "ORG_NAME": "",
-        "COUNTRY_CODE": "",
-        "STATE": "",
-        "CITY": "",
         "SVC_LDAP": True,
         "SVC_OXAUTH": True,
         "SVC_OXTRUST": True,
@@ -203,8 +197,8 @@ class App(object):
         "SVC_CASA": False,
         "PERSISTENCE_TYPE": "ldap",
         "PERSISTENCE_LDAP_MAPPING": "default",
-        "PERSISTENCE_VERSION": "4.0.1_04",
-        "CONFIG_INIT_VERSION": "4.0.1_04",
+        "PERSISTENCE_VERSION": "4.1.0_dev",
+        "CONFIG_INIT_VERSION": "4.1.0_dev",
         "COUCHBASE_USER": "admin",
         "COUCHBASE_URL": "localhost",
         "OXTRUST_API_ENABLED": False,
@@ -416,9 +410,10 @@ class App(object):
                     return value
                 click.echo("Password must be at least 6 characters and include one uppercase letter, ")
 
-        def prompt_password():
+        def prompt_password(prompt="Enter password: "):
+            # FIXME: stdiomask doesn't handle CTRL+C
             while True:
-                passwd = stdiomask.getpass(prompt="Enter password: ")
+                passwd = stdiomask.getpass(prompt=prompt)
                 if not PASSWD_RGX.match(passwd):
                     click.echo("Password must be at least 6 characters and include one uppercase letter, "
                                "one lowercase letter, one digit, and one special character.")
@@ -437,7 +432,8 @@ class App(object):
         params["country_code"] = prompt_country_code()
         params["state"] = click.prompt("Enter state", default="TX")
         params["city"] = click.prompt("Enter city", default="Austin")
-        params["admin_pw"] = prompt_password()
+        params["admin_pw"] = prompt_password("Enter oxTrust admin password: ")
+        params["ldap_pw"] = prompt_password("Enter LDAP admin password: ")
         params["email"] = prompt_email()
         params["org_name"] = click.prompt("Enter organization", default="Gluu")
 
