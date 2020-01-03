@@ -172,10 +172,10 @@ class Config(object):
 
     def hostname_from_file(self, file_):
         hostname = ""
-        with contextlib.suppress(FileNotFoundError, json.decoder.JSONDecodeError):
+        with contextlib.suppress(json.decoder.JSONDecodeError):
             with open(file_) as f:
                 data = json.loads(f.read())
-                hostname = data.get("hostname", "")
+                hostname = data.get("_config", {}).get("hostname", "")
         return hostname
 
 
@@ -442,6 +442,8 @@ class App(object):
         return params
 
     def prepare_config_secret(self):
+        workdir = os.getcwd()
+
         with self.top_level_cmd() as tlc:
             if not self.ps("consul"):
                 self._up(["consul"])
@@ -462,23 +464,23 @@ class App(object):
 
             click.echo("[W] Configuration not found in Consul")
 
-            if os.path.isfile(f"{CONFIG_DIR}/config.json"):
+            if os.path.isfile(f"{workdir}/{CONFIG_DIR}/config.json"):
                 if click.confirm("Load previously saved configuration in local disk?", default=True):
-                    hostname = config.hostname_from_file(f"{CONFIG_DIR}/config.json")
+                    hostname = config.hostname_from_file(f"{workdir}/{CONFIG_DIR}/config.json")
                     self.settings["DOMAIN"] = hostname
                     self.run_config_init()
                     return
 
             # prompt inputs for generating new config and secret
-            if not hostname and not os.path.isfile("generate.json"):
-                params = self.generate_params("generate.json")
+            if not hostname and not os.path.isfile(f"{workdir}/generate.json"):
+                params = self.generate_params(f"{workdir}/generate.json")
                 self.settings["DOMAIN"] = params["hostname"]
 
             self.run_config_init(True)
 
             # cleanup
             with contextlib.suppress(FileNotFoundError):
-                pathlib.Path("generate.json").unlink()
+                pathlib.Path(f"{workdir}/generate.json").unlink()
 
     def run_config_init(self, generate=False):
         workdir = os.getcwd()
@@ -579,7 +581,8 @@ class App(object):
             shutil.copy(entry, dst)
 
     def run_persistence(self):
-        if os.path.isfile("db_initialized"):
+        workdir = os.getcwd()
+        if os.path.isfile(f"{workdir}/db_initialized"):
             return
 
         click.echo("[I] Adding entries to database")
@@ -630,7 +633,7 @@ class App(object):
                 tlc.project.client.start(cid)
                 for log in tlc.project.client.logs(cid, stream=True):
                     click.echo(log.strip())
-                pathlib.Path("db_initialized").touch()
+                pathlib.Path(f"{workdir}/db_initialized").touch()
                 tlc.project.client.remove_container(cid, force=True)
             except Exception:
                 raise
