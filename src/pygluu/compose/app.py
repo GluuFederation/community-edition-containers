@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 import contextlib
 import io
 import ipaddress
@@ -6,6 +5,7 @@ import json
 import os
 import pathlib
 import re
+import shutil
 import socket
 import time
 
@@ -230,7 +230,6 @@ class App(object):
 
     def __init__(self):
         self.settings = self.get_settings()
-        self.touch_files()
 
     @contextlib.contextmanager
     def top_level_cmd(self):
@@ -253,7 +252,7 @@ class App(object):
             env = Environment()
             env.update(os.environ)
 
-            project = get_project(".", config_path, environment=env)
+            project = get_project(os.getcwd(), config_path, environment=env)
             tlc = TopLevelCommand(project)
             yield tlc
         except Exception:
@@ -330,6 +329,7 @@ class App(object):
                 "--no-build": True,
                 "--scale": {},
                 "--no-color": False,
+                "--quiet-pull": True,
             })
 
     def ps(self, service):
@@ -481,7 +481,8 @@ class App(object):
                 pathlib.Path("generate.json").unlink()
 
     def run_config_init(self, generate=False):
-        workdir = os.path.abspath(os.path.dirname(__file__))
+        workdir = os.getcwd()
+        image = f"gluufederation/config-init:{self.settings['CONFIG_INIT_VERSION']}"
 
         volumes = [
             f"{workdir}/{CONFIG_DIR}:/app/db/",
@@ -492,6 +493,10 @@ class App(object):
             volumes.append(f"{workdir}/generate.json:/app/db/generate.json")
 
         with self.top_level_cmd() as tlc:
+            if not tlc.project.client.images(name=image):
+                click.echo(f"[I] Pulling {image}")
+                tlc.project.client.pull(image)
+
             try:
                 cid = tlc.project.client.create_container(
                     image=f"gluufederation/config-init:{self.settings['CONFIG_INIT_VERSION']}",
@@ -511,16 +516,15 @@ class App(object):
                 tlc.project.client.start(cid)
                 for log in tlc.project.client.logs(cid, stream=True):
                     click.echo(log.strip())
+                tlc.project.client.remove_container(cid, force=True)
             except Exception:
                 raise
-            finally:
-                tlc.project.client.remove_container(cid, force=True)
 
     def up(self):
         self.gather_ip()
         self.prepare_config_secret()
         self._up()
-        self.init_db_entries()
+        self.run_persistence()
         self.healthcheck()
 
     def healthcheck(self):
@@ -563,13 +567,25 @@ class App(object):
         for file_ in files:
             pathlib.Path(file_).touch()
 
-    def init_db_entries(self):
+    def copy_templates(self):
+        entries = pathlib.Path(
+            os.path.join(os.path.dirname(__file__), "templates")
+        )
+        curdir = os.getcwd()
+        for entry in entries.iterdir():
+            dst = os.path.join(curdir, entry.name)
+            if os.path.exists(dst):
+                continue
+            shutil.copy(entry, dst)
+
+    def run_persistence(self):
         if os.path.isfile("db_initialized"):
             return
 
         click.echo("[I] Adding entries to database")
 
-        workdir = os.path.abspath(os.path.dirname(__file__))
+        workdir = os.getcwd()
+        image = f"gluufederation/persistence:{self.settings['PERSISTENCE_VERSION']}"
 
         volumes = [
             f"{workdir}/vault_role_id.txt:/etc/certs/vault_role_id",
@@ -579,6 +595,10 @@ class App(object):
         ]
 
         with self.top_level_cmd() as tlc:
+            if not tlc.project.client.images(name=image):
+                click.echo(f"[I] Pulling {image}")
+                tlc.project.client.pull(image)
+
             try:
                 cid = tlc.project.client.create_container(
                     image=f"gluufederation/persistence:{self.settings['PERSISTENCE_VERSION']}",
@@ -611,52 +631,6 @@ class App(object):
                 for log in tlc.project.client.logs(cid, stream=True):
                     click.echo(log.strip())
                 pathlib.Path("db_initialized").touch()
+                tlc.project.client.remove_container(cid, force=True)
             except Exception:
                 raise
-            finally:
-                tlc.project.client.remove_container(cid, force=True)
-
-
-@click.group()
-@click.pass_context
-def cli(ctx):
-    ctx.obj = App()
-
-
-@cli.command()
-@click.pass_obj
-def config(app):
-    """Validate and view the Compose file
-    """
-    click.echo(app.config())
-
-
-@cli.command()
-@click.pass_obj
-def down(app):
-    """Stop and remove containers, networks, images, and volumes
-    """
-    app.down()
-
-
-@cli.command()
-@click.option("-f", "--follow", default=False, help="Follow log output", is_flag=True)
-@click.option("--tail", default="all", help="Number of lines to show from the end of the logs for each container")
-@click.argument("services", nargs=-1)
-@click.pass_obj
-def logs(app, follow, tail, services):
-    """View output from containers
-    """
-    app.logs(follow, tail, services)
-
-
-@cli.command()
-@click.pass_obj
-def up(app):
-    """Create and start containers
-    """
-    app.up()
-
-
-if __name__ == "__main__":
-    cli()
