@@ -472,9 +472,13 @@ class App(object):
                     return
 
             # prompt inputs for generating new config and secret
-            if not hostname and not os.path.isfile(f"{workdir}/generate.json"):
-                params = self.generate_params(f"{workdir}/generate.json")
-                self.settings["DOMAIN"] = params["hostname"]
+            if not hostname:
+                if not os.path.isfile(f"{workdir}/generate.json"):
+                    params = self.generate_params(f"{workdir}/generate.json")
+                    self.settings["DOMAIN"] = params["hostname"]
+                else:
+                    params = json.loads(f"{workdir}/generate.json")
+                    self.settings["DOMAIN"] = params["hostname"]
 
             self.run_config_init(True)
 
@@ -518,9 +522,10 @@ class App(object):
                 tlc.project.client.start(cid)
                 for log in tlc.project.client.logs(cid, stream=True):
                     click.echo(log.strip())
-                tlc.project.client.remove_container(cid, force=True)
             except Exception:
                 raise
+            finally:
+                tlc.project.client.remove_container(cid, force=True)
 
     def up(self):
         self.gather_ip()
@@ -634,6 +639,7 @@ class App(object):
                 for log in tlc.project.client.logs(cid, stream=True):
                     click.echo(log.strip())
                 pathlib.Path(f"{workdir}/db_initialized").touch()
-                tlc.project.client.remove_container(cid, force=True)
             except Exception:
                 raise
+            finally:
+                tlc.project.client.remove_container(cid, force=True)
