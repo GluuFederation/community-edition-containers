@@ -4,13 +4,24 @@ This is an example of running Gluu Server Community Edition on a single VM.
 
 ## Quickstart
 
-1.  [Install](https://github.com/GluuFederation/community-edition-containers/tree/compose-py3/src) the `pygluu-compose` application.
+1.  Install [docker](https://docs.docker.com/install/)
+
+1.  Install Python 3 and make sure `python3` executable is available in `PATH`
+
+1.  Download `pygluu-compose` executable:
+
+    ```sh
+    mkdir -p gluu
+    cd gluu
+    wget https://bintray.com/iromli/generic/download_file?file_path=pygluu-compose.pyz -O pygluu-compose
+    chmod +x pygluu-compose
+    ```
 
 1.  Run the following commands:
 
     ```sh
-    pygluu-compose init
-    pygluu-compose up
+    ./pygluu-compose init
+    ./pygluu-compose up
     ```
 
 ## Documentation

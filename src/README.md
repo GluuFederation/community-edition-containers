@@ -33,7 +33,7 @@
     make zipapp
     ```
 
-    This command will install executable called `pygluu-compose`.
+    This command will install executable called `pygluu-compose.pyz`.
 
 ## Example
 
