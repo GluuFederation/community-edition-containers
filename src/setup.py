@@ -29,7 +29,7 @@ setup(
     packages=find_packages(),
     zip_safe=False,
     install_requires=[
-        "Click>=7.0",
+        "Click!=7.0,>=6.7",
         "docker-compose>=1.25.0",
         "stdiomask>=0.0.4",
     ],
