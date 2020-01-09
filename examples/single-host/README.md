@@ -4,9 +4,14 @@ This is an example of running Gluu Server Community Edition on a single VM.
 
 ## Quickstart
 
-1.  Install [docker](https://docs.docker.com/install/)
+1.  Install packages (depends on OS):
 
-1.  Install Python 3 and make sure `python3` executable is available in `PATH`
+    - `curl`
+    - `wget`
+    - `python3` (Python 3.6 and above)
+    - `python3-distutils` (only for Ubuntu/Debian)
+
+1.  Install [docker](https://docs.docker.com/install/)
 
 1.  Download `pygluu-compose` executable:
 
