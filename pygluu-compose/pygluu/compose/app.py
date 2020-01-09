@@ -528,6 +528,12 @@ class App(object):
                 tlc.project.client.remove_container(cid, force=True)
 
     def up(self):
+        for port in [80, 443]:
+            port_available = check_port("0.0.0.0", port)
+            if not port_available:
+                click.echo(f"[E] Required port {port} is bind to another process")
+                raise click.Abort()
+
         self.gather_ip()
         self.prepare_config_secret()
         self._up()
@@ -643,3 +649,12 @@ class App(object):
                 raise
             finally:
                 tlc.project.client.remove_container(cid, force=True)
+
+
+def check_port(host, port):
+    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as sock:
+        conn = sock.connect_ex((host, port))
+        if conn == 0:
+            # port is not available
+            return False
+        return True
