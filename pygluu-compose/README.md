@@ -9,7 +9,12 @@
 
 ### Standard Python package
 
-1.  Prepare virtual environment or system-wide setup.
+1.  Create virtual environment and activate:
+
+    ```sh
+    python -m venv .venv
+    source ./venv/bin/activate
+    ```
 
 1.  Install the package:
 
@@ -17,7 +22,7 @@
     make install
     ```
 
-    This command will install executable called `pygluu-compose`.
+    This command will install executable called `pygluu-compose` available in virtual environment `PATH`.
 
 ### Python zipapp
 
@@ -33,7 +38,7 @@
     make zipapp
     ```
 
-    This command will install executable called `pygluu-compose.pyz`.
+    This command will generate executable called `pygluu-compose.pyz` under the same directory.
 
 ## Example
 
