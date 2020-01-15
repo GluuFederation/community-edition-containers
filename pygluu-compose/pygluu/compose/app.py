@@ -451,8 +451,8 @@ class App(object):
             if not self.ps("vault"):
                 self._up(["vault"])
 
-                secret = Secret(tlc.project.client)
-                secret.setup()
+            secret = Secret(tlc.project.client)
+            secret.setup()
 
             # check if config exists
             config = Config(tlc.project.client)
@@ -588,8 +588,14 @@ class App(object):
 
     def run_persistence(self):
         workdir = os.getcwd()
-        if os.path.isfile(f"{workdir}/db_initialized"):
-            return
+        flag_file = f"{workdir}/db_initialized"
+
+        if os.path.isfile(flag_file):
+            click.echo(
+                "[I] db_initialized file found; initial data might have been populated"
+            )
+            if not click.confirm("Do you wish to populate initial data", default=False):
+                return
 
         click.echo("[I] Adding entries to database")
 
@@ -639,7 +645,7 @@ class App(object):
                 tlc.project.client.start(cid)
                 for log in tlc.project.client.logs(cid, stream=True):
                     click.echo(log.strip())
-                pathlib.Path(f"{workdir}/db_initialized").touch()
+                pathlib.Path(flag_file).touch()
             except Exception:
                 raise
             finally:
