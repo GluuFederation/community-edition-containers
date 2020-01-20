@@ -432,10 +432,12 @@ class App(object):
         params["country_code"] = prompt_country_code()
         params["state"] = click.prompt("Enter state", default="TX")
         params["city"] = click.prompt("Enter city", default="Austin")
-        params["admin_pw"] = prompt_password("Enter oxTrust admin password:")
+        params["admin_pw"] = prompt_password("Enter oxTrust admin password: ")
 
-        if not click.confirm("Re-use oxTrust admin password as LDAP admin password:", default=True):
-            params["ldap_pw"] = prompt_password("Enter LDAP admin password:")
+        if click.confirm("Re-use oxTrust admin password as LDAP admin password:", default=True):
+            params["ldap_pw"] = params["admin_pw"]
+        else:
+            params["ldap_pw"] = prompt_password("Enter LDAP admin password: ")
 
         params["email"] = prompt_email()
         params["org_name"] = click.prompt("Enter organization", default="Gluu")
