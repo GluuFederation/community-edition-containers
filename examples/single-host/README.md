@@ -22,11 +22,16 @@ This is an example of running Gluu Server Community Edition on a single VM.
     chmod +x pygluu-compose
     ```
 
-1.  Run the following commands:
+1.  Run the following commands to start deploying containers:
 
     ```sh
-    ./pygluu-compose init
     ./pygluu-compose up
+    ```
+
+    Or check available commands by running:
+
+    ```sh
+    ./pygluu-compose -h
     ```
 
 ## Documentation
