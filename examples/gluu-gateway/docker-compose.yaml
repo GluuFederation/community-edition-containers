@@ -1,0 +1,118 @@
+version: "3"
+
+networks:
+ kong-net:
+  driver: bridge
+
+services:
+
+  #######################################
+  # Postgres: The database used by Kong
+  #######################################
+  kong-database:
+    image: postgres:9.6
+    restart: always
+    networks:
+      - kong-net
+    environment:
+      POSTGRES_USER: kong
+      POSTGRES_DB: kong
+      POSTGRES_PASSWORD: kong 
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "kong"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  #######################################
+  # Kong database migration
+  #######################################
+  kong-migration:
+    image: gluufederation/gluu-gateway:4.1.0_dev
+    command: "kong migrations bootstrap"
+    networks:
+      - kong-net
+    restart: on-failure
+    environment:
+      KONG_PG_HOST: kong-database
+      KONG_PG_USER: kong 
+      KONG_PG_PASSWORD: kong
+    links:
+      - kong-database
+    depends_on:
+      - kong-database
+
+  #######################################
+  # Kong: The API Gateway
+  #######################################
+  gg-kong:
+    image: gluufederation/gluu-gateway:4.1.0_dev
+    networks:
+      - kong-net
+    restart: on-failure
+    environment:
+      KONG_PG_HOST: kong-database
+      KONG_DATABASE: postgres
+      KONG_PG_USER: kong 
+      KONG_PG_PASSWORD: kong
+      KONG_PROXY_ACCESS_LOG: /dev/stdout
+      KONG_ADMIN_ACCESS_LOG: /dev/stdout
+      KONG_PROXY_ERROR_LOG: /dev/stderr
+      KONG_ADMIN_ERROR_LOG: /dev/stderr
+      KONG_PROXY_LISTEN: 0.0.0.0:8000
+      KONG_ADMIN_LISTEN: 0.0.0.0:8001,0.0.0.0:8444 ssl
+    depends_on:
+      - kong-database
+      - kong-migration
+    links:
+      - kong-database
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://gg-kong:8001"]
+      interval: 5s
+      timeout: 2s
+      retries: 15
+    ports:
+      - "8001:8001"
+      - "8000:8000"
+      - "8443:8443"
+      - "8444:8444"
+
+  #######################################
+  # Konga/ UI database prepare
+  #######################################
+  ui-prepare:
+    image: gluufederation/gluu-gateway-ui:4.1.0_dev 
+    command: "-c prepare -a postgres -u postgresql://kong:kong@kong-database:5432/kong"
+    volumes:
+      - ./certificate.pem:/etc/certs/certificate.pem
+      - ./key.pem:/etc/certs/key.pem
+    env_file: 
+      - ./.env 
+    networks:
+      - kong-net
+    restart: on-failure
+    links:
+      - kong-database
+    depends_on:
+      - kong-database
+
+  # #######################################
+  # # gg-ui: GG GUI
+  # #######################################
+  gg-ui:
+    image: gluufederation/gluu-gateway-ui:4.1.0_dev 
+    restart: always
+    volumes:
+      - ./certificate.pem:/etc/certs/certificate.pem
+      - ./key.pem:/etc/certs/key.pem
+    networks:
+        - kong-net
+    env_file: 
+      - ./.env 
+    depends_on:
+      - kong-database
+      - ui-prepare
+    ports:
+      - "1337:1337"
