@@ -152,7 +152,7 @@ class Config(object):
         self.container = ContainerHelper("consul", docker_client)
 
     def hostname_from_backend(self):
-        click.echo("[I] Checking existing config in Consul")
+        click.echo("[I] Attempting to gather FQDN from Consul")
 
         hostname = ""
         retry = 1
@@ -165,14 +165,14 @@ class Config(object):
                 hostname = value.strip().decode()
                 break
 
-            click.echo("[W] Unable to get config in Consul; retrying ...")
+            click.echo("[W] Unable to get FQDN from Consul; retrying ...")
             retry += 1
             time.sleep(5)
         return hostname
 
     def hostname_from_file(self, file_):
         hostname = ""
-        with contextlib.suppress(json.decoder.JSONDecodeError):
+        with contextlib.suppress(FileNotFoundError, json.decoder.JSONDecodeError):
             with open(file_) as f:
                 data = json.loads(f.read())
                 hostname = data.get("_config", {}).get("hostname", "")
@@ -183,6 +183,13 @@ class App(object):
     default_settings = {
         "HOST_IP": "",
         "DOMAIN": "",
+        "ADMIN_PW": "",
+        "LDAP_PW": "",
+        "EMAIL": "",
+        "ORG_NAME": "",
+        "COUNTRY_CODE": "",
+        "STATE": "",
+        "CITY": "",
         "SVC_LDAP": True,
         "SVC_OXAUTH": True,
         "SVC_OXTRUST": True,
@@ -352,34 +359,31 @@ class App(object):
             return f"{tlc.project.name}_default"
 
     def gather_ip(self):
-        ip = ""
+        """Gather IP address.
+        """
 
-        # detect IP address automatically (if possible)
-        click.echo("[I] Determining OS type and attempting to gather external IP address")
-        try:
-            sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-            sock.connect(("8.8.8.8", 80))
-            ip, _ = sock.getsockname()
-        except socket.error:
-            # prompt for user-inputted IP address
-            click.echo("[W] Cannot determine IP address")
-            ip = click.prompt("Please input the host's external IP address: ")
-        finally:
-            sock.close()
-
-        if click.confirm(f"Is this the correct external IP address? {ip}", default=True, show_default=True):
-            self.settings["HOST_IP"] = ip
-            return
-
-        while True:
-            ip = click.prompt("Please input the host's external IP address")
+        def auto_detect_ip():
+            # detect IP address automatically (if possible)
             try:
-                ipaddress.ip_address(ip)
-                self.settings["HOST_IP"] = ip
-                break
-            except ValueError as exc:
-                # raised if IP is invalid
-                click.echo(f"[W] {exc}")
+                sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+                sock.connect(("8.8.8.8", 80))
+                ip, _ = sock.getsockname()
+            except socket.error:
+                ip = ""
+            finally:
+                sock.close()
+            return ip
+
+        click.echo("[I] Attempting to gather external IP address")
+        ip = self.settings["HOST_IP"] or auto_detect_ip() or click.prompt("Please input the host's external IP address")
+
+        try:
+            ipaddress.ip_address(ip)
+            click.echo(f"[I] Using {ip} as external IP address")
+            self.settings["HOST_IP"] = ip
+        except ValueError as exc:
+            click.echo(f"[E] Cannot determine IP address; reason={exc}")
+            raise click.Abort()
 
     def generate_params(self, file_):
         EMAIL_RGX = re.compile(
@@ -425,22 +429,17 @@ class App(object):
                     continue
                 return passwd
 
-        click.echo("[I] Creating new configuration, please input the following parameters")
+        # click.echo("[I] Creating new configuration, please input the following parameters")
 
         params = {}
-        params["hostname"] = prompt_hostname()
-        params["country_code"] = prompt_country_code()
-        params["state"] = click.prompt("Enter state", default="TX")
-        params["city"] = click.prompt("Enter city", default="Austin")
-        params["admin_pw"] = prompt_password("Enter oxTrust admin password: ")
-
-        if click.confirm("Re-use oxTrust admin password as LDAP admin password:", default=True):
-            params["ldap_pw"] = params["admin_pw"]
-        else:
-            params["ldap_pw"] = prompt_password("Enter LDAP admin password: ")
-
-        params["email"] = prompt_email()
-        params["org_name"] = click.prompt("Enter organization", default="Gluu")
+        params["hostname"] = self.settings["DOMAIN"] or prompt_hostname()
+        params["country_code"] = self.settings["COUNTRY_CODE"] or prompt_country_code()
+        params["state"] = self.settings["STATE"] or click.prompt("Enter state", default="TX")
+        params["city"] = self.settings["CITY"] or click.prompt("Enter city", default="Austin")
+        params["admin_pw"] = self.settings["ADMIN_PW"] or prompt_password("Enter oxTrust admin password: ")
+        params["ldap_pw"] = self.settings["LDAP_PW"] or prompt_password("Enter LDAP admin password: ")
+        params["email"] = self.settings["EMAIL"] or prompt_email()
+        params["org_name"] = self.settings["ORG_NAME"] or click.prompt("Enter organization", default="Gluu")
 
         with open(file_, "w") as f:
             f.write(json.dumps(params, indent=4))
@@ -459,7 +458,6 @@ class App(object):
             secret = Secret(tlc.project.client)
             secret.setup()
 
-            # check if config exists
             config = Config(tlc.project.client)
 
             hostname = config.hostname_from_backend()
@@ -467,30 +465,22 @@ class App(object):
                 self.settings["DOMAIN"] = hostname
                 return
 
-            click.echo("[W] Configuration not found in Consul")
+            cfg_file = f"{workdir}/{CONFIG_DIR}/config.json"
+            gen_file = f"{workdir}/generate.json"
 
-            if os.path.isfile(f"{workdir}/{CONFIG_DIR}/config.json"):
-                if click.confirm("Load previously saved configuration in local disk?", default=True):
-                    hostname = config.hostname_from_file(f"{workdir}/{CONFIG_DIR}/config.json")
-                    self.settings["DOMAIN"] = hostname
-                    self.run_config_init()
-                    return
-
-            # prompt inputs for generating new config and secret
-            if not hostname:
-                if not os.path.isfile(f"{workdir}/generate.json"):
-                    params = self.generate_params(f"{workdir}/generate.json")
-                else:
-                    params = json.loads(f"{workdir}/generate.json")
+            hostname = config.hostname_from_file(cfg_file)
+            if hostname:
+                self.settings["DOMAIN"] = hostname
+            else:
+                params = self.generate_params(gen_file)
                 self.settings["DOMAIN"] = params["hostname"]
-
-            self.run_config_init(True)
+            self.run_config_init()
 
             # cleanup
             with contextlib.suppress(FileNotFoundError):
-                pathlib.Path(f"{workdir}/generate.json").unlink()
+                pathlib.Path(gen_file).unlink()
 
-    def run_config_init(self, generate=False):
+    def run_config_init(self):
         workdir = os.getcwd()
         image = f"gluufederation/config-init:{self.settings['CONFIG_INIT_VERSION']}"
 
@@ -499,8 +489,10 @@ class App(object):
             f"{workdir}/vault_role_id.txt:/etc/certs/vault_role_id",
             f"{workdir}/vault_secret_id.txt:/etc/certs/vault_secret_id",
         ]
-        if generate:
-            volumes.append(f"{workdir}/generate.json:/app/db/generate.json")
+
+        gen_file = f"{workdir}/generate.json"
+        if os.path.isfile(gen_file):
+            volumes.append(f"{gen_file}:/app/db/generate.json")
 
         with self.top_level_cmd() as tlc:
             if not tlc.project.client.images(name=image):
