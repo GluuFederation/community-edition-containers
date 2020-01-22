@@ -547,7 +547,7 @@ class App(object):
             elapsed = 0
             while elapsed <= 300:
                 with contextlib.suppress(requests.exceptions.ConnectionError):
-                    req = requests.head(
+                    req = requests.get(
                         f"https://{self.settings['HOST_IP']}",
                         verify=False,
                     )
@@ -584,16 +584,8 @@ class App(object):
 
     def run_persistence(self):
         workdir = os.getcwd()
-        flag_file = f"{workdir}/db_initialized"
 
-        if os.path.isfile(flag_file):
-            click.echo(
-                "[I] db_initialized file found; initial data might have been populated"
-            )
-            if not click.confirm("Do you wish to populate initial data", default=False):
-                return
-
-        click.echo("[I] Adding entries to database")
+        click.echo("[I] Checking entries in database")
 
         workdir = os.getcwd()
         image = f"gluufederation/persistence:{self.settings['PERSISTENCE_VERSION']}"
@@ -641,7 +633,6 @@ class App(object):
                 tlc.project.client.start(cid)
                 for log in tlc.project.client.logs(cid, stream=True):
                     click.echo(log.strip())
-                pathlib.Path(flag_file).touch()
             except Exception:
                 raise
             finally:
