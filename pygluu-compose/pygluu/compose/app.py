@@ -217,6 +217,7 @@ class App(object):
         "SCIM_ENABLED": False,
         "SCIM_TEST_MODE": False,
         "ENABLE_OVERRIDE": False,
+        "PERSISTENCE_SKIP_EXISTING": True,
     }
 
     compose_mappings = {
@@ -625,6 +626,7 @@ class App(object):
                         "GLUU_SAML_ENABLED": self.settings["SAML_ENABLED"],
                         "GLUU_SCIM_ENABLED": self.settings["SCIM_ENABLED"],
                         "GLUU_SCIM_TEST_MODE": self.settings["SCIM_TEST_MODE"],
+                        "GLUU_PERSISTENCE_SKIP_EXISTING": self.settings["PERSISTENCE_SKIP_EXISTING"],
                     },
                     host_config=HostConfig(
                         version="1.25",
