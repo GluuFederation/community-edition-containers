@@ -463,6 +463,7 @@ class App(object):
             hostname = config.hostname_from_backend()
             if hostname:
                 self.settings["DOMAIN"] = hostname
+                click.echo(f"[I] Using {self.settings['DOMAIN']} as FQDN")
                 return
 
             cfg_file = f"{workdir}/{CONFIG_DIR}/config.json"
@@ -474,6 +475,8 @@ class App(object):
             else:
                 params = self.generate_params(gen_file)
                 self.settings["DOMAIN"] = params["hostname"]
+
+            click.echo(f"[I] Using {self.settings['DOMAIN']} as FQDN")
             self.run_config_init()
 
             # cleanup
