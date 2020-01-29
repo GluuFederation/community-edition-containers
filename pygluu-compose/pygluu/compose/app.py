@@ -52,10 +52,11 @@ class Secret(object):
         key = ""
         token = ""
 
-        with open("vault_key_token.txt") as f:
-            txt = f.read()
-            key = self.UNSEAL_KEY_RE.findall(txt)[0]
-            token = self.ROOT_TOKEN_RE.findall(txt)[0]
+        if os.path.isfile("vault_key_token.txt"):
+            with open("vault_key_token.txt") as f:
+                txt = f.read()
+                key = self.UNSEAL_KEY_RE.findall(txt)[0]
+                token = self.ROOT_TOKEN_RE.findall(txt)[0]
         return {"key": key, "token": token}
 
     def status(self):
