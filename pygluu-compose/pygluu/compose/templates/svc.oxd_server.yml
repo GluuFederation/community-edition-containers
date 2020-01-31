@@ -26,10 +26,12 @@ services:
       - APPLICATION_KEYSTORE_PATH=/opt/oxd-server/conf/oxd-server.keystore
       - APPLICATION_KEYSTORE_PASSWORD=example
       - APPLICATION_KEYSTORE_VALIDATE_CERTS=false
+      - APPLICATION_KEYSTORE_CN=oxd_server
       - ADMIN_CONNECTOR_HTTPS_PORT=8444
       - ADMIN_KEYSTORE_PATH=/opt/oxd-server/conf/oxd-server.keystore
       - ADMIN_KEYSTORE_PASSWORD=example
       - ADMIN_KEYSTORE_VALIDATE_CERTS=false
+      - ADMIN_KEYSTORE_CN=oxd_server
       - GLUU_LOG_LEVEL=TRACE
       - XDI_LOG_LEVEL=TRACE
       - THRESHOLD=TRACE
@@ -46,10 +48,11 @@ services:
       - DEFAULT_SITE_CONFIG_UI_LOCALES=['en']
       - DEFAULT_SITE_CONFIG_CLAIMS_LOCALES=['en']
       - DEFAULT_SITE_CONFIG_CONTACTS=[]
-    volumes:
-      - ./volumes/oxd-server:/var/log/oxd-server
+      - GLUU_SERVER_HOST=$DOMAIN
     container_name: oxd-server
     restart: unless-stopped
     mem_limit: 500M
     labels:
       - "SERVICE_IGNORE=yes"
+    extra_hosts:
+      - "${DOMAIN}:${HOST_IP}"
