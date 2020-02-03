@@ -571,7 +571,7 @@ class App(object):
             "gcp_kms_creds.json",
             "couchbase.crt",
             "couchbase_password",
-            "casa.json",
+            # "casa.json",
         ]
         for file_ in files:
             pathlib.Path(file_).touch()

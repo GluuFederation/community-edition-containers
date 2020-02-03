@@ -20,7 +20,7 @@ services:
       - ./vault_role_id.txt:/etc/certs/vault_role_id
       - ./vault_secret_id.txt:/etc/certs/vault_secret_id
       - ./couchbase.crt:/etc/certs/couchbase.crt
-      - ./casa.json:/etc/gluu/conf/casa.json
+      # - ./casa.json:/etc/gluu/conf/casa.json
       - ./couchbase_password:/etc/gluu/conf/couchbase_password
     restart: unless-stopped
     labels:

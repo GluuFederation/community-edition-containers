@@ -25,7 +25,7 @@ services:
       - ./vault_secret_id.txt:/etc/certs/vault_secret_id
       - ./couchbase.crt:/etc/certs/couchbase.crt
       - ./couchbase_password:/etc/gluu/conf/couchbase_password
-      - ./casa.json:/etc/gluu/conf/casa.json
+      # - ./casa.json:/etc/gluu/conf/casa.json
     mem_limit: 1536M
     restart: unless-stopped
     labels:
