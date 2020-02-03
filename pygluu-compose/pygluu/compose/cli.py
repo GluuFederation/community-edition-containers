@@ -1,4 +1,4 @@
-import os
+# import os
 
 import click
 
@@ -8,9 +8,8 @@ from .app import App
 def _init_workdir(app):
     """Initialize working directory
     """
-    if not os.path.exists("docker-compose.yml"):
-        app.touch_files()
-        app.copy_templates()
+    app.touch_files()
+    app.copy_templates()
 
 
 @click.group(context_settings={
