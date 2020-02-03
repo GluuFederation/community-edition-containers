@@ -56,3 +56,5 @@ services:
       - "SERVICE_IGNORE=yes"
     extra_hosts:
       - "${DOMAIN}:${HOST_IP}"
+    volumes:
+      - ./volumes/oxd-server/certs:/etc/certs
