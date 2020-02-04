@@ -12,8 +12,8 @@
 1.  Create virtual environment and activate:
 
     ```sh
-    python -m venv .venv
-    source ./venv/bin/activate
+    python3 -m venv .venv
+    source .venv/bin/activate
     ```
 
 1.  Install the package:
@@ -26,10 +26,10 @@
 
 ### Python zipapp
 
-1.  Install [shiv](https://shiv.readthedocs.io/) using `pip`:
+1.  Install [shiv](https://shiv.readthedocs.io/) using `pip3`:
 
     ```sh
-    pip install shiv
+    pip3 install shiv
     ```
 
 1.  Install the package:
