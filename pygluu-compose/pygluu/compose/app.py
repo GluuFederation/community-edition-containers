@@ -541,16 +541,15 @@ class App(object):
         import urllib3
         urllib3.disable_warnings()
 
-        with click.progressbar(length=300,
-                               show_eta=False,
-                               show_percent=False,
-                               fill_char=".",
-                               empty_char="",
-                               width=0,
+        wait_max = 300
+        wait_delay = 10
+
+        with click.progressbar(length=wait_max, show_eta=False, show_percent=False,
+                               fill_char=".", empty_char="", width=0,
                                bar_template="%(label)s %(bar)s %(info)s",
                                label="[I] Launching Gluu Server") as pbar:
             elapsed = 0
-            while elapsed <= 300:
+            while elapsed <= wait_max:
                 with contextlib.suppress(requests.exceptions.ConnectionError):
                     req = requests.get(
                         f"https://{self.settings['HOST_IP']}",
@@ -559,9 +558,9 @@ class App(object):
                     if req.ok:
                         click.echo(f"\n[I] Gluu Server installed successfully; please visit https://{self.settings['DOMAIN']}")
                         break
-                    time.sleep(5)
-                    elapsed += 5
-                    pbar.update(4)
+                time.sleep(wait_delay)
+                elapsed += wait_delay
+                pbar.update(4)
 
     def touch_files(self):
         files = [
