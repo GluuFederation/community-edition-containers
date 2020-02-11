@@ -13,7 +13,7 @@ This is an example of running Gluu Server Community Edition on a single VM.
 
 1.  Install [docker](https://docs.docker.com/install/)
 
-1.  Get `pygluu-compose` executable by following https://github.com/GluuFederation/community-edition-containers/blob/4.1/pygluu-compose/README.md.
+1.  Get `pygluu-compose` executable by following this [doc](https://github.com/GluuFederation/community-edition-containers/blob/4.1/pygluu-compose/README.md).
 
 1.  Run the following commands to start deploying containers:
 
