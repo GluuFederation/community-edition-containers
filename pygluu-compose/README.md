@@ -40,6 +40,8 @@
 
     This command will generate executable called `pygluu-compose.pyz` under the same directory.
 
-## Example
+    For compatibility, rename the executable:
 
-Refer to [this example](https://github.com/GluuFederation/community-edition-containers/tree/compose-py3/examples/single-host) for details.
+    ```sh
+    mv pygluu-compose.pyz pygluu-compose
+    ```
