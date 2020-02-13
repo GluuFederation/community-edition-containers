@@ -18,13 +18,15 @@
 1.  Run the following commands to start deploying containers:
 
     ```sh
-    ./pygluu-compose up
+    mkdir -p examples/single-host
+    cd examples/single-host
+    pygluu-compose up
     ```
 
     Or check available commands by running:
 
     ```sh
-    ./pygluu-compose -h
+    pygluu-compose -h
     ```
 
 ## Issues
