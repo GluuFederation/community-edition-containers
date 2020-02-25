@@ -2,9 +2,8 @@ name: pygluu compose
 # This builds, packages and tests pyglu-compose
 on:
   push:
-    # Sequence of patterns matched against refs/tags
-    tags:
-      - 'v*' # Push events to matching v*, i.e. v1.0, v20.15.10
+    paths:
+      - pygluu-compose/pygluu/compose/__init__.py
 jobs:
   build:
 
