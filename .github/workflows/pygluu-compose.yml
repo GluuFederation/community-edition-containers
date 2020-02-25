@@ -95,10 +95,12 @@ jobs:
         echo -e "\nENABLE_OVERRIDE=True" >> settings.py
         echo -e "\PERSISTENCE_SKIP_EXISTING=True" >> settings.py
         echo -e "\nHOST_IP=""'$ip'" >> settings.py
+        cat settings.py
 
     - name: Test Pygluu Compose
       id: test_compose
       run: |
+          cd /home/runner/work/test/
           ./pygluu-compose.pyz up
 
     - name: Install Changelog autogenerator
