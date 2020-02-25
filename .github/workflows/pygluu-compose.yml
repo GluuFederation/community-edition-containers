@@ -1,4 +1,4 @@
-name: pygluu-compose
+name: pygluu compose
 # This builds, packages and tests pyglu-compose
 on: [push]
   #push:
