@@ -15,8 +15,8 @@ jobs:
         python-version: [3.7]
 
     steps:
-    - name: Checkout code on 4.1
-      uses: actions/checkout@4.1
+    - name: Checkout code
+      uses: actions/checkout@master
     - name: Set up Python ${{ matrix.python-version }}
       uses: actions/setup-python@v1
       with:
@@ -36,8 +36,8 @@ jobs:
         # exit-zero treats all errors as warnings. The GitHub editor is 127 chars wide
         flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
 
-    - name: Checkout code on 4.1
-      uses: actions/checkout@4.1
+    - name: Checkout code
+      uses: actions/checkout@master
 
     - name: Build Zipapp
       run: |
@@ -98,7 +98,7 @@ jobs:
 
     - name: Upload Release Asset
       id: upload-release-asset
-      uses: actions/upload-release-asset@4.1
+      uses: actions/upload-release-asset@master
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
@@ -107,7 +107,7 @@ jobs:
         asset_name: pygluu-compose.pyz
         asset_content_type: application/pyz
 
-    - name: Push CHANGELOG.md to 4.1
-      uses: mikeal/publish-to-github-action@4.1
+    - name: Push CHANGELOG.md
+      uses: mikeal/publish-to-github-action@master
       env:
         GITHUB_TOKEN: ${{ secrets.token }}
