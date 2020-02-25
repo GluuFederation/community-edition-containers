@@ -1,5 +1,4 @@
-![](https://github.com/GluuFederation/community-edition-containers/workflows/pygluu-compose/badge.svg?branch=4.1)
-
+![pygluu compose](https://github.com/GluuFederation/community-edition-containers/workflows/pygluu%20compose/badge.svg?branch=4.1)
 # Gluu Server Community Edition Containers
 
 [Gluu Server Community Edition Documentation](https://gluu.org/docs/ce/4.1)
