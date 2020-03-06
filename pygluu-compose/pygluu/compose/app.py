@@ -206,8 +206,8 @@ class App(object):
         "SVC_CASA": False,
         "PERSISTENCE_TYPE": "ldap",
         "PERSISTENCE_LDAP_MAPPING": "default",
-        "PERSISTENCE_VERSION": "4.1.0_dev",
-        "CONFIG_INIT_VERSION": "4.1.0_dev",
+        "PERSISTENCE_VERSION": "4.1.0_01",
+        "CONFIG_INIT_VERSION": "4.1.0_01",
         "COUCHBASE_USER": "admin",
         "COUCHBASE_URL": "localhost",
         "OXTRUST_API_ENABLED": False,
@@ -590,7 +590,7 @@ class App(object):
     def run_persistence(self):
         workdir = os.getcwd()
 
-        click.echo("[I] Checking entries in database")
+        click.echo("[I] Checking entries in persistence")
 
         workdir = os.getcwd()
         image = f"gluufederation/persistence:{self.settings['PERSISTENCE_VERSION']}"
