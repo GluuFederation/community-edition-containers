@@ -187,6 +187,12 @@ class App(object):
         "DOMAIN": "",
         "ADMIN_PW": "",
         "LDAP_PW": "",
+        "REDIS_PW": "",
+        "REDIS_URL": "redis:6379",
+        "REDIS_TYPE": "STANDALONE",
+        "REDIS_USE_SSL": False,
+        "REDIS_SSL_TRUSTSTORE": "",
+        "REDIS_SENTINEL_GROUP": "",
         "EMAIL": "",
         "ORG_NAME": "",
         "COUNTRY_CODE": "",
@@ -205,6 +211,7 @@ class App(object):
         "SVC_VAULT_AUTOUNSEAL": False,
         "SVC_CASA": False,
         "PERSISTENCE_TYPE": "ldap",
+        "CACHE_TYPE": "NATIVE_PERSISTENCE",
         "PERSISTENCE_LDAP_MAPPING": "default",
         "PERSISTENCE_VERSION": "4.1.0_01",
         "CONFIG_INIT_VERSION": "4.1.0_01",
@@ -412,10 +419,10 @@ class App(object):
 
         def prompt_email():
             while True:
-                value = click.prompt("Enter email", default="support@example.com")
+                value = click.prompt("Enter email", default="support@demoexample.gluu.org")
                 if EMAIL_RGX.match(value):
                     return value
-                click.echo("Password must be at least 6 characters and include one uppercase letter, ")
+                click.echo("Invalid email address.")
 
         def prompt_password(prompt="Enter password: "):
             # FIXME: stdiomask doesn't handle CTRL+C
@@ -432,8 +439,6 @@ class App(object):
                     continue
                 return passwd
 
-        # click.echo("[I] Creating new configuration, please input the following parameters")
-
         params = {}
         params["hostname"] = self.settings["DOMAIN"] or prompt_hostname()
         params["country_code"] = self.settings["COUNTRY_CODE"] or prompt_country_code()
@@ -444,8 +449,11 @@ class App(object):
         params["email"] = self.settings["EMAIL"] or prompt_email()
         params["org_name"] = self.settings["ORG_NAME"] or click.prompt("Enter organization", default="Gluu")
 
+        if self.settings["CACHE_TYPE"] == "REDIS":
+            params["redis_pw"] = self.settings["REDIS_PW"] or click.prompt("Enter Redis password: ", default="")
+
         with open(file_, "w") as f:
-            f.write(json.dumps(params, indent=4))
+            f.write(json.dumps(params, sort_keys=True, indent=4))
         return params
 
     def prepare_config_secret(self):
@@ -637,6 +645,12 @@ class App(object):
                         "GLUU_SCIM_ENABLED": self.settings["SCIM_ENABLED"],
                         "GLUU_SCIM_TEST_MODE": self.settings["SCIM_TEST_MODE"],
                         "GLUU_PERSISTENCE_SKIP_EXISTING": self.settings["PERSISTENCE_SKIP_EXISTING"],
+                        "GLUU_CACHE_TYPE": self.settings["CACHE_TYPE"],
+                        "GLUU_REDIS_URL": self.settings["REDIS_URL"],
+                        "GLUU_REDIS_TYPE": self.settings["REDIS_TYPE"],
+                        "GLUU_REDIS_USE_SSL": self.settings["REDIS_USE_SSL"],
+                        "GLUU_REDIS_SSL_TRUSTSTORE": self.settings["REDIS_SSL_TRUSTSTORE"],
+                        "GLUU_REDIS_SENTINEL_GROUP": self.settings["REDIS_SENTINEL_GROUP"],
                     },
                     host_config=HostConfig(
                         version="1.25",
