@@ -445,7 +445,12 @@ class App(object):
         params["state"] = self.settings["STATE"] or click.prompt("Enter state", default="TX")
         params["city"] = self.settings["CITY"] or click.prompt("Enter city", default="Austin")
         params["admin_pw"] = self.settings["ADMIN_PW"] or prompt_password("Enter oxTrust admin password: ")
-        params["ldap_pw"] = self.settings["LDAP_PW"] or prompt_password("Enter LDAP admin password: ")
+
+        if self.settings["PERSISTENCE_TYPE"] in ("ldap", "hybrid"):
+            params["ldap_pw"] = self.settings["LDAP_PW"] or prompt_password("Enter LDAP admin password: ")
+        else:
+            params["ldap_pw"] = params["admin_pw"]
+
         params["email"] = self.settings["EMAIL"] or prompt_email()
         params["org_name"] = self.settings["ORG_NAME"] or click.prompt("Enter organization", default="Gluu")
 
