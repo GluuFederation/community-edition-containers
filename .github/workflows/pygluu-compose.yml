@@ -80,8 +80,8 @@ jobs:
         echo -e "SVC_CASA='False'" >> settings.py
         echo -e "PERSISTENCE_TYPE='ldap'" >> settings.py
         echo -e "PERSISTENCE_LDAP_MAPPING='default'" >> settings.py
-        echo -e "PERSISTENCE_VERSION='4.1.0_dev'" >> settings.py
-        echo -e "CONFIG_INIT_VERSION='4.1.0_dev'" >> settings.py
+        echo -e "PERSISTENCE_VERSION='4.1.1_dev'" >> settings.py
+        echo -e "CONFIG_INIT_VERSION='4.1.1_dev'" >> settings.py
         echo -e "COUCHBASE_USER='admin'" >> settings.py
         echo -e "CCOUCHBASE_URL='localhost'" >> settings.py
         echo -e "OXTRUST_API_ENABLED='False'" >> settings.py
@@ -149,4 +149,3 @@ jobs:
     #  uses: mikeal/publish-to-github-action@master
     #  env:
     #    GITHUB_TOKEN: ${{ secrets.token }}
-
