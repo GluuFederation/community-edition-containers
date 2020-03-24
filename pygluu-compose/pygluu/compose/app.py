@@ -514,9 +514,18 @@ class App(object):
             volumes.append(f"{gen_file}:/app/db/generate.json")
 
         with self.top_level_cmd() as tlc:
-            if not tlc.project.client.images(name=image):
-                click.echo(f"[I] Pulling {image}")
-                tlc.project.client.pull(image)
+            retry = 0
+            while retry < 3:
+                try:
+                    if not tlc.project.client.images(name=image):
+                        click.echo(f"[I] Pulling {image}")
+                        tlc.project.client.pull(image)
+                        break
+                except requests.exceptions.Timeout as exc:
+                    click.echo(f"[W] Unable to connect to docker daemon; reason={exc}; "
+                               "retrying in 10 seconds")
+                time.sleep(10)
+                retry += 1
 
             try:
                 cid = tlc.project.client.create_container(
