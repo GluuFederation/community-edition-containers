@@ -3,7 +3,7 @@ version: "2.4"
 
 services:
   oxshibboleth:
-    image: gluufederation/oxshibboleth:4.1.1_01
+    image: gluufederation/oxshibboleth:4.1.1_02
     environment:
       - GLUU_CONFIG_CONSUL_HOST=consul
       - GLUU_SECRET_VAULT_HOST=vault
@@ -17,7 +17,6 @@ services:
       - "${DOMAIN}:${HOST_IP}"
     container_name: oxshibboleth
     volumes:
-      - ./volumes/shared-shibboleth-idp:/opt/shared-shibboleth-idp
       - ./vault_role_id.txt:/etc/certs/vault_role_id
       - ./vault_secret_id.txt:/etc/certs/vault_secret_id
       - ./couchbase.crt:/etc/certs/couchbase.crt
@@ -29,3 +28,4 @@ services:
       - "SERVICE_8086_CHECK_HTTP=/idp"
       - "SERVICE_8086_CHECK_INTERVAL=30s"
       - "SERVICE_8086_CHECK_TIMEOUT=30s"
+      - "APP_NAME=oxshibboleth"

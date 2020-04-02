@@ -25,3 +25,4 @@ services:
     restart: unless-stopped
     labels:
       - "SERVICE_NAME=casa"
+      - "APP_NAME=casa"

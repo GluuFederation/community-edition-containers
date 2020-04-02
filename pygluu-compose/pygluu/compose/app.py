@@ -10,6 +10,7 @@ import socket
 import time
 
 import click
+import docker.errors
 import requests.exceptions
 import stdiomask
 from compose.cli.command import get_project
@@ -213,8 +214,8 @@ class App(object):
         "PERSISTENCE_TYPE": "ldap",
         "CACHE_TYPE": "NATIVE_PERSISTENCE",
         "PERSISTENCE_LDAP_MAPPING": "default",
-        "PERSISTENCE_VERSION": "4.1.1_01",
-        "CONFIG_INIT_VERSION": "4.1.1_01",
+        "PERSISTENCE_VERSION": "4.1.1_02",
+        "CONFIG_INIT_VERSION": "4.1.1_02",
         "COUCHBASE_USER": "admin",
         "COUCHBASE_URL": "localhost",
         "OXTRUST_API_ENABLED": False,
@@ -346,7 +347,7 @@ class App(object):
                 "--no-build": True,
                 "--scale": {},
                 "--no-color": False,
-                "--quiet-pull": True,
+                "--quiet-pull": False,
             })
 
     def ps(self, service):
@@ -518,15 +519,15 @@ class App(object):
             while retry < 3:
                 try:
                     if not tlc.project.client.images(name=image):
-                        click.echo(f"[I] Pulling {image}")
                         tlc.project.client.pull(image)
                         break
-                except requests.exceptions.Timeout as exc:
-                    click.echo(f"[W] Unable to connect to docker daemon; reason={exc}; "
+                except (requests.exceptions.Timeout, docker.errors.APIError) as exc:
+                    click.echo(f"[W] Unable to get {image}; reason={exc}; "
                                "retrying in 10 seconds")
                 time.sleep(10)
                 retry += 1
 
+            cid = None
             try:
                 cid = tlc.project.client.create_container(
                     image=f"gluufederation/config-init:{self.settings['CONFIG_INIT_VERSION']}",
@@ -549,7 +550,8 @@ class App(object):
             except Exception:
                 raise
             finally:
-                tlc.project.client.remove_container(cid, force=True)
+                if cid:
+                    tlc.project.client.remove_container(cid, force=True)
 
     def up(self):
         self.check_ports()
@@ -629,15 +631,15 @@ class App(object):
             while retry < 3:
                 try:
                     if not tlc.project.client.images(name=image):
-                        click.echo(f"[I] Pulling {image}")
                         tlc.project.client.pull(image)
                         break
-                except requests.exceptions.Timeout as exc:
-                    click.echo(f"[W] Unable to connect to docker daemon; reason={exc}; "
+                except (requests.exceptions.Timeout, docker.errors.APIError) as exc:
+                    click.echo(f"[W] Unable to get {image}; reason={exc}; "
                                "retrying in 10 seconds")
                 time.sleep(10)
                 retry += 1
 
+            cid = None
             try:
                 cid = tlc.project.client.create_container(
                     image=f"gluufederation/persistence:{self.settings['PERSISTENCE_VERSION']}",
@@ -679,7 +681,8 @@ class App(object):
             except Exception:
                 raise
             finally:
-                tlc.project.client.remove_container(cid, force=True)
+                if cid:
+                    tlc.project.client.remove_container(cid, force=True)
 
     def check_ports(self):
         def _check(host, port):

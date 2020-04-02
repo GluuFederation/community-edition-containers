@@ -3,7 +3,7 @@ version: "2.4"
 
 services:
   oxauth:
-    image: gluufederation/oxauth:4.1.1_02
+    image: gluufederation/oxauth:4.1.1_03
     environment:
       - GLUU_CONFIG_CONSUL_HOST=consul
       - GLUU_SECRET_VAULT_HOST=vault
@@ -12,6 +12,8 @@ services:
       - GLUU_LDAP_URL=ldap:1636
       - GLUU_COUCHBASE_URL=${COUCHBASE_URL}
       - GLUU_COUCHBASE_USER=${COUCHBASE_USER}
+      - GLUU_CONTAINER_METADATA=docker
+      - GLUU_SYNC_CASA_MANIFESTS=true
     extra_hosts:
       - "${DOMAIN}:${HOST_IP}"
     container_name: oxauth
@@ -26,6 +28,7 @@ services:
       - ./couchbase.crt:/etc/certs/couchbase.crt
       - ./couchbase_password:/etc/gluu/conf/couchbase_password
       # - ./casa.json:/etc/gluu/conf/casa.json
+      - /var/run/docker.sock:/var/run/docker.sock
     mem_limit: 1536M
     restart: unless-stopped
     labels:
