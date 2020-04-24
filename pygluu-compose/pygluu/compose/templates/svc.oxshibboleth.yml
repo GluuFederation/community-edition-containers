@@ -13,6 +13,7 @@ services:
       - GLUU_COUCHBASE_URL=${COUCHBASE_URL}
       - GLUU_COUCHBASE_USER=${COUCHBASE_USER}
       - GLUU_OXTRUST_BACKEND=oxtrust:8080
+      - GLUU_JCA_URL=http://jackrabbit:8080
     extra_hosts:
       - "${DOMAIN}:${HOST_IP}"
     container_name: oxshibboleth

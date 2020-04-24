@@ -211,6 +211,7 @@ class App(object):
         "SVC_REDIS": False,
         "SVC_VAULT_AUTOUNSEAL": False,
         "SVC_CASA": False,
+        "SVC_JACKRABBIT": False,
         "PERSISTENCE_TYPE": "ldap",
         "CACHE_TYPE": "NATIVE_PERSISTENCE",
         "PERSISTENCE_LDAP_MAPPING": "default",
@@ -228,6 +229,7 @@ class App(object):
         "SCIM_TEST_MODE": False,
         "ENABLE_OVERRIDE": False,
         "PERSISTENCE_SKIP_EXISTING": True,
+        "DOCUMENT_STORE_TYPE": "LOCAL",
     }
 
     compose_mappings = {
@@ -243,6 +245,7 @@ class App(object):
         "SVC_REDIS": "svc.redis.yml",
         "SVC_VAULT_AUTOUNSEAL": "svc.vault_autounseal.yml",
         "SVC_CASA": "svc.casa.yml",
+        "SVC_JACKRABBIT": "svc.jackrabbit.yml",
         "ENABLE_OVERRIDE": "docker-compose.override.yml",
     }
 
@@ -667,6 +670,8 @@ class App(object):
                         "GLUU_REDIS_USE_SSL": self.settings["REDIS_USE_SSL"],
                         "GLUU_REDIS_SSL_TRUSTSTORE": self.settings["REDIS_SSL_TRUSTSTORE"],
                         "GLUU_REDIS_SENTINEL_GROUP": self.settings["REDIS_SENTINEL_GROUP"],
+                        "GLUU_DOCUMENT_STORE_TYPE": self.settings["DOCUMENT_STORE_TYPE"],
+                        "GLUU_JCA_RMI_URL": "http://jackrabbit:8080/rmi",
                     },
                     host_config=HostConfig(
                         version="1.25",
