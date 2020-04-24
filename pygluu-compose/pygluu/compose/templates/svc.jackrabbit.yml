@@ -5,15 +5,10 @@ services:
   jackrabbit:
     image: gluufederation/jackrabbit:4.1.1_dev
     container_name: jackrabbit
-    environment:
-      - GLUU_CONFIG_CONSUL_HOST=consul
-      - GLUU_SECRET_VAULT_HOST=vault
     volumes:
       - ./volumes/jackrabbit/repository:/opt/jackrabbit/repository
       - ./volumes/jackrabbit/version:/opt/jackrabbit/version
       - ./volumes/jackrabbit/workspaces:/opt/jackrabbit/workspaces
-      - ./vault_role_id.txt:/etc/certs/vault_role_id
-      - ./vault_secret_id.txt:/etc/certs/vault_secret_id
     labels:
       - "SERVICE_IGNORE=yes"
     restart: unless-stopped
