@@ -14,7 +14,7 @@ services:
       - GLUU_COUCHBASE_URL=${COUCHBASE_URL}
       - GLUU_COUCHBASE_USER=${COUCHBASE_USER}
       - GLUU_CONTAINER_METADATA=docker
-      - GLUU_SYNC_SHIB_MANIFESTS=true
+      - GLUU_SYNC_SHIB_MANIFESTS=false
     extra_hosts:
       - "${DOMAIN}:${HOST_IP}"
     container_name: oxtrust
