@@ -269,6 +269,7 @@ class App(object):
             os.environ["COUCHBASE_URL"] = self.settings.get("COUCHBASE_URL")
             os.environ["DOMAIN"] = self.settings.get("DOMAIN")
             os.environ["HOST_IP"] = self.settings.get("HOST_IP")
+            os.environ["DOCUMENT_STORE_TYPE"] = self.settings.get("DOCUMENT_STORE_TYPE")
 
             env = Environment()
             env.update(os.environ)
