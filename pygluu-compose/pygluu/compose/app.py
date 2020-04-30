@@ -215,7 +215,7 @@ class App(object):
         "PERSISTENCE_TYPE": "ldap",
         "CACHE_TYPE": "NATIVE_PERSISTENCE",
         "PERSISTENCE_LDAP_MAPPING": "default",
-        "PERSISTENCE_VERSION": "4.1.1_02",
+        "PERSISTENCE_VERSION": "4.1.1_03",
         "CONFIG_INIT_VERSION": "4.1.1_02",
         "COUCHBASE_USER": "admin",
         "COUCHBASE_URL": "localhost",
@@ -523,6 +523,7 @@ class App(object):
             while retry < 3:
                 try:
                     if not tlc.project.client.images(name=image):
+                        click.echo(f"{self.settings['CONFIG_INIT_VERSION']}: Pulling from gluufederation/config-init")
                         tlc.project.client.pull(image)
                         break
                 except (requests.exceptions.Timeout, docker.errors.APIError) as exc:
@@ -635,6 +636,7 @@ class App(object):
             while retry < 3:
                 try:
                     if not tlc.project.client.images(name=image):
+                        click.echo(f"{self.settings['PERSISTENCE_VERSION']}: Pulling from gluufederation/persistence")
                         tlc.project.client.pull(image)
                         break
                 except (requests.exceptions.Timeout, docker.errors.APIError) as exc:
