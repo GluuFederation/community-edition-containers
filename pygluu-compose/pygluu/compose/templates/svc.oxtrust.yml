@@ -15,16 +15,18 @@ services:
       - GLUU_COUCHBASE_USER=${COUCHBASE_USER}
       - GLUU_CONTAINER_METADATA=docker
       - GLUU_SYNC_SHIB_MANIFESTS=false
+      - GLUU_JCA_URL=http://jackrabbit:8080
+      - GLUU_DOCUMENT_STORE_TYPE=${DOCUMENT_STORE_TYPE}
     extra_hosts:
       - "${DOMAIN}:${HOST_IP}"
     container_name: oxtrust
     volumes:
-      - ./volumes/oxtrust/custom/pages:/opt/gluu/jetty/identity/custom/pages
-      - ./volumes/oxtrust/custom/static:/opt/gluu/jetty/identity/custom/static
-      - ./volumes/oxtrust/custom/libs:/opt/gluu/jetty/identity/custom/libs
-      - ./volumes/oxtrust/custom/i18n:/opt/gluu/jetty/identity/custom/i18n
+      # - ./volumes/oxtrust/custom/pages:/opt/gluu/jetty/identity/custom/pages
+      # - ./volumes/oxtrust/custom/static:/opt/gluu/jetty/identity/custom/static
+      # - ./volumes/oxtrust/custom/libs:/opt/gluu/jetty/identity/custom/libs
+      # - ./volumes/oxtrust/custom/i18n:/opt/gluu/jetty/identity/custom/i18n
       - ./volumes/oxtrust/logs:/opt/gluu/jetty/identity/logs
-      - ./volumes/oxtrust/opt/shibboleth-idp:/opt/shibboleth-idp
+      # - ./volumes/oxtrust/opt/shibboleth-idp:/opt/shibboleth-idp
       - ./vault_role_id.txt:/etc/certs/vault_role_id
       - ./vault_secret_id.txt:/etc/certs/vault_secret_id
       - ./couchbase.crt:/etc/certs/couchbase.crt
