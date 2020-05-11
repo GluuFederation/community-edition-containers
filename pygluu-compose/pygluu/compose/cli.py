@@ -1,15 +1,6 @@
-# import os
-
 import click
 
 from .app import App
-
-
-def _init_workdir(app):
-    """Initialize working directory
-    """
-    app.touch_files()
-    app.copy_templates()
 
 
 @click.group(context_settings={
@@ -22,10 +13,19 @@ def cli(ctx):
 
 @cli.command()
 @click.pass_obj
+def init(app):
+    """Initialize working directory
+    """
+    app.touch_files()
+    app.copy_templates()
+
+
+@cli.command()
+@click.pass_obj
 def config(app):
     """Validate and view the Compose file
     """
-    _init_workdir(app)
+    app.check_workdir()
     click.echo(app.config())
 
 
@@ -34,7 +34,7 @@ def config(app):
 def down(app):
     """Stop and remove containers, networks, images, and volumes
     """
-    _init_workdir(app)
+    app.check_workdir()
     app.down()
 
 
@@ -46,7 +46,7 @@ def down(app):
 def logs(app, follow, tail, services):
     """View output from containers
     """
-    _init_workdir(app)
+    app.check_workdir()
     app.logs(follow, tail, services)
 
 
@@ -55,5 +55,5 @@ def logs(app, follow, tail, services):
 def up(app):
     """Create and start containers
     """
-    _init_workdir(app)
+    app.check_workdir()
     app.up()

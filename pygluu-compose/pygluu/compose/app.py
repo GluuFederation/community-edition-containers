@@ -714,3 +714,9 @@ class App(object):
                 if not port_available:
                     click.echo(f"[W] Required port {port} is bind to another process")
                     raise click.Abort()
+
+    def check_workdir(self):
+        if not os.path.isfile("docker-compose.yml"):
+            click.echo("[E] docker-compose.yml file is not found; "
+                       "make sure to run init command first")
+            raise click.Abort()

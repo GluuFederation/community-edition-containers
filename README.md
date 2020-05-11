@@ -21,6 +21,7 @@
     ```sh
     mkdir -p examples/single-host
     cd examples/single-host
+    pygluu-compose init
     pygluu-compose up
     ```
 

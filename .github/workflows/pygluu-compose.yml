@@ -98,6 +98,7 @@ jobs:
       id: test_compose
       run: |
           cd /home/runner/work/test/
+          ./pygluu-compose.pyz init
           ./pygluu-compose.pyz up
 
     - name: Install Changelog autogenerator
