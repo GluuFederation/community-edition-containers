@@ -3,7 +3,7 @@ version: "2.4"
 
 services:
   oxauth:
-    image: gluufederation/oxauth:4.1.1_06
+    image: gluufederation/oxauth:4.2.0_dev
     environment:
       - GLUU_CONFIG_CONSUL_HOST=consul
       - GLUU_SECRET_VAULT_HOST=vault
