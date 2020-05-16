@@ -3,7 +3,7 @@ version: "2.4"
 
 services:
   jackrabbit:
-    image: gluufederation/jackrabbit:4.1.1_01
+    image: gluufederation/jackrabbit:4.2.0_dev
     container_name: jackrabbit
     volumes:
       - ./volumes/jackrabbit/repository:/opt/jackrabbit/repository
