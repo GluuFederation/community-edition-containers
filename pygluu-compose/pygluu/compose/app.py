@@ -212,6 +212,8 @@ class App(object):
         "SVC_VAULT_AUTOUNSEAL": False,
         "SVC_CASA": False,
         "SVC_JACKRABBIT": False,
+        "SVC_SCIM": False,
+        "SVC_FIDO2": False,
         "PERSISTENCE_TYPE": "ldap",
         "CACHE_TYPE": "NATIVE_PERSISTENCE",
         "PERSISTENCE_LDAP_MAPPING": "default",
@@ -246,6 +248,8 @@ class App(object):
         "SVC_VAULT_AUTOUNSEAL": "svc.vault_autounseal.yml",
         "SVC_CASA": "svc.casa.yml",
         "SVC_JACKRABBIT": "svc.jackrabbit.yml",
+        "SVC_SCIM": "svc.scim.yml",
+        "SVC_FIDO2": "svc.fido2.yml",
         "ENABLE_OVERRIDE": "docker-compose.override.yml",
     }
 
