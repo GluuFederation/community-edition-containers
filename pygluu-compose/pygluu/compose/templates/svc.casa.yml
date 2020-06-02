@@ -26,3 +26,6 @@ services:
     labels:
       - "SERVICE_NAME=casa"
       - "APP_NAME=casa"
+      - "SERVICE_8080_CHECK_HTTP=/casa/health-check"
+      - "SERVICE_8080_CHECK_INTERVAL=30s"
+      - "SERVICE_8080_CHECK_TIMEOUT=30s"
