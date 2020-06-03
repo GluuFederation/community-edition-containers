@@ -385,14 +385,10 @@ class App(object):
 
         def auto_detect_ip():
             # detect IP address automatically (if possible)
-            try:
-                sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+            ip = ""
+            with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as sock:
                 sock.connect(("8.8.8.8", 80))
                 ip, _ = sock.getsockname()
-            except socket.error:
-                ip = ""
-            finally:
-                sock.close()
             return ip
 
         click.echo("[I] Attempting to gather external IP address")
