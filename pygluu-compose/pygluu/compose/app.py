@@ -56,10 +56,9 @@ class Secret(object):
         path = pathlib.Path("vault_key_token.txt")
 
         if path.is_file():
-            with path.open() as f:
-                txt = f.read()
-                key = self.UNSEAL_KEY_RE.findall(txt)[0]
-                token = self.ROOT_TOKEN_RE.findall(txt)[0]
+            txt = path.read_text()
+            key = self.UNSEAL_KEY_RE.findall(txt)[0]
+            token = self.ROOT_TOKEN_RE.findall(txt)[0]
         return {"key": key, "token": token}
 
     def status(self):
@@ -89,10 +88,9 @@ class Secret(object):
             "-recovery-threshold=1",
         )
 
-        with pathlib.Path("vault_key_token.txt").open("w") as f:
-            f.write(out.decode())
-            click.echo("[I] Vault recovery key and root token "
-                       "saved to vault_key_token.txt")
+        pathlib.Path("vault_key_token.txt").write_text(out.decode())
+        click.echo("[I] Vault recovery key and root token "
+                   "saved to vault_key_token.txt")
 
     def unseal(self):
         click.echo("[I] Unsealing Vault manually")
@@ -126,13 +124,11 @@ class Secret(object):
             "secret_id_num_uses=0"
         )
 
-        with pathlib.Path("vault_role_id.txt").open("w") as f:
-            role_id = self.container.exec("vault read -field=role_id auth/approle/role/gluu/role-id")
-            f.write(role_id.decode())
+        role_id = self.container.exec("vault read -field=role_id auth/approle/role/gluu/role-id")
+        pathlib.Path("vault_role_id.txt").write_text(role_id.decode())
 
-        with pathlib.Path("vault_secret_id.txt").open("w") as f:
-            secret_id = self.container.exec("vault write -f -field=secret_id auth/approle/role/gluu/secret-id")
-            f.write(secret_id.decode())
+        secret_id = self.container.exec("vault write -f -field=secret_id auth/approle/role/gluu/secret-id")
+        pathlib.Path("vault_secret_id.txt").write_text(secret_id.decode())
 
     def setup(self):
         status = self.status()
@@ -178,9 +174,8 @@ class Config(object):
     def hostname_from_file(self, file_):
         hostname = ""
         with contextlib.suppress(FileNotFoundError, json.decoder.JSONDecodeError):
-            with open(file_) as f:
-                data = json.loads(f.read())
-                hostname = data.get("_config", {}).get("hostname", "")
+            data = json.loads(pathlib.Path(file_).read_text())
+            hostname = data.get("_config", {}).get("hostname", "")
         return hostname
 
 
@@ -294,8 +289,7 @@ class App(object):
 
         with contextlib.suppress(FileNotFoundError):
             path = pathlib.Path("settings.py")
-            with path.open() as f:
-                exec(compile(f.read(), path, "exec"), custom_settings)
+            exec(compile(path.read_text(), path, "exec"), custom_settings)
 
         # make sure only uppercased settings are loaded
         custom_settings = {
@@ -464,8 +458,7 @@ class App(object):
         if self.settings["CACHE_TYPE"] == "REDIS":
             params["redis_pw"] = self.settings["REDIS_PW"] or click.prompt("Enter Redis password: ", default="")
 
-        with pathlib.Path(file_).open("w") as f:
-            f.write(json.dumps(params, sort_keys=True, indent=4))
+        pathlib.Path(file_).write_text(json.dumps(params, sort_keys=True, indent=4))
         return params
 
     def prepare_config_secret(self):
