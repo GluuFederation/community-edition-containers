@@ -53,9 +53,10 @@ class Secret(object):
     def creds(self):
         key = ""
         token = ""
+        path = pathlib.Path("vault_key_token.txt")
 
-        if os.path.isfile("vault_key_token.txt"):
-            with open("vault_key_token.txt") as f:
+        if path.is_file():
+            with path.open() as f:
                 txt = f.read()
                 key = self.UNSEAL_KEY_RE.findall(txt)[0]
                 token = self.ROOT_TOKEN_RE.findall(txt)[0]
@@ -87,7 +88,8 @@ class Secret(object):
             "-recovery-shares=1 "
             "-recovery-threshold=1",
         )
-        with open("vault_key_token.txt", "w") as f:
+
+        with pathlib.Path("vault_key_token.txt").open("w") as f:
             f.write(out.decode())
             click.echo("[I] Vault recovery key and root token "
                        "saved to vault_key_token.txt")
@@ -124,11 +126,11 @@ class Secret(object):
             "secret_id_num_uses=0"
         )
 
-        with open("vault_role_id.txt", "w") as f:
+        with pathlib.Path("vault_role_id.txt").open("w") as f:
             role_id = self.container.exec("vault read -field=role_id auth/approle/role/gluu/role-id")
             f.write(role_id.decode())
 
-        with open("vault_secret_id.txt", "w") as f:
+        with pathlib.Path("vault_secret_id.txt").open("w") as f:
             secret_id = self.container.exec("vault write -f -field=secret_id auth/approle/role/gluu/secret-id")
             f.write(secret_id.decode())
 
@@ -291,9 +293,9 @@ class App(object):
         custom_settings = {}
 
         with contextlib.suppress(FileNotFoundError):
-            filename = "settings.py"
-            with open(filename) as f:
-                exec(compile(f.read(), filename, "exec"), custom_settings)
+            path = pathlib.Path("settings.py")
+            with path.open() as f:
+                exec(compile(f.read(), path, "exec"), custom_settings)
 
         # make sure only uppercased settings are loaded
         custom_settings = {
@@ -466,7 +468,7 @@ class App(object):
         if self.settings["CACHE_TYPE"] == "REDIS":
             params["redis_pw"] = self.settings["REDIS_PW"] or click.prompt("Enter Redis password: ", default="")
 
-        with open(file_, "w") as f:
+        with pathlib.Path(file_).open("w") as f:
             f.write(json.dumps(params, sort_keys=True, indent=4))
         return params
 
