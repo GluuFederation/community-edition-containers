@@ -582,7 +582,7 @@ class App(object):
             while elapsed <= wait_max:
                 with contextlib.suppress(requests.exceptions.ConnectionError):
                     req = requests.get(
-                        f"https://{self.settings['HOST_IP']}/identity/restv1/scim-configuration",
+                        f"https://{self.settings['HOST_IP']}/.well-known/scim-configuration",
                         verify=False,
                     )
                     if req.ok:
