@@ -50,7 +50,7 @@ services:
       - consul
 
   nginx:
-    image: gluufederation/nginx:4.1.1_01
+    image: gluufederation/nginx:4.1.1_02
     environment:
       - GLUU_CONFIG_CONSUL_HOST=consul
       - GLUU_SECRET_VAULT_HOST=vault
