@@ -32,6 +32,7 @@ setup(
         "Click!=7.0,>=6.7",
         "docker-compose>=1.25.0",
         "stdiomask>=0.0.4",
+        "click-spinner>=0.1.10",
     ],
     classifiers=[
         "Intended Audience :: Developers",

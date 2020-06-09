@@ -10,6 +10,7 @@ import socket
 import time
 
 import click
+import click_spinner
 import docker.errors
 import requests.exceptions
 import stdiomask
@@ -569,10 +570,8 @@ class App(object):
         wait_max = 300
         wait_delay = 10
 
-        with click.progressbar(length=wait_max, show_eta=False, show_percent=False,
-                               fill_char=".", empty_char="", width=0,
-                               bar_template="%(label)s %(bar)s %(info)s",
-                               label="[I] Launching Gluu Server") as pbar:
+        click.echo("[I] Launching Gluu Server")
+        with click_spinner.spinner():
             elapsed = 0
             while elapsed <= wait_max:
                 with contextlib.suppress(requests.exceptions.ConnectionError):
@@ -583,9 +582,9 @@ class App(object):
                     if req.ok:
                         click.echo(f"\n[I] Gluu Server installed successfully; please visit https://{self.settings['DOMAIN']}")
                         break
+
                 time.sleep(wait_delay)
                 elapsed += wait_delay
-                pbar.update(4)
 
     def touch_files(self):
         files = [
