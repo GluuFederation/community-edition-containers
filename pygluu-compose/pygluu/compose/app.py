@@ -576,8 +576,8 @@ class App(object):
             elapsed = 0
             while elapsed <= wait_max:
                 with contextlib.suppress(requests.exceptions.ConnectionError):
-                    req = requests.get(
-                        f"https://{self.settings['HOST_IP']}/.well-known/scim-configuration",
+                    req = requests.head(
+                        f"https://{self.settings['HOST_IP']}/identity/finishlogout.htm",
                         verify=False,
                     )
                     if req.ok:
