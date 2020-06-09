@@ -14,6 +14,7 @@ services:
       - GLUU_PERSISTENCE_TYPE=${PERSISTENCE_TYPE}
       - GLUU_PERSISTENCE_LDAP_MAPPING=${PERSISTENCE_LDAP_MAPPING}
     container_name: ldap
+    hostname: ldap
     volumes:
       - ./volumes/opendj/config:/opt/opendj/config
       - ./volumes/opendj/ldif:/opt/opendj/ldif
