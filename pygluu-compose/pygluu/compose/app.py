@@ -21,6 +21,9 @@ from compose.config.config import yaml
 from compose.config.environment import Environment
 from docker.types import HostConfig
 
+from .settings import DEFAULT_SETTINGS
+from .settings import COMPOSE_MAPPINGS
+
 CONFIG_DIR = "volumes/config-init/db"
 
 
@@ -63,7 +66,7 @@ class Secret(object):
         return {"key": key, "token": token}
 
     def status(self):
-        click.echo("[I] Checking Vault status")
+        print("[I] Checking Vault status")
 
         status = {}
         retry = 1
@@ -74,13 +77,13 @@ class Secret(object):
                 if status:
                     break
 
-            click.echo("[W] Unable to get seal status in Vault; retrying ...")
+            print("[W] Unable to get seal status in Vault; retrying ...")
             retry += 1
             time.sleep(5)
         return status
 
     def initialize(self):
-        click.echo("[I] Initializing Vault with 1 recovery key and token")
+        print("[I] Initializing Vault with 1 recovery key and token")
         out = self.container.exec(
             "vault operator init "
             "-key-shares=1 "
@@ -90,11 +93,11 @@ class Secret(object):
         )
 
         pathlib.Path("vault_key_token.txt").write_text(out.decode())
-        click.echo("[I] Vault recovery key and root token "
-                   "saved to vault_key_token.txt")
+        print("[I] Vault recovery key and root token "
+              "saved to vault_key_token.txt")
 
     def unseal(self):
-        click.echo("[I] Unsealing Vault manually")
+        print("[I] Unsealing Vault manually")
         self.container.exec("vault operator unseal {}".format(self.creds["key"]))
 
     def write_policy(self):
@@ -102,7 +105,7 @@ class Secret(object):
         if b"gluu" in policies:
             return
 
-        click.echo("[I] Creating Vault policy for Gluu")
+        print("[I] Creating Vault policy for Gluu")
         self.container.exec("vault policy write gluu /vault/config/policy.hcl")
 
     def enable_approle(self):
@@ -112,7 +115,7 @@ class Secret(object):
         if "approle/" in auth_methods:
             return
 
-        click.echo("[I] Enabling Vault AppRole auth")
+        print("[I] Enabling Vault AppRole auth")
 
         self.container.exec("vault auth enable approle")
         self.container.exec("vault write auth/approle/role/gluu policies=gluu")
@@ -154,7 +157,7 @@ class Config(object):
         self.container = ContainerHelper("consul", docker_client)
 
     def hostname_from_backend(self):
-        click.echo("[I] Attempting to gather FQDN from Consul")
+        print("[I] Attempting to gather FQDN from Consul")
 
         hostname = ""
         retry = 1
@@ -167,7 +170,7 @@ class Config(object):
                 hostname = value.strip().decode()
                 break
 
-            click.echo("[W] Unable to get FQDN from Consul; retrying ...")
+            print("[W] Unable to get FQDN from Consul; retrying ...")
             retry += 1
             time.sleep(5)
         return hostname
@@ -181,76 +184,6 @@ class Config(object):
 
 
 class App(object):
-    default_settings = {
-        "HOST_IP": "",
-        "DOMAIN": "",
-        "ADMIN_PW": "",
-        "LDAP_PW": "",
-        "REDIS_PW": "",
-        "REDIS_URL": "redis:6379",
-        "REDIS_TYPE": "STANDALONE",
-        "REDIS_USE_SSL": False,
-        "REDIS_SSL_TRUSTSTORE": "",
-        "REDIS_SENTINEL_GROUP": "",
-        "EMAIL": "",
-        "ORG_NAME": "",
-        "COUNTRY_CODE": "",
-        "STATE": "",
-        "CITY": "",
-        "SVC_LDAP": True,
-        "SVC_OXAUTH": True,
-        "SVC_OXTRUST": True,
-        "SVC_OXPASSPORT": False,
-        "SVC_OXSHIBBOLETH": False,
-        "SVC_CR_ROTATE": False,
-        "SVC_KEY_ROTATION": False,
-        "SVC_OXD_SERVER": False,
-        "SVC_RADIUS": False,
-        "SVC_REDIS": False,
-        "SVC_VAULT_AUTOUNSEAL": False,
-        "SVC_CASA": False,
-        "SVC_JACKRABBIT": False,
-        "SVC_SCIM": False,
-        "SVC_FIDO2": False,
-        "PERSISTENCE_TYPE": "ldap",
-        "CACHE_TYPE": "NATIVE_PERSISTENCE",
-        "PERSISTENCE_LDAP_MAPPING": "default",
-        "PERSISTENCE_VERSION": "4.2.0_dev",
-        "CONFIG_INIT_VERSION": "4.2.0_dev",
-        "COUCHBASE_USER": "admin",
-        "COUCHBASE_URL": "localhost",
-        "OXTRUST_API_ENABLED": False,
-        "OXTRUST_API_TEST_MODE": False,
-        "PASSPORT_ENABLED": False,
-        "CASA_ENABLED": False,
-        "RADIUS_ENABLED": False,
-        "SAML_ENABLED": False,
-        "SCIM_ENABLED": False,
-        "SCIM_TEST_MODE": False,
-        "ENABLE_OVERRIDE": False,
-        "PERSISTENCE_SKIP_EXISTING": True,
-        "DOCUMENT_STORE_TYPE": "LOCAL",
-    }
-
-    compose_mappings = {
-        "SVC_LDAP": "svc.ldap.yml",
-        "SVC_OXAUTH": "svc.oxauth.yml",
-        "SVC_OXTRUST": "svc.oxtrust.yml",
-        "SVC_OXPASSPORT": "svc.oxpassport.yml",
-        "SVC_OXSHIBBOLETH": "svc.oxshibboleth.yml",
-        "SVC_CR_ROTATE": "svc.cr_rotate.yml",
-        "SVC_KEY_ROTATION": "svc.key_rotation.yml",
-        "SVC_OXD_SERVER": "svc.oxd_server.yml",
-        "SVC_RADIUS": "svc.radius.yml",
-        "SVC_REDIS": "svc.redis.yml",
-        "SVC_VAULT_AUTOUNSEAL": "svc.vault_autounseal.yml",
-        "SVC_CASA": "svc.casa.yml",
-        "SVC_JACKRABBIT": "svc.jackrabbit.yml",
-        "SVC_SCIM": "svc.scim.yml",
-        "SVC_FIDO2": "svc.fido2.yml",
-        "ENABLE_OVERRIDE": "docker-compose.override.yml",
-    }
-
     def __init__(self):
         self.settings = self.get_settings()
 
@@ -285,7 +218,7 @@ class App(object):
     def get_settings(self):
         """Get merged settings (default and custom settings from local Python file).
         """
-        settings = self.default_settings
+        settings = DEFAULT_SETTINGS
         custom_settings = {}
 
         with contextlib.suppress(FileNotFoundError):
@@ -303,7 +236,7 @@ class App(object):
 
     def get_compose_files(self):
         files = ["docker-compose.yml"]
-        for svc, filename in self.compose_mappings.items():
+        for svc, filename in COMPOSE_MAPPINGS.items():
             if all([svc in self.settings, self.settings.get(svc), os.path.isfile(filename)]):
                 files.append(filename)
         return ":".join(files)
@@ -386,15 +319,15 @@ class App(object):
                 ip, _ = sock.getsockname()
             return ip
 
-        click.echo("[I] Attempting to gather external IP address")
+        print("[I] Attempting to gather external IP address")
         ip = self.settings["HOST_IP"] or auto_detect_ip() or click.prompt("Please input the host's external IP address")
 
         try:
             ipaddress.ip_address(ip)
-            click.echo(f"[I] Using {ip} as external IP address")
+            print(f"[I] Using {ip} as external IP address")
             self.settings["HOST_IP"] = ip
         except ValueError as exc:
-            click.echo(f"[E] Cannot determine IP address; reason={exc}")
+            print(f"[E] Cannot determine IP address; reason={exc}")
             raise click.Abort()
 
     def generate_params(self, file_):
@@ -410,34 +343,34 @@ class App(object):
                 value = click.prompt("Enter hostname", default="demoexample.gluu.org")
                 if len(value.split(".")) == 3:
                     return value
-                click.echo("Hostname provided is invalid. Please enter a FQDN with the format demoexample.gluu.org")
+                print("Hostname provided is invalid. Please enter a FQDN with the format demoexample.gluu.org")
 
         def prompt_country_code():
             while True:
                 value = click.prompt("Enter country code", default="US")
                 if len(value) == 2 and value.isupper():
                     return value
-                click.echo("Country code must use 2 uppercased characters")
+                print("Country code must use 2 uppercased characters")
 
         def prompt_email():
             while True:
                 value = click.prompt("Enter email", default="support@demoexample.gluu.org")
                 if EMAIL_RGX.match(value):
                     return value
-                click.echo("Invalid email address.")
+                print("Invalid email address.")
 
         def prompt_password(prompt="Enter password: "):
             # FIXME: stdiomask doesn't handle CTRL+C
             while True:
                 passwd = stdiomask.getpass(prompt=prompt)
                 if not PASSWD_RGX.match(passwd):
-                    click.echo("Password must be at least 6 characters and include one uppercase letter, "
-                               "one lowercase letter, one digit, and one special character.")
+                    print("Password must be at least 6 characters and include one uppercase letter, "
+                          "one lowercase letter, one digit, and one special character.")
                     continue
 
                 passwd_confirm = stdiomask.getpass(prompt="Repeat password: ")
                 if passwd_confirm != passwd:
-                    click.echo("Both passwords are not equal")
+                    print("Both passwords are not equal")
                     continue
                 return passwd
 
@@ -480,7 +413,7 @@ class App(object):
             hostname = config.hostname_from_backend()
             if hostname:
                 self.settings["DOMAIN"] = hostname
-                click.echo(f"[I] Using {self.settings['DOMAIN']} as FQDN")
+                print(f"[I] Using {self.settings['DOMAIN']} as FQDN")
                 return
 
             cfg_file = f"{workdir}/{CONFIG_DIR}/config.json"
@@ -493,7 +426,7 @@ class App(object):
                 params = self.generate_params(gen_file)
                 self.settings["DOMAIN"] = params["hostname"]
 
-            click.echo(f"[I] Using {self.settings['DOMAIN']} as FQDN")
+            print(f"[I] Using {self.settings['DOMAIN']} as FQDN")
             self.run_config_init()
 
             # cleanup
@@ -519,12 +452,12 @@ class App(object):
             while retry < 3:
                 try:
                     if not tlc.project.client.images(name=image):
-                        click.echo(f"{self.settings['CONFIG_INIT_VERSION']}: Pulling from gluufederation/config-init")
+                        print(f"{self.settings['CONFIG_INIT_VERSION']}: Pulling from gluufederation/config-init")
                         tlc.project.client.pull(image)
                         break
                 except (requests.exceptions.Timeout, docker.errors.APIError) as exc:
-                    click.echo(f"[W] Unable to get {image}; reason={exc}; "
-                               "retrying in 10 seconds")
+                    print(f"[W] Unable to get {image}; reason={exc}; "
+                          "retrying in 10 seconds")
                 time.sleep(10)
                 retry += 1
 
@@ -547,7 +480,7 @@ class App(object):
 
                 tlc.project.client.start(cid)
                 for log in tlc.project.client.logs(cid, stream=True):
-                    click.echo(log.strip())
+                    print(log.decode().strip())
             except Exception:
                 raise
             finally:
@@ -570,7 +503,7 @@ class App(object):
         wait_max = 300
         wait_delay = 10
 
-        click.echo("[I] Launching Gluu Server")
+        print("[I] Launching Gluu Server")
         with click_spinner.spinner():
             elapsed = 0
             while elapsed <= wait_max:
@@ -580,7 +513,7 @@ class App(object):
                         verify=False,
                     )
                     if req.ok:
-                        click.echo(f"\n[I] Gluu Server installed successfully; please visit https://{self.settings['DOMAIN']}")
+                        print(f"\n[I] Gluu Server installed successfully; please visit https://{self.settings['DOMAIN']}")
                         break
 
                 time.sleep(wait_delay)
@@ -613,7 +546,7 @@ class App(object):
     def run_persistence(self):
         workdir = os.getcwd()
 
-        click.echo("[I] Checking entries in persistence")
+        print("[I] Checking entries in persistence")
 
         workdir = os.getcwd()
         image = f"gluufederation/persistence:{self.settings['PERSISTENCE_VERSION']}"
@@ -630,12 +563,12 @@ class App(object):
             while retry < 3:
                 try:
                     if not tlc.project.client.images(name=image):
-                        click.echo(f"{self.settings['PERSISTENCE_VERSION']}: Pulling from gluufederation/persistence")
+                        print(f"{self.settings['PERSISTENCE_VERSION']}: Pulling from gluufederation/persistence")
                         tlc.project.client.pull(image)
                         break
                 except (requests.exceptions.Timeout, docker.errors.APIError) as exc:
-                    click.echo(f"[W] Unable to get {image}; reason={exc}; "
-                               "retrying in 10 seconds")
+                    print(f"[W] Unable to get {image}; reason={exc}; "
+                          "retrying in 10 seconds")
                 time.sleep(10)
                 retry += 1
 
@@ -679,7 +612,7 @@ class App(object):
 
                 tlc.project.client.start(cid)
                 for log in tlc.project.client.logs(cid, stream=True):
-                    click.echo(log.strip())
+                    print(log.decode().strip())
             except Exception:
                 raise
             finally:
@@ -706,11 +639,11 @@ class App(object):
             for port in [80, 443]:
                 port_available = _check("0.0.0.0", port)
                 if not port_available:
-                    click.echo(f"[W] Required port {port} is bind to another process")
+                    print(f"[W] Required port {port} is bind to another process")
                     raise click.Abort()
 
     def check_workdir(self):
         if not os.path.isfile("docker-compose.yml"):
-            click.echo("[E] docker-compose.yml file is not found; "
-                       "make sure to run init command first")
+            print("[E] docker-compose.yml file is not found; "
+                  "make sure to run init command first")
             raise click.Abort()
