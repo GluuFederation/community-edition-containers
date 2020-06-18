@@ -12,8 +12,8 @@ services:
       - GLUU_LDAP_URL=ldap:1636
       - GLUU_COUCHBASE_URL=${COUCHBASE_URL}
       - GLUU_COUCHBASE_USER=${COUCHBASE_USER}
-      - GLUU_APPLICATION_CERT_CN=oxd_server
-      - GLUU_ADMIN_CERT_CN=oxd_server
+      - GLUU_OXD_APPLICATION_CERT_CN=oxd_server
+      - GLUU_OXD_ADMIN_CERT_CN=oxd_server
     container_name: oxd-server
     restart: unless-stopped
     mem_limit: 500M
