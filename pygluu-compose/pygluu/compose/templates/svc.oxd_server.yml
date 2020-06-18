@@ -12,16 +12,8 @@ services:
       - GLUU_LDAP_URL=ldap:1636
       - GLUU_COUCHBASE_URL=${COUCHBASE_URL}
       - GLUU_COUCHBASE_USER=${COUCHBASE_USER}
-      - APPLICATION_KEYSTORE_PATH=/opt/oxd-server/conf/oxd-server.keystore
-      - APPLICATION_KEYSTORE_PASSWORD_FILE=/etc/gluu/conf/app_keystore_password
-      - APPLICATION_KEYSTORE_CN=oxd_server
-      - ADMIN_KEYSTORE_PATH=/opt/oxd-server/conf/oxd-server.keystore
-      - ADMIN_KEYSTORE_PASSWORD_FILE=/etc/gluu/conf/admin_keystore_password
-      - ADMIN_KEYSTORE_CN=oxd_server
-      - GLUU_SERVER_HOST=$DOMAIN
-      - GLUU_REDIS_URL=redis:6379
-      - GLUU_REDIS_TYPE=STANDALONE
-      - STORAGE=gluu_server_configuration
+      - GLUU_APPLICATION_CERT_CN=oxd_server
+      - GLUU_ADMIN_CERT_CN=oxd_server
     container_name: oxd-server
     restart: unless-stopped
     mem_limit: 500M
