@@ -2,7 +2,7 @@
 version: "2.4"
 services:
   casa:
-    image: gluufederation/casa:4.2.0_dev
+    image: gluufederation/casa:4.2.0_01
     environment:
       - GLUU_CONFIG_CONSUL_HOST=consul
       - GLUU_SECRET_VAULT_HOST=vault
@@ -20,7 +20,6 @@ services:
       - ./vault_role_id.txt:/etc/certs/vault_role_id
       - ./vault_secret_id.txt:/etc/certs/vault_secret_id
       - ./couchbase.crt:/etc/certs/couchbase.crt
-      # - ./casa.json:/etc/gluu/conf/casa.json
       - ./couchbase_password:/etc/gluu/conf/couchbase_password
     restart: unless-stopped
     labels:

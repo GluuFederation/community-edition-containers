@@ -3,7 +3,7 @@ version: "2.4"
 
 services:
   oxauth:
-    image: gluufederation/oxauth:4.2.0_dev
+    image: gluufederation/oxauth:4.2.0_01
     environment:
       - GLUU_CONFIG_CONSUL_HOST=consul
       - GLUU_SECRET_VAULT_HOST=vault
@@ -20,16 +20,11 @@ services:
       - "${DOMAIN}:${HOST_IP}"
     container_name: oxauth
     volumes:
-      # - ./volumes/oxauth/custom/pages:/opt/gluu/jetty/oxauth/custom/pages
-      # - ./volumes/oxauth/custom/static:/opt/gluu/jetty/oxauth/custom/static
-      # - ./volumes/oxauth/custom/libs:/opt/gluu/jetty/oxauth/custom/libs
-      # - ./volumes/oxauth/custom/i18n:/opt/gluu/jetty/oxauth/custom/i18n
-      - ./volumes/oxauth/logs:/opt/gluu/jetty/oxauth/logs
+      # - ./volumes/oxauth/logs:/opt/gluu/jetty/oxauth/logs
       - ./vault_role_id.txt:/etc/certs/vault_role_id
       - ./vault_secret_id.txt:/etc/certs/vault_secret_id
       - ./couchbase.crt:/etc/certs/couchbase.crt
       - ./couchbase_password:/etc/gluu/conf/couchbase_password
-      # - ./casa.json:/etc/gluu/conf/casa.json
       - /var/run/docker.sock:/var/run/docker.sock
     mem_limit: 1536M
     restart: unless-stopped
