@@ -3,7 +3,7 @@ version: "2.4"
 
 services:
   ldap:
-    image: gluufederation/wrends:4.2.0_01
+    image: gluufederation/wrends:4.2.0_02
     environment:
       - GLUU_CONFIG_CONSUL_HOST=consul
       - GLUU_SECRET_VAULT_HOST=vault
