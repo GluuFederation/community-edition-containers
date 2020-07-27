@@ -1,0 +1,41 @@
+# use v2.x API to allow `mem_limit` option
+version: "2.4"
+services:
+  persistence:
+    image: gluufederation/persistence:4.2.1_dev
+    environment:
+      - GLUU_CONFIG_CONSUL_HOST=consul
+      - GLUU_SECRET_VAULT_HOST=vault
+      - GLUU_PERSISTENCE_TYPE=${PERSISTENCE_TYPE}
+      - GLUU_PERSISTENCE_LDAP_MAPPING=${PERSISTENCE_LDAP_MAPPING}
+      - GLUU_LDAP_URL=ldap:1636
+      - GLUU_COUCHBASE_URL=${COUCHBASE_URL}
+      - GLUU_COUCHBASE_USER=${COUCHBASE_USER}
+      - GLUU_OXTRUST_API_ENABLED=${OXTRUST_API_ENABLED}
+      - GLUU_OXTRUST_API_TEST_MODE=${OXTRUST_API_TEST_MODE}
+      - GLUU_PASSPORT_ENABLED=${PASSPORT_ENABLED}
+      - GLUU_CASA_ENABLED=${CASA_ENABLED}
+      - GLUU_RADIUS_ENABLED=${RADIUS_ENABLED}
+      - GLUU_SAML_ENABLED=${SAML_ENABLED}
+      - GLUU_SCIM_ENABLED=${SCIM_ENABLED}
+      - GLUU_SCIM_TEST_MODE=${SCIM_TEST_MODE}
+      - GLUU_PERSISTENCE_SKIP_EXISTING=${PERSISTENCE_SKIP_EXISTING}
+      - GLUU_CACHE_TYPE=${CACHE_TYPE}
+      - GLUU_REDIS_URL=${REDIS_URL}
+      - GLUU_REDIS_TYPE=${REDIS_TYPE}
+      - GLUU_REDIS_USE_SSL=${REDIS_USE_SSL}
+      - GLUU_REDIS_SSL_TRUSTSTORE=${REDIS_SSL_TRUSTSTORE}
+      - GLUU_REDIS_SENTINEL_GROUP=${REDIS_SENTINEL_GROUP}
+      - GLUU_DOCUMENT_STORE_TYPE=${DOCUMENT_STORE_TYPE}
+      - GLUU_JCA_RMI_URL=http://jackrabbit:8080/rmi
+    extra_hosts:
+      - "${DOMAIN}:${HOST_IP}"
+    container_name: persistence
+    volumes:
+      - ./vault_role_id.txt:/etc/certs/vault_role_id
+      - ./vault_secret_id.txt:/etc/certs/vault_secret_id
+      - ./couchbase.crt:/etc/certs/couchbase.crt
+      - ./couchbase_password:/etc/gluu/conf/couchbase_password
+    restart: on-failure
+    labels:
+      - "SERVICE_IGNORE=yes"

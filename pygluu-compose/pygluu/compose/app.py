@@ -198,13 +198,11 @@ class App(object):
             )
 
             os.environ["COMPOSE_FILE"] = compose_files
-            os.environ["PERSISTENCE_TYPE"] = self.settings.get("PERSISTENCE_TYPE")
-            os.environ["PERSISTENCE_LDAP_MAPPING"] = self.settings.get("PERSISTENCE_LDAP_MAPPING")
-            os.environ["COUCHBASE_USER"] = self.settings.get("COUCHBASE_USER")
-            os.environ["COUCHBASE_URL"] = self.settings.get("COUCHBASE_URL")
-            os.environ["DOMAIN"] = self.settings.get("DOMAIN")
-            os.environ["HOST_IP"] = self.settings.get("HOST_IP")
-            os.environ["DOCUMENT_STORE_TYPE"] = self.settings.get("DOCUMENT_STORE_TYPE")
+
+            for k, v in self.settings.items():
+                if isinstance(v, bool):
+                    v = f"{v}".lower()
+                os.environ[k] = v
 
             env = Environment()
             env.update(os.environ)
@@ -492,7 +490,6 @@ class App(object):
         self.gather_ip()
         self.prepare_config_secret()
         self._up()
-        self.run_persistence()
         self.healthcheck()
 
     def healthcheck(self):
@@ -542,82 +539,6 @@ class App(object):
             if os.path.exists(dst):
                 continue
             shutil.copy(entry, dst)
-
-    def run_persistence(self):
-        workdir = os.getcwd()
-
-        print("[I] Checking entries in persistence")
-
-        workdir = os.getcwd()
-        image = f"gluufederation/persistence:{self.settings['PERSISTENCE_VERSION']}"
-
-        volumes = [
-            f"{workdir}/vault_role_id.txt:/etc/certs/vault_role_id",
-            f"{workdir}/vault_secret_id.txt:/etc/certs/vault_secret_id",
-            f"{workdir}/couchbase.crt:/etc/certs/couchbase.crt",
-            f"{workdir}/couchbase_password:/etc/gluu/conf/couchbase_password",
-        ]
-
-        with self.top_level_cmd() as tlc:
-            retry = 0
-            while retry < 3:
-                try:
-                    if not tlc.project.client.images(name=image):
-                        print(f"{self.settings['PERSISTENCE_VERSION']}: Pulling from gluufederation/persistence")
-                        tlc.project.client.pull(image)
-                        break
-                except (requests.exceptions.Timeout, docker.errors.APIError) as exc:
-                    print(f"[W] Unable to get {image}; reason={exc}; "
-                          "retrying in 10 seconds")
-                time.sleep(10)
-                retry += 1
-
-            cid = None
-            try:
-                cid = tlc.project.client.create_container(
-                    image=f"gluufederation/persistence:{self.settings['PERSISTENCE_VERSION']}",
-                    name="persistence",
-                    environment={
-                        "GLUU_CONFIG_CONSUL_HOST": "consul",
-                        "GLUU_SECRET_VAULT_HOST": "vault",
-                        "GLUU_PERSISTENCE_TYPE": self.settings["PERSISTENCE_TYPE"],
-                        "GLUU_PERSISTENCE_LDAP_MAPPING": self.settings["PERSISTENCE_LDAP_MAPPING"],
-                        "GLUU_LDAP_URL": "ldap:1636",
-                        "GLUU_COUCHBASE_URL": self.settings["COUCHBASE_URL"],
-                        "GLUU_COUCHBASE_USER": self.settings["COUCHBASE_USER"],
-                        "GLUU_OXTRUST_API_ENABLED": self.settings["OXTRUST_API_ENABLED"],
-                        "GLUU_OXTRUST_API_TEST_MODE": self.settings["OXTRUST_API_TEST_MODE"],
-                        "GLUU_PASSPORT_ENABLED": self.settings["PASSPORT_ENABLED"],
-                        "GLUU_CASA_ENABLED": self.settings["CASA_ENABLED"],
-                        "GLUU_RADIUS_ENABLED": self.settings["RADIUS_ENABLED"],
-                        "GLUU_SAML_ENABLED": self.settings["SAML_ENABLED"],
-                        "GLUU_SCIM_ENABLED": self.settings["SCIM_ENABLED"],
-                        "GLUU_SCIM_TEST_MODE": self.settings["SCIM_TEST_MODE"],
-                        "GLUU_PERSISTENCE_SKIP_EXISTING": self.settings["PERSISTENCE_SKIP_EXISTING"],
-                        "GLUU_CACHE_TYPE": self.settings["CACHE_TYPE"],
-                        "GLUU_REDIS_URL": self.settings["REDIS_URL"],
-                        "GLUU_REDIS_TYPE": self.settings["REDIS_TYPE"],
-                        "GLUU_REDIS_USE_SSL": self.settings["REDIS_USE_SSL"],
-                        "GLUU_REDIS_SSL_TRUSTSTORE": self.settings["REDIS_SSL_TRUSTSTORE"],
-                        "GLUU_REDIS_SENTINEL_GROUP": self.settings["REDIS_SENTINEL_GROUP"],
-                        "GLUU_DOCUMENT_STORE_TYPE": self.settings["DOCUMENT_STORE_TYPE"],
-                        "GLUU_JCA_RMI_URL": "http://jackrabbit:8080/rmi",
-                    },
-                    host_config=HostConfig(
-                        version="1.25",
-                        network_mode=self.network_name,
-                        binds=volumes,
-                    ),
-                ).get("Id")
-
-                tlc.project.client.start(cid)
-                for log in tlc.project.client.logs(cid, stream=True):
-                    print(log.decode().strip())
-            except Exception:
-                raise
-            finally:
-                if cid:
-                    tlc.project.client.remove_container(cid, force=True)
 
     def check_ports(self):
         def _check(host, port):

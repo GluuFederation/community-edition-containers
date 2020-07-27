@@ -29,10 +29,10 @@ DEFAULT_SETTINGS = {
     "SVC_JACKRABBIT": False,
     "SVC_SCIM": False,
     "SVC_FIDO2": False,
+    "JOB_PERSISTENCE": True,
     "PERSISTENCE_TYPE": "ldap",
     "CACHE_TYPE": "NATIVE_PERSISTENCE",
     "PERSISTENCE_LDAP_MAPPING": "default",
-    "PERSISTENCE_VERSION": "4.2.1_dev",
     "CONFIG_INIT_VERSION": "4.2.1_dev",
     "COUCHBASE_USER": "admin",
     "COUCHBASE_URL": "localhost",
@@ -65,5 +65,6 @@ COMPOSE_MAPPINGS = {
     "SVC_JACKRABBIT": "svc.jackrabbit.yml",
     "SVC_SCIM": "svc.scim.yml",
     "SVC_FIDO2": "svc.fido2.yml",
+    "JOB_PERSISTENCE": "job.persistence.yml",
     "ENABLE_OVERRIDE": "docker-compose.override.yml",
 }
