@@ -339,9 +339,9 @@ class App(object):
         def prompt_hostname():
             while True:
                 value = click.prompt("Enter hostname", default="demoexample.gluu.org")
-                if len(value.split(".")) == 3:
+                if len(value.split(".")) > 2:
                     return value
-                print("Hostname provided is invalid. Please enter a FQDN with the format demoexample.gluu.org")
+                click.echo("Hostname has to be at least three domain components.")
 
         def prompt_country_code():
             while True:
