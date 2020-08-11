@@ -27,7 +27,9 @@ services:
       - GLUU_REDIS_SSL_TRUSTSTORE=${REDIS_SSL_TRUSTSTORE}
       - GLUU_REDIS_SENTINEL_GROUP=${REDIS_SENTINEL_GROUP}
       - GLUU_DOCUMENT_STORE_TYPE=${DOCUMENT_STORE_TYPE}
-      - GLUU_JCA_RMI_URL=http://jackrabbit:8080/rmi
+      - GLUU_JACKRABBIT_RMI_URL=http://jackrabbit:8080/rmi
+      - GLUU_JACKRABBIT_ADMIN_ID=${JACKRABBIT_USER}
+      - GLUU_JACKRABBIT_ADMIN_PASSWORD_FILE=/etc/gluu/conf/jackrabbit_admin_password
     extra_hosts:
       - "${DOMAIN}:${HOST_IP}"
     container_name: persistence
@@ -36,6 +38,7 @@ services:
       - ./vault_secret_id.txt:/etc/certs/vault_secret_id
       - ./couchbase.crt:/etc/certs/couchbase.crt
       - ./couchbase_password:/etc/gluu/conf/couchbase_password
+      - ./jackrabbit_admin_password:/etc/gluu/conf/jackrabbit_admin_password
     restart: on-failure
     labels:
       - "SERVICE_IGNORE=yes"

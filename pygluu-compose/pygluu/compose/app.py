@@ -500,7 +500,10 @@ class App(object):
         wait_max = 300
         wait_delay = 10
 
-        print("[I] Launching Gluu Server")
+        print(
+            "[I] Launching Gluu Server; to see logs on deployment process, "
+            "please run 'logs -f' command on seperate terminal"
+        )
         with click_spinner.spinner():
             elapsed = 0
             while elapsed <= wait_max:
@@ -511,10 +514,13 @@ class App(object):
                     )
                     if req.ok:
                         print(f"\n[I] Gluu Server installed successfully; please visit https://{self.settings['DOMAIN']}")
-                        break
+                        return
 
                 time.sleep(wait_delay)
                 elapsed += wait_delay
+
+            # healthcheck likely failed
+            print(f"\n[W] Unable to get healthcheck status; please check the logs or visit https://{self.settings['DOMAIN']}")
 
     def touch_files(self):
         files = [
@@ -525,6 +531,7 @@ class App(object):
             "couchbase.crt",
             "couchbase_password",
             # "casa.json",
+            "jackrabbit_admin_password",
         ]
         for file_ in files:
             pathlib.Path(file_).touch()

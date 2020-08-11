@@ -3,12 +3,19 @@ version: "2.4"
 
 services:
   jackrabbit:
-    image: gluufederation/jackrabbit:4.2.0_01
+    image: gluufederation/jackrabbit:4.2.1_dev
     container_name: jackrabbit
+    hostname: jackrabbit
+    environment:
+      # - GLUU_DOCUMENT_STORE_TYPE=${DOCUMENT_STORE_TYPE}
+      # - GLUU_JACKRABBIT_URL=http://jackrabbit:8080
+      - GLUU_JACKRABBIT_ADMIN_ID=${JACKRABBIT_USER}
+      - GLUU_JACKRABBIT_ADMIN_PASSWORD_FILE=/etc/gluu/conf/jackrabbit_admin_password
     volumes:
       - ./volumes/jackrabbit/repository:/opt/jackrabbit/repository
       - ./volumes/jackrabbit/version:/opt/jackrabbit/version
       - ./volumes/jackrabbit/workspaces:/opt/jackrabbit/workspaces
+      - ./jackrabbit_admin_password:/etc/gluu/conf/jackrabbit_admin_password
     labels:
       - "SERVICE_IGNORE=yes"
     restart: unless-stopped

@@ -12,9 +12,10 @@ services:
       - GLUU_LDAP_URL=ldap:1636
       - GLUU_COUCHBASE_URL=${COUCHBASE_URL}
       - GLUU_COUCHBASE_USER=${COUCHBASE_USER}
-      - GLUU_OXTRUST_BACKEND=oxtrust:8080
-      - GLUU_JCA_URL=http://jackrabbit:8080
       - GLUU_DOCUMENT_STORE_TYPE=${DOCUMENT_STORE_TYPE}
+      - GLUU_JACKRABBIT_URL=http://jackrabbit:8080
+      - GLUU_JACKRABBIT_ADMIN_ID=${JACKRABBIT_USER}
+      - GLUU_JACKRABBIT_ADMIN_PASSWORD_FILE=/etc/gluu/conf/jackrabbit_admin_password
     extra_hosts:
       - "${DOMAIN}:${HOST_IP}"
     container_name: oxshibboleth
@@ -23,6 +24,7 @@ services:
       - ./vault_secret_id.txt:/etc/certs/vault_secret_id
       - ./couchbase.crt:/etc/certs/couchbase.crt
       - ./couchbase_password:/etc/gluu/conf/couchbase_password
+      - ./jackrabbit_admin_password:/etc/gluu/conf/jackrabbit_admin_password
     mem_limit: 1024M
     restart: unless-stopped
     labels:
