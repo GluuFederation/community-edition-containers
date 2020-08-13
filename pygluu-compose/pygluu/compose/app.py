@@ -215,7 +215,7 @@ class App(object):
         "PERSISTENCE_TYPE": "ldap",
         "CACHE_TYPE": "NATIVE_PERSISTENCE",
         "PERSISTENCE_LDAP_MAPPING": "default",
-        "PERSISTENCE_VERSION": "4.1.1_04",
+        "PERSISTENCE_VERSION": "4.1.3_01",
         "CONFIG_INIT_VERSION": "4.1.1_03",
         "COUCHBASE_USER": "admin",
         "COUCHBASE_URL": "localhost",
