@@ -502,7 +502,7 @@ class App(object):
 
         print(
             "[I] Launching Gluu Server; to see logs on deployment process, "
-            "please run 'logs -f' command on seperate terminal"
+            "please run 'logs -f' command on separate terminal"
         )
         with click_spinner.spinner():
             elapsed = 0
