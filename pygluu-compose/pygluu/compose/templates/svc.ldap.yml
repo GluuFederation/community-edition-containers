@@ -27,3 +27,4 @@ services:
     restart: unless-stopped
     labels:
       - "SERVICE_IGNORE=yes"
+    mem_limit: 2048M
