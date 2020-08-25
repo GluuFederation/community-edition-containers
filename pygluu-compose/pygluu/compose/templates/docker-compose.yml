@@ -16,6 +16,7 @@ services:
     labels:
       - "SERVICE_IGNORE=yes"
     restart: unless-stopped
+    mem_limit: 512M
 
   vault:
     container_name: vault
@@ -38,6 +39,7 @@ services:
       - consul
     labels:
       - "SERVICE_IGNORE=yes"
+    mem_limit: 512M
 
   registrator:
     image: gliderlabs/registrator:master
@@ -48,6 +50,7 @@ services:
     restart: unless-stopped
     depends_on:
       - consul
+    mem_limit: 512M
 
   nginx:
     image: gluufederation/nginx:4.2.1_dev
@@ -64,3 +67,4 @@ services:
     volumes:
       - ./vault_role_id.txt:/etc/certs/vault_role_id
       - ./vault_secret_id.txt:/etc/certs/vault_secret_id
+    mem_limit: 512M

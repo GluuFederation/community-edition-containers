@@ -10,3 +10,4 @@ services:
     labels:
       - "SERVICE_IGNORE=yes"
     restart: unless-stopped
+    mem_limit: 512M

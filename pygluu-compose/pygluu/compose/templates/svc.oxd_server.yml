@@ -16,7 +16,7 @@ services:
       - GLUU_OXD_ADMIN_CERT_CN=oxd_server
     container_name: oxd-server
     restart: unless-stopped
-    mem_limit: 500M
+    mem_limit: 1024M
     labels:
       - "SERVICE_IGNORE=yes"
     extra_hosts:

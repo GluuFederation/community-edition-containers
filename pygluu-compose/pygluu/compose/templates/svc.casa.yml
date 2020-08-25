@@ -33,3 +33,4 @@ services:
       - "SERVICE_8080_CHECK_HTTP=/casa/health-check"
       - "SERVICE_8080_CHECK_INTERVAL=30s"
       - "SERVICE_8080_CHECK_TIMEOUT=30s"
+    mem_limit: 1024M

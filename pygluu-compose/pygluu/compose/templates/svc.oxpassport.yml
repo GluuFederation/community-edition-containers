@@ -20,3 +20,4 @@ services:
       - "SERVICE_8090_CHECK_HTTP=/passport/token"
       - "SERVICE_8090_CHECK_INTERVAL=30s"
       - "SERVICE_8090_CHECK_TIMEOUT=30s"
+    mem_limit: 1024M

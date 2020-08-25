@@ -42,3 +42,4 @@ services:
     restart: on-failure
     labels:
       - "SERVICE_IGNORE=yes"
+    mem_limit: 512M
