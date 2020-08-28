@@ -16,7 +16,5 @@ services:
       - ./volumes/jackrabbit/version:/opt/jackrabbit/version
       - ./volumes/jackrabbit/workspaces:/opt/jackrabbit/workspaces
       - ./jackrabbit_admin_password:/etc/gluu/conf/jackrabbit_admin_password
-    labels:
-      - "SERVICE_IGNORE=yes"
     restart: unless-stopped
     mem_limit: 1024M

@@ -25,6 +25,4 @@ services:
       - ./vault_secret_id.txt:/etc/certs/vault_secret_id
       # - ./101-ox.ldif:/opt/opendj/config/schema/101-ox.ldif
     restart: unless-stopped
-    labels:
-      - "SERVICE_IGNORE=yes"
     mem_limit: 2048M

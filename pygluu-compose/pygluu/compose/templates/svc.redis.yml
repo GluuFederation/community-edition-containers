@@ -7,7 +7,5 @@ services:
     # run cluster-enabled redis-server
     # command: redis-server --port 6379 --cluster-enabled yes --cluster-config-file nodes.conf --appendonly yes --cluster-node-timeout 5000
     container_name: redis
-    labels:
-      - "SERVICE_IGNORE=yes"
     restart: unless-stopped
     mem_limit: 512M

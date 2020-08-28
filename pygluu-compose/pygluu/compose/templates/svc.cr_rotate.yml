@@ -21,6 +21,4 @@ services:
       - ./couchbase_password:/etc/gluu/conf/couchbase_password
     container_name: cr-rotate
     restart: unless-stopped
-    labels:
-      - "SERVICE_IGNORE=yes"
     mem_limit: 512M

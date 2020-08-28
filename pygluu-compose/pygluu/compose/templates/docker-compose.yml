@@ -13,8 +13,6 @@ services:
     restart: unless-stopped
     volumes:
       - ./volumes/consul:/consul/data
-    labels:
-      - "SERVICE_IGNORE=yes"
     restart: unless-stopped
     mem_limit: 512M
 
@@ -37,8 +35,6 @@ services:
     restart: unless-stopped
     depends_on:
       - consul
-    labels:
-      - "SERVICE_IGNORE=yes"
     mem_limit: 512M
 
   registrator:
@@ -62,8 +58,6 @@ services:
       - "443:443"
     container_name: nginx
     restart: unless-stopped
-    labels:
-      - "SERVICE_IGNORE=yes"
     volumes:
       - ./vault_role_id.txt:/etc/certs/vault_role_id
       - ./vault_secret_id.txt:/etc/certs/vault_secret_id

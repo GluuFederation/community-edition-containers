@@ -17,8 +17,6 @@ services:
     container_name: oxd-server
     restart: unless-stopped
     mem_limit: 1024M
-    labels:
-      - "SERVICE_IGNORE=yes"
     extra_hosts:
       - "${DOMAIN}:${HOST_IP}"
     volumes:

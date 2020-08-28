@@ -22,6 +22,4 @@ services:
       - ./couchbase.crt:/etc/certs/couchbase.crt
       - ./couchbase_password:/etc/gluu/conf/couchbase_password
     restart: unless-stopped
-    labels:
-      - "SERVICE_IGNORE=yes"
     mem_limit: 1024M
