@@ -3,7 +3,7 @@ name: pygluu compose
 on:
   push:
     paths:
-      - pygluu-compose/pygluu/compose/__init__.py
+      - VERSION.txt
 jobs:
   build:
 
