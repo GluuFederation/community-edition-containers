@@ -34,7 +34,9 @@ class ContainerHelper(object):
 
     def exec(self, cmd):
         exec_id = self.docker.exec_create(self.name, cmd).get("Id")
-        return self.docker.exec_start(exec_id)
+        retval = self.docker.exec_start(exec_id)
+        retcode = self.docker.exec_inspect(exec_id).get("ExitCode")
+        return retval, retcode
 
 
 class Secret(object):
@@ -71,7 +73,7 @@ class Secret(object):
         status = {}
         retry = 1
         while retry <= 3:
-            raw = self.container.exec("vault status -format yaml")
+            raw, _ = self.container.exec("vault status -format yaml")
             with contextlib.suppress(yaml.scanner.ScannerError):
                 status = yaml.safe_load(raw)
                 if status:
@@ -84,7 +86,7 @@ class Secret(object):
 
     def initialize(self):
         print("[I] Initializing Vault with 1 recovery key and token")
-        out = self.container.exec(
+        out, _ = self.container.exec(
             "vault operator init "
             "-key-shares=1 "
             "-key-threshold=1 "
@@ -101,15 +103,20 @@ class Secret(object):
         self.container.exec("vault operator unseal {}".format(self.creds["key"]))
 
     def write_policy(self):
-        policies = self.container.exec("vault policy list").splitlines()
-        if b"gluu" in policies:
+        policies, _ = self.container.exec("vault policy list")
+        if b"gluu" in policies.splitlines():
             return
 
         print("[I] Creating Vault policy for Gluu")
         self.container.exec("vault policy write gluu /vault/config/policy.hcl")
 
     def enable_approle(self):
-        raw = self.container.exec("vault auth list -format yaml")
+        raw, retcode = self.container.exec("vault auth list -format yaml")
+
+        if retcode != 0:
+            print(f"[E] Unable to get auth list; reason={raw.decode()}")
+            raise click.Abort()
+
         auth_methods = yaml.safe_load(raw)
 
         if "approle/" in auth_methods:
@@ -128,10 +135,10 @@ class Secret(object):
             "secret_id_num_uses=0"
         )
 
-        role_id = self.container.exec("vault read -field=role_id auth/approle/role/gluu/role-id")
+        role_id, _ = self.container.exec("vault read -field=role_id auth/approle/role/gluu/role-id")
         pathlib.Path("vault_role_id.txt").write_text(role_id.decode())
 
-        secret_id = self.container.exec("vault write -f -field=secret_id auth/approle/role/gluu/secret-id")
+        secret_id, _ = self.container.exec("vault write -f -field=secret_id auth/approle/role/gluu/secret-id")
         pathlib.Path("vault_secret_id.txt").write_text(secret_id.decode())
 
     def setup(self):
@@ -163,7 +170,7 @@ class Config(object):
         retry = 1
 
         while retry <= 3:
-            value = self.container.exec(
+            value, _ = self.container.exec(
                 f"consul kv get -http-addr=http://consul:8500 gluu/config/hostname"
             )
             if not value.startswith(b"Error"):
