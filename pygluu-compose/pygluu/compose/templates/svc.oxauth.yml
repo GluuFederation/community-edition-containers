@@ -30,7 +30,7 @@ services:
     restart: unless-stopped
     labels:
       - "SERVICE_NAME=oxauth"
-      - "SERVICE_8080_CHECK_HTTP=/oxauth/.well-known/openid-configuration"
+      - "SERVICE_8080_CHECK_HTTP=/oxauth/restv1/health-check"
       - "SERVICE_8080_CHECK_INTERVAL=30s"
       - "SERVICE_8080_CHECK_TIMEOUT=30s"
       - "APP_NAME=oxauth"
