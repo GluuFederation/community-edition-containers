@@ -515,8 +515,8 @@ class App(object):
             elapsed = 0
             while elapsed <= wait_max:
                 with contextlib.suppress(requests.exceptions.ConnectionError):
-                    req = requests.head(
-                        f"https://{self.settings['HOST_IP']}/identity/finishlogout.htm",
+                    req = requests.get(
+                        f"https://{self.settings['HOST_IP']}/identity/restv1/health-check",
                         verify=False,
                     )
                     if req.ok:

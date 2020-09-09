@@ -32,7 +32,7 @@ services:
     restart: unless-stopped
     labels:
       - "SERVICE_NAME=oxtrust"
-      - "SERVICE_8080_CHECK_HTTP=/identity/finishlogout.htm"
+      - "SERVICE_8080_CHECK_HTTP=/identity/restv1/health-check"
       - "SERVICE_8080_CHECK_INTERVAL=30s"
       - "SERVICE_8080_CHECK_TIMEOUT=30s"
       - "APP_NAME=oxtrust"
