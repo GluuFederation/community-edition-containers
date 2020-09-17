@@ -1,9 +1,6 @@
 name: pygluu compose
 # This builds, packages and tests pyglu-compose
-on:
-  push:
-    paths:
-      - VERSION.txt
+on: [workflow_dispatch]
 jobs:
   build:
 
