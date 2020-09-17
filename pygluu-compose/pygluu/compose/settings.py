@@ -20,7 +20,6 @@ DEFAULT_SETTINGS = {
     "SVC_OXPASSPORT": False,
     "SVC_OXSHIBBOLETH": False,
     "SVC_CR_ROTATE": False,
-    "SVC_KEY_ROTATION": False,
     "SVC_OXD_SERVER": False,
     "SVC_RADIUS": False,
     "SVC_REDIS": False,
@@ -29,11 +28,11 @@ DEFAULT_SETTINGS = {
     "SVC_JACKRABBIT": False,
     "SVC_SCIM": False,
     "SVC_FIDO2": False,
+    "JOB_PERSISTENCE": True,
     "PERSISTENCE_TYPE": "ldap",
     "CACHE_TYPE": "NATIVE_PERSISTENCE",
     "PERSISTENCE_LDAP_MAPPING": "default",
-    "PERSISTENCE_VERSION": "4.2.0_02",
-    "CONFIG_INIT_VERSION": "4.2.0_01",
+    "CONFIG_INIT_VERSION": "4.2.1_01",
     "COUCHBASE_USER": "admin",
     "COUCHBASE_URL": "localhost",
     "OXTRUST_API_ENABLED": False,
@@ -47,6 +46,7 @@ DEFAULT_SETTINGS = {
     "ENABLE_OVERRIDE": False,
     "PERSISTENCE_SKIP_EXISTING": True,
     "DOCUMENT_STORE_TYPE": "LOCAL",
+    "JACKRABBIT_USER": "admin",
 }
 
 COMPOSE_MAPPINGS = {
@@ -56,7 +56,6 @@ COMPOSE_MAPPINGS = {
     "SVC_OXPASSPORT": "svc.oxpassport.yml",
     "SVC_OXSHIBBOLETH": "svc.oxshibboleth.yml",
     "SVC_CR_ROTATE": "svc.cr_rotate.yml",
-    "SVC_KEY_ROTATION": "svc.key_rotation.yml",
     "SVC_OXD_SERVER": "svc.oxd_server.yml",
     "SVC_RADIUS": "svc.radius.yml",
     "SVC_REDIS": "svc.redis.yml",
@@ -65,5 +64,6 @@ COMPOSE_MAPPINGS = {
     "SVC_JACKRABBIT": "svc.jackrabbit.yml",
     "SVC_SCIM": "svc.scim.yml",
     "SVC_FIDO2": "svc.fido2.yml",
+    "JOB_PERSISTENCE": "job.persistence.yml",
     "ENABLE_OVERRIDE": "docker-compose.override.yml",
 }

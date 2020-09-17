@@ -3,7 +3,7 @@ version: "2.4"
 
 services:
   radius:
-    image: gluufederation/radius:4.2.0_01
+    image: gluufederation/radius:4.2.1_01
     environment:
       - GLUU_CONFIG_CONSUL_HOST=consul
       - GLUU_SECRET_VAULT_HOST=vault
@@ -22,5 +22,4 @@ services:
       - ./couchbase.crt:/etc/certs/couchbase.crt
       - ./couchbase_password:/etc/gluu/conf/couchbase_password
     restart: unless-stopped
-    labels:
-      - "SERVICE_IGNORE=yes"
+    mem_limit: 1024M

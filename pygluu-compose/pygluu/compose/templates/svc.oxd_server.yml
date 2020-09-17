@@ -3,7 +3,7 @@ version: "2.4"
 
 services:
   oxd_server:
-    image: gluufederation/oxd-server:4.2.0_01
+    image: gluufederation/oxd-server:4.2.1_01
     environment:
       - GLUU_CONFIG_CONSUL_HOST=consul
       - GLUU_SECRET_VAULT_HOST=vault
@@ -16,9 +16,7 @@ services:
       - GLUU_OXD_ADMIN_CERT_CN=oxd_server
     container_name: oxd-server
     restart: unless-stopped
-    mem_limit: 500M
-    labels:
-      - "SERVICE_IGNORE=yes"
+    mem_limit: 1024M
     extra_hosts:
       - "${DOMAIN}:${HOST_IP}"
     volumes:

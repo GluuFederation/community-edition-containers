@@ -13,9 +13,8 @@ services:
     restart: unless-stopped
     volumes:
       - ./volumes/consul:/consul/data
-    labels:
-      - "SERVICE_IGNORE=yes"
     restart: unless-stopped
+    mem_limit: 512M
 
   vault:
     container_name: vault
@@ -36,21 +35,21 @@ services:
     restart: unless-stopped
     depends_on:
       - consul
-    labels:
-      - "SERVICE_IGNORE=yes"
+    mem_limit: 512M
 
   registrator:
     image: gliderlabs/registrator:master
-    command: -internal -cleanup -resync 30 -retry-attempts 5 -retry-interval 10 consul://consul:8500
+    command: -internal -cleanup -resync 30 -retry-attempts 5 -retry-interval 10 -explicit consul://consul:8500
     container_name: registrator
     volumes:
       - /var/run/docker.sock:/tmp/docker.sock
     restart: unless-stopped
     depends_on:
       - consul
+    mem_limit: 512M
 
   nginx:
-    image: gluufederation/nginx:4.2.0_01
+    image: gluufederation/nginx:4.2.1_01
     environment:
       - GLUU_CONFIG_CONSUL_HOST=consul
       - GLUU_SECRET_VAULT_HOST=vault
@@ -59,8 +58,7 @@ services:
       - "443:443"
     container_name: nginx
     restart: unless-stopped
-    labels:
-      - "SERVICE_IGNORE=yes"
     volumes:
       - ./vault_role_id.txt:/etc/certs/vault_role_id
       - ./vault_secret_id.txt:/etc/certs/vault_secret_id
+    mem_limit: 512M

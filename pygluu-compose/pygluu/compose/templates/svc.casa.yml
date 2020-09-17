@@ -2,7 +2,7 @@
 version: "2.4"
 services:
   casa:
-    image: gluufederation/casa:4.2.0_02
+    image: gluufederation/casa:4.2.1_01
     environment:
       - GLUU_CONFIG_CONSUL_HOST=consul
       - GLUU_SECRET_VAULT_HOST=vault
@@ -13,6 +13,10 @@ services:
       - GLUU_COUCHBASE_URL=${COUCHBASE_URL}
       - GLUU_COUCHBASE_USER=${COUCHBASE_USER}
       - GLUU_OXD_SERVER_URL=oxd_server:8443
+      - GLUU_DOCUMENT_STORE_TYPE=${DOCUMENT_STORE_TYPE}
+      - GLUU_JACKRABBIT_URL=http://jackrabbit:8080
+      - GLUU_JACKRABBIT_ADMIN_ID=${JACKRABBIT_USER}
+      - GLUU_JACKRABBIT_ADMIN_PASSWORD_FILE=/etc/gluu/conf/jackrabbit_admin_password
     extra_hosts:
       - "${DOMAIN}:${HOST_IP}"
     container_name: casa
@@ -21,6 +25,7 @@ services:
       - ./vault_secret_id.txt:/etc/certs/vault_secret_id
       - ./couchbase.crt:/etc/certs/couchbase.crt
       - ./couchbase_password:/etc/gluu/conf/couchbase_password
+      - ./jackrabbit_admin_password:/etc/gluu/conf/jackrabbit_admin_password
     restart: unless-stopped
     labels:
       - "SERVICE_NAME=casa"
@@ -28,3 +33,4 @@ services:
       - "SERVICE_8080_CHECK_HTTP=/casa/health-check"
       - "SERVICE_8080_CHECK_INTERVAL=30s"
       - "SERVICE_8080_CHECK_TIMEOUT=30s"
+    mem_limit: 1024M

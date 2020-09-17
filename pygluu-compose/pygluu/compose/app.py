@@ -34,7 +34,9 @@ class ContainerHelper(object):
 
     def exec(self, cmd):
         exec_id = self.docker.exec_create(self.name, cmd).get("Id")
-        return self.docker.exec_start(exec_id)
+        retval = self.docker.exec_start(exec_id)
+        retcode = self.docker.exec_inspect(exec_id).get("ExitCode")
+        return retval, retcode
 
 
 class Secret(object):
@@ -71,7 +73,7 @@ class Secret(object):
         status = {}
         retry = 1
         while retry <= 3:
-            raw = self.container.exec("vault status -format yaml")
+            raw, _ = self.container.exec("vault status -format yaml")
             with contextlib.suppress(yaml.scanner.ScannerError):
                 status = yaml.safe_load(raw)
                 if status:
@@ -84,7 +86,7 @@ class Secret(object):
 
     def initialize(self):
         print("[I] Initializing Vault with 1 recovery key and token")
-        out = self.container.exec(
+        out, _ = self.container.exec(
             "vault operator init "
             "-key-shares=1 "
             "-key-threshold=1 "
@@ -101,15 +103,20 @@ class Secret(object):
         self.container.exec("vault operator unseal {}".format(self.creds["key"]))
 
     def write_policy(self):
-        policies = self.container.exec("vault policy list").splitlines()
-        if b"gluu" in policies:
+        policies, _ = self.container.exec("vault policy list")
+        if b"gluu" in policies.splitlines():
             return
 
         print("[I] Creating Vault policy for Gluu")
         self.container.exec("vault policy write gluu /vault/config/policy.hcl")
 
     def enable_approle(self):
-        raw = self.container.exec("vault auth list -format yaml")
+        raw, retcode = self.container.exec("vault auth list -format yaml")
+
+        if retcode != 0:
+            print(f"[E] Unable to get auth list; reason={raw.decode()}")
+            raise click.Abort()
+
         auth_methods = yaml.safe_load(raw)
 
         if "approle/" in auth_methods:
@@ -128,10 +135,10 @@ class Secret(object):
             "secret_id_num_uses=0"
         )
 
-        role_id = self.container.exec("vault read -field=role_id auth/approle/role/gluu/role-id")
+        role_id, _ = self.container.exec("vault read -field=role_id auth/approle/role/gluu/role-id")
         pathlib.Path("vault_role_id.txt").write_text(role_id.decode())
 
-        secret_id = self.container.exec("vault write -f -field=secret_id auth/approle/role/gluu/secret-id")
+        secret_id, _ = self.container.exec("vault write -f -field=secret_id auth/approle/role/gluu/secret-id")
         pathlib.Path("vault_secret_id.txt").write_text(secret_id.decode())
 
     def setup(self):
@@ -163,7 +170,7 @@ class Config(object):
         retry = 1
 
         while retry <= 3:
-            value = self.container.exec(
+            value, _ = self.container.exec(
                 f"consul kv get -http-addr=http://consul:8500 gluu/config/hostname"
             )
             if not value.startswith(b"Error"):
@@ -198,13 +205,11 @@ class App(object):
             )
 
             os.environ["COMPOSE_FILE"] = compose_files
-            os.environ["PERSISTENCE_TYPE"] = self.settings.get("PERSISTENCE_TYPE")
-            os.environ["PERSISTENCE_LDAP_MAPPING"] = self.settings.get("PERSISTENCE_LDAP_MAPPING")
-            os.environ["COUCHBASE_USER"] = self.settings.get("COUCHBASE_USER")
-            os.environ["COUCHBASE_URL"] = self.settings.get("COUCHBASE_URL")
-            os.environ["DOMAIN"] = self.settings.get("DOMAIN")
-            os.environ["HOST_IP"] = self.settings.get("HOST_IP")
-            os.environ["DOCUMENT_STORE_TYPE"] = self.settings.get("DOCUMENT_STORE_TYPE")
+
+            for k, v in self.settings.items():
+                if isinstance(v, bool):
+                    v = f"{v}".lower()
+                os.environ[k] = v
 
             env = Environment()
             env.update(os.environ)
@@ -341,9 +346,9 @@ class App(object):
         def prompt_hostname():
             while True:
                 value = click.prompt("Enter hostname", default="demoexample.gluu.org")
-                if len(value.split(".")) == 3:
+                if len(value.split(".")) > 2:
                     return value
-                print("Hostname provided is invalid. Please enter a FQDN with the format demoexample.gluu.org")
+                click.echo("Hostname has to be at least three domain components.")
 
         def prompt_country_code():
             while True:
@@ -492,7 +497,6 @@ class App(object):
         self.gather_ip()
         self.prepare_config_secret()
         self._up()
-        self.run_persistence()
         self.healthcheck()
 
     def healthcheck(self):
@@ -503,21 +507,27 @@ class App(object):
         wait_max = 300
         wait_delay = 10
 
-        print("[I] Launching Gluu Server")
+        print(
+            "[I] Launching Gluu Server; to see logs on deployment process, "
+            "please run 'logs -f' command on separate terminal"
+        )
         with click_spinner.spinner():
             elapsed = 0
             while elapsed <= wait_max:
                 with contextlib.suppress(requests.exceptions.ConnectionError):
-                    req = requests.head(
-                        f"https://{self.settings['HOST_IP']}/identity/finishlogout.htm",
+                    req = requests.get(
+                        f"https://{self.settings['HOST_IP']}/identity/restv1/health-check",
                         verify=False,
                     )
                     if req.ok:
                         print(f"\n[I] Gluu Server installed successfully; please visit https://{self.settings['DOMAIN']}")
-                        break
+                        return
 
                 time.sleep(wait_delay)
                 elapsed += wait_delay
+
+            # healthcheck likely failed
+            print(f"\n[W] Unable to get healthcheck status; please check the logs or visit https://{self.settings['DOMAIN']}")
 
     def touch_files(self):
         files = [
@@ -528,6 +538,7 @@ class App(object):
             "couchbase.crt",
             "couchbase_password",
             # "casa.json",
+            "jackrabbit_admin_password",
         ]
         for file_ in files:
             pathlib.Path(file_).touch()
@@ -542,82 +553,6 @@ class App(object):
             if os.path.exists(dst):
                 continue
             shutil.copy(entry, dst)
-
-    def run_persistence(self):
-        workdir = os.getcwd()
-
-        print("[I] Checking entries in persistence")
-
-        workdir = os.getcwd()
-        image = f"gluufederation/persistence:{self.settings['PERSISTENCE_VERSION']}"
-
-        volumes = [
-            f"{workdir}/vault_role_id.txt:/etc/certs/vault_role_id",
-            f"{workdir}/vault_secret_id.txt:/etc/certs/vault_secret_id",
-            f"{workdir}/couchbase.crt:/etc/certs/couchbase.crt",
-            f"{workdir}/couchbase_password:/etc/gluu/conf/couchbase_password",
-        ]
-
-        with self.top_level_cmd() as tlc:
-            retry = 0
-            while retry < 3:
-                try:
-                    if not tlc.project.client.images(name=image):
-                        print(f"{self.settings['PERSISTENCE_VERSION']}: Pulling from gluufederation/persistence")
-                        tlc.project.client.pull(image)
-                        break
-                except (requests.exceptions.Timeout, docker.errors.APIError) as exc:
-                    print(f"[W] Unable to get {image}; reason={exc}; "
-                          "retrying in 10 seconds")
-                time.sleep(10)
-                retry += 1
-
-            cid = None
-            try:
-                cid = tlc.project.client.create_container(
-                    image=f"gluufederation/persistence:{self.settings['PERSISTENCE_VERSION']}",
-                    name="persistence",
-                    environment={
-                        "GLUU_CONFIG_CONSUL_HOST": "consul",
-                        "GLUU_SECRET_VAULT_HOST": "vault",
-                        "GLUU_PERSISTENCE_TYPE": self.settings["PERSISTENCE_TYPE"],
-                        "GLUU_PERSISTENCE_LDAP_MAPPING": self.settings["PERSISTENCE_LDAP_MAPPING"],
-                        "GLUU_LDAP_URL": "ldap:1636",
-                        "GLUU_COUCHBASE_URL": self.settings["COUCHBASE_URL"],
-                        "GLUU_COUCHBASE_USER": self.settings["COUCHBASE_USER"],
-                        "GLUU_OXTRUST_API_ENABLED": self.settings["OXTRUST_API_ENABLED"],
-                        "GLUU_OXTRUST_API_TEST_MODE": self.settings["OXTRUST_API_TEST_MODE"],
-                        "GLUU_PASSPORT_ENABLED": self.settings["PASSPORT_ENABLED"],
-                        "GLUU_CASA_ENABLED": self.settings["CASA_ENABLED"],
-                        "GLUU_RADIUS_ENABLED": self.settings["RADIUS_ENABLED"],
-                        "GLUU_SAML_ENABLED": self.settings["SAML_ENABLED"],
-                        "GLUU_SCIM_ENABLED": self.settings["SCIM_ENABLED"],
-                        "GLUU_SCIM_TEST_MODE": self.settings["SCIM_TEST_MODE"],
-                        "GLUU_PERSISTENCE_SKIP_EXISTING": self.settings["PERSISTENCE_SKIP_EXISTING"],
-                        "GLUU_CACHE_TYPE": self.settings["CACHE_TYPE"],
-                        "GLUU_REDIS_URL": self.settings["REDIS_URL"],
-                        "GLUU_REDIS_TYPE": self.settings["REDIS_TYPE"],
-                        "GLUU_REDIS_USE_SSL": self.settings["REDIS_USE_SSL"],
-                        "GLUU_REDIS_SSL_TRUSTSTORE": self.settings["REDIS_SSL_TRUSTSTORE"],
-                        "GLUU_REDIS_SENTINEL_GROUP": self.settings["REDIS_SENTINEL_GROUP"],
-                        "GLUU_DOCUMENT_STORE_TYPE": self.settings["DOCUMENT_STORE_TYPE"],
-                        "GLUU_JCA_RMI_URL": "http://jackrabbit:8080/rmi",
-                    },
-                    host_config=HostConfig(
-                        version="1.25",
-                        network_mode=self.network_name,
-                        binds=volumes,
-                    ),
-                ).get("Id")
-
-                tlc.project.client.start(cid)
-                for log in tlc.project.client.logs(cid, stream=True):
-                    print(log.decode().strip())
-            except Exception:
-                raise
-            finally:
-                if cid:
-                    tlc.project.client.remove_container(cid, force=True)
 
     def check_ports(self):
         def _check(host, port):
