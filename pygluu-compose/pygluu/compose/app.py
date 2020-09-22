@@ -537,7 +537,7 @@ class App(object):
             "gcp_kms_creds.json",
             "couchbase.crt",
             "couchbase_password",
-            # "casa.json",
+            "couchbase_superuser_password",
             "jackrabbit_admin_password",
         ]
         for file_ in files:

@@ -34,6 +34,7 @@ DEFAULT_SETTINGS = {
     "PERSISTENCE_LDAP_MAPPING": "default",
     "CONFIG_INIT_VERSION": "4.2.1_01",
     "COUCHBASE_USER": "admin",
+    "COUCHBASE_SUPERUSER": "",
     "COUCHBASE_URL": "localhost",
     "OXTRUST_API_ENABLED": False,
     "OXTRUST_API_TEST_MODE": False,
