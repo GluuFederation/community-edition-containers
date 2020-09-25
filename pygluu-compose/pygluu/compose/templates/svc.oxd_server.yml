@@ -3,7 +3,7 @@ version: "2.4"
 
 services:
   oxd_server:
-    image: gluufederation/oxd-server:4.2.1_01
+    image: gluufederation/oxd-server:4.2.1_02
     environment:
       - GLUU_CONFIG_CONSUL_HOST=consul
       - GLUU_SECRET_VAULT_HOST=vault
