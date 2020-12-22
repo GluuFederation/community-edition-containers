@@ -3,7 +3,7 @@ version: "2.4"
 
 services:
   cr_rotate:
-    image: gluufederation/cr-rotate:4.2.1_02
+    image: gluufederation/cr-rotate:4.2.2_01
     environment:
       - GLUU_CONFIG_CONSUL_HOST=consul
       - GLUU_SECRET_VAULT_HOST=vault
@@ -13,6 +13,7 @@ services:
       - GLUU_CR_ROTATION_CHECK=60
       - GLUU_COUCHBASE_URL=${COUCHBASE_URL}
       - GLUU_COUCHBASE_USER=${COUCHBASE_USER}
+      - GLUU_COUCHBASE_BUCKET_PREFIX=${COUCHBASE_BUCKET_PREFIX}
     volumes:
       - ./vault_role_id.txt:/etc/certs/vault_role_id
       - ./vault_secret_id.txt:/etc/certs/vault_secret_id
