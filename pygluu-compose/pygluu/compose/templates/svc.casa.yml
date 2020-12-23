@@ -2,7 +2,7 @@
 version: "2.4"
 services:
   casa:
-    image: gluufederation/casa:4.2.1_02
+    image: gluufederation/casa:4.2.2_02
     environment:
       - GLUU_CONFIG_CONSUL_HOST=consul
       - GLUU_SECRET_VAULT_HOST=vault
@@ -12,6 +12,7 @@ services:
       - GLUU_LDAP_URL=ldap:1636
       - GLUU_COUCHBASE_URL=${COUCHBASE_URL}
       - GLUU_COUCHBASE_USER=${COUCHBASE_USER}
+      - GLUU_COUCHBASE_BUCKET_PREFIX=${COUCHBASE_BUCKET_PREFIX}
       - GLUU_OXD_SERVER_URL=oxd_server:8443
       - GLUU_DOCUMENT_STORE_TYPE=${DOCUMENT_STORE_TYPE}
       - GLUU_JACKRABBIT_URL=http://jackrabbit:8080

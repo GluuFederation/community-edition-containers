@@ -3,7 +3,7 @@ version: "2.4"
 
 services:
   scim:
-    image: gluufederation/scim:4.2.1_02
+    image: gluufederation/scim:4.2.2_02
     environment:
       - GLUU_CONFIG_CONSUL_HOST=consul
       - GLUU_SECRET_VAULT_HOST=vault
@@ -12,6 +12,7 @@ services:
       - GLUU_LDAP_URL=ldap:1636
       - GLUU_COUCHBASE_URL=${COUCHBASE_URL}
       - GLUU_COUCHBASE_USER=${COUCHBASE_USER}
+      - GLUU_COUCHBASE_BUCKET_PREFIX=${COUCHBASE_BUCKET_PREFIX}
     extra_hosts:
       - "${DOMAIN}:${HOST_IP}"
     container_name: scim
