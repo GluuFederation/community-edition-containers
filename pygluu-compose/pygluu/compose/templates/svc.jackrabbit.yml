@@ -3,12 +3,10 @@ version: "2.4"
 
 services:
   jackrabbit:
-    image: gluufederation/jackrabbit:4.2.1_02
+    image: gluufederation/jackrabbit:4.2.2_02
     container_name: jackrabbit
     hostname: jackrabbit
     environment:
-      # - GLUU_DOCUMENT_STORE_TYPE=${DOCUMENT_STORE_TYPE}
-      # - GLUU_JACKRABBIT_URL=http://jackrabbit:8080
       - GLUU_JACKRABBIT_ADMIN_ID=${JACKRABBIT_USER}
       - GLUU_JACKRABBIT_ADMIN_PASSWORD_FILE=/etc/gluu/conf/jackrabbit_admin_password
     volumes:
