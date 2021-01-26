@@ -26,13 +26,17 @@ from .settings import COMPOSE_MAPPINGS
 
 CONFIG_DIR = "volumes/config-init/db"
 
+EMAIL_RGX = re.compile(r"^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$")
+
+PASSWD_RGX = re.compile(r"^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*\W)[a-zA-Z0-9\S]{6,}$")
+
 
 class ContainerHelper(object):
     def __init__(self, name, docker_client):
         self.name = name
         self.docker = docker_client
 
-    def exec(self, cmd):
+    def exec(self, cmd):  # noqa: A003
         exec_id = self.docker.exec_create(self.name, cmd).get("Id")
         retval = self.docker.exec_start(exec_id)
         retcode = self.docker.exec_inspect(exec_id).get("ExitCode")
@@ -171,7 +175,7 @@ class Config(object):
 
         while retry <= 3:
             value, _ = self.container.exec(
-                f"consul kv get -http-addr=http://consul:8500 gluu/config/hostname"
+                "consul kv get -http-addr=http://consul:8500 gluu/config/hostname"
             )
             if not value.startswith(b"Error"):
                 hostname = value.strip().decode()
@@ -336,13 +340,6 @@ class App(object):
             raise click.Abort()
 
     def generate_params(self, file_):
-        EMAIL_RGX = re.compile(
-            r"^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$"
-        )
-        PASSWD_RGX = re.compile(
-            r"^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*\W)[a-zA-Z0-9\S]{6,}$"
-        )
-
         def prompt_hostname():
             while True:
                 value = click.prompt("Enter hostname", default="demoexample.gluu.org")
