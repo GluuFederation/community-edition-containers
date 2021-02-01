@@ -3,7 +3,7 @@ version: "2.4"
 
 services:
   fido2:
-    image: gluufederation/fido2:4.2.2_02
+    image: gluufederation/fido2:4.2.2_03
     environment:
       - GLUU_CONFIG_CONSUL_HOST=consul
       - GLUU_SECRET_VAULT_HOST=vault
