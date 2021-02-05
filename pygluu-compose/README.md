@@ -1,11 +1,16 @@
 # pygluu-compose
 
+Setup container-based Gluu Server using `docker-compose`.
+
 ## Prerequisites
 
 1.  Python 3.6+.
 1.  Python `pip` package.
 
 ## Installation
+
+The following sections are meant for developers.
+Documentation is officially available at https://gluu.org/docs/gluu-server/installation-guide/install-docker/.
 
 ### Standard Python package
 
