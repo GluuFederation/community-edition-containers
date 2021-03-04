@@ -45,6 +45,8 @@ class ContainerHelper(object):
 
 class Secret(object):
     UNSEAL_KEY_RE = re.compile(r"^Unseal Key 1: (.+)", re.M)
+    # auto-unseal uses recovery key instead of unseal key
+    RECOVERY_KEY_RE = re.compile(r"^Recovery Key 1: (.+)", re.M)
     ROOT_TOKEN_RE = re.compile(r"^Initial Root Token: (.+)", re.M)
 
     def __init__(self, docker_client):
@@ -56,7 +58,7 @@ class Secret(object):
         try:
             self.container.exec("vault login {}".format(token))
             yield
-        except Exception:
+        except Exception:  # noqa: B902
             raise
 
     @property
@@ -67,7 +69,10 @@ class Secret(object):
 
         if path.is_file():
             txt = path.read_text()
-            key = self.UNSEAL_KEY_RE.findall(txt)[0]
+            try:
+                key = self.UNSEAL_KEY_RE.findall(txt)[0]
+            except IndexError:
+                key = self.RECOVERY_KEY_RE.findall(txt)[0]
             token = self.ROOT_TOKEN_RE.findall(txt)[0]
         return {"key": key, "token": token}
 
@@ -147,12 +152,13 @@ class Secret(object):
 
     def setup(self):
         status = self.status()
-
         if not status["initialized"]:
             self.initialize()
 
+        # double check status
+        time.sleep(5)
+        status = self.status()
         if status["sealed"]:
-            time.sleep(5)
             self.unseal()
 
         time.sleep(5)
@@ -221,7 +227,7 @@ class App(object):
             project = get_project(os.getcwd(), config_path, environment=env)
             tlc = TopLevelCommand(project)
             yield tlc
-        except Exception:
+        except Exception:  # noqa: B902
             raise
 
     def get_settings(self):
@@ -483,7 +489,7 @@ class App(object):
                 tlc.project.client.start(cid)
                 for log in tlc.project.client.logs(cid, stream=True):
                     print(log.decode().strip())
-            except Exception:
+            except Exception:  # noqa: B902
                 raise
             finally:
                 if cid:
