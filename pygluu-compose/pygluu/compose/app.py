@@ -11,27 +11,26 @@ import time
 
 import click
 import click_spinner
-import docker.errors
-import requests.exceptions
 import stdiomask
 from compose.cli.command import get_project
 from compose.cli.command import get_config_path_from_options
 from compose.cli.main import TopLevelCommand
 from compose.config.config import yaml
 from compose.config.environment import Environment
-from docker.types import HostConfig
 
 from .settings import DEFAULT_SETTINGS
 from .settings import COMPOSE_MAPPINGS
 
 CONFIG_DIR = "volumes/config-init/db"
+EMAIL_RGX = re.compile(
+    r"^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$"
+)
+PASSWD_RGX = re.compile(
+    r"^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*\W)[a-zA-Z0-9\S]{6,}$"
+)
 
-EMAIL_RGX = re.compile(r"^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$")
 
-PASSWD_RGX = re.compile(r"^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*\W)[a-zA-Z0-9\S]{6,}$")
-
-
-class ContainerHelper(object):
+class ContainerHelper:
     def __init__(self, name, docker_client):
         self.name = name
         self.docker = docker_client
@@ -43,7 +42,7 @@ class ContainerHelper(object):
         return retval, retcode
 
 
-class Secret(object):
+class Secret:
     UNSEAL_KEY_RE = re.compile(r"^Unseal Key 1: (.+)", re.M)
     # auto-unseal uses recovery key instead of unseal key
     RECOVERY_KEY_RE = re.compile(r"^Recovery Key 1: (.+)", re.M)
@@ -169,7 +168,7 @@ class Secret(object):
             self.enable_approle()
 
 
-class Config(object):
+class Config:
     def __init__(self, docker_client):
         self.container = ContainerHelper("consul", docker_client)
 
@@ -431,69 +430,14 @@ class App(object):
             if hostname:
                 self.settings["DOMAIN"] = hostname
             else:
-                params = self.generate_params(gen_file)
+                if not os.path.isfile(gen_file):
+                    params = self.generate_params(gen_file)
+                else:
+                    with open(gen_file) as f:
+                        params = json.loads(f.read())
                 self.settings["DOMAIN"] = params["hostname"]
 
             print(f"[I] Using {self.settings['DOMAIN']} as FQDN")
-            self.run_config_init()
-
-            # cleanup
-            with contextlib.suppress(FileNotFoundError):
-                pathlib.Path(gen_file).unlink()
-
-    def run_config_init(self):
-        workdir = os.getcwd()
-        image = f"gluufederation/config-init:{self.settings['CONFIG_INIT_VERSION']}"
-
-        volumes = [
-            f"{workdir}/{CONFIG_DIR}:/app/db/",
-            f"{workdir}/vault_role_id.txt:/etc/certs/vault_role_id",
-            f"{workdir}/vault_secret_id.txt:/etc/certs/vault_secret_id",
-        ]
-
-        gen_file = f"{workdir}/generate.json"
-        if os.path.isfile(gen_file):
-            volumes.append(f"{gen_file}:/app/db/generate.json")
-
-        with self.top_level_cmd() as tlc:
-            retry = 0
-            while retry < 3:
-                try:
-                    if not tlc.project.client.images(name=image):
-                        print(f"{self.settings['CONFIG_INIT_VERSION']}: Pulling from gluufederation/config-init")
-                        tlc.project.client.pull(image)
-                        break
-                except (requests.exceptions.Timeout, docker.errors.APIError) as exc:
-                    print(f"[W] Unable to get {image}; reason={exc}; "
-                          "retrying in 10 seconds")
-                time.sleep(10)
-                retry += 1
-
-            cid = None
-            try:
-                cid = tlc.project.client.create_container(
-                    image=f"gluufederation/config-init:{self.settings['CONFIG_INIT_VERSION']}",
-                    name="config-init",
-                    command="load",
-                    environment={
-                        "GLUU_CONFIG_CONSUL_HOST": "consul",
-                        "GLUU_SECRET_VAULT_HOST": "vault",
-                    },
-                    host_config=HostConfig(
-                        version="1.25",
-                        network_mode=self.network_name,
-                        binds=volumes,
-                    ),
-                ).get("Id")
-
-                tlc.project.client.start(cid)
-                for log in tlc.project.client.logs(cid, stream=True):
-                    print(log.decode().strip())
-            except Exception:  # noqa: B902
-                raise
-            finally:
-                if cid:
-                    tlc.project.client.remove_container(cid, force=True)
 
     def up(self):
         self.check_ports()
@@ -554,8 +498,10 @@ class App(object):
         for entry in entries.iterdir():
             dst = os.path.join(curdir, entry.name)
             if os.path.exists(dst):
+                print(f"[W] Skipping existing {dst}")
                 continue
             shutil.copy(entry, dst)
+            print(f"[I] Creating new {dst}")
 
     def check_ports(self):
         def _check(host, port):

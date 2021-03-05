@@ -29,10 +29,10 @@ DEFAULT_SETTINGS = {
     "SVC_SCIM": False,
     "SVC_FIDO2": False,
     "JOB_PERSISTENCE": True,
+    "JOB_CONFIGURATION": True,
     "PERSISTENCE_TYPE": "ldap",
     "CACHE_TYPE": "NATIVE_PERSISTENCE",
     "PERSISTENCE_LDAP_MAPPING": "default",
-    "CONFIG_INIT_VERSION": "4.2.3_01",
     "COUCHBASE_USER": "admin",
     "COUCHBASE_SUPERUSER": "",
     "COUCHBASE_URL": "localhost",
@@ -67,5 +67,6 @@ COMPOSE_MAPPINGS = {
     "SVC_SCIM": "svc.scim.yml",
     "SVC_FIDO2": "svc.fido2.yml",
     "JOB_PERSISTENCE": "job.persistence.yml",
+    "JOB_CONFIGURATION": "job.configuration.yml",
     "ENABLE_OVERRIDE": "docker-compose.override.yml",
 }

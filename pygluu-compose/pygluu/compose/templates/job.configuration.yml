@@ -1,0 +1,19 @@
+# use v2.x API to allow `mem_limit` option
+version: "2.4"
+services:
+  configuration:
+    image: gluufederation/config-init:4.3.0_dev
+    command: load
+    environment:
+      - GLUU_CONFIG_CONSUL_HOST=consul
+      - GLUU_SECRET_VAULT_HOST=vault
+    extra_hosts:
+      - "${DOMAIN}:${HOST_IP}"
+    container_name: configuration
+    volumes:
+      - ./vault_role_id.txt:/etc/certs/vault_role_id
+      - ./vault_secret_id.txt:/etc/certs/vault_secret_id
+      - ./volumes/config-init/db:/app/db
+      - ./generate.json:/app/db/generate.json
+    restart: on-failure
+    mem_limit: 512M
