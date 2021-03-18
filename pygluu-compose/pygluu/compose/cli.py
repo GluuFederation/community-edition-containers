@@ -1,26 +1,13 @@
-import os
-import re
-
 import click
 
 from .app import App
-
-
-def find_version(*file_paths):
-    here = os.path.abspath(os.path.dirname(__file__))
-    with open(os.path.join(here, *file_paths), 'r') as f:
-        version_file = f.read()
-    version_match = re.search(r"^__version__ = ['\"]([^'\"]*)['\"]",
-                              version_file, re.M)
-    if version_match:
-        return version_match.group(1)
-    raise RuntimeError("Unable to find version string.")
+from .version import __version__
 
 
 @click.group(context_settings={
     "help_option_names": ["-h", "--help"],
 })
-@click.version_option(find_version("__init__.py"), "-v", "--version")
+@click.version_option(__version__, "-v", "--version")
 @click.pass_context
 def cli(ctx):
     ctx.obj = App()
