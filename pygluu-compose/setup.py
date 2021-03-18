@@ -19,7 +19,7 @@ def find_version(*file_paths):
 
 setup(
     name="pygluu-compose",
-    version=find_version("pygluu", "compose", "__init__.py"),
+    version=find_version("pygluu", "compose", "version.py"),
     url="",
     license="Gluu Support",
     author="Gluu",
