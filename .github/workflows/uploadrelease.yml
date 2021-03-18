@@ -51,6 +51,7 @@ jobs:
         sudo apt-get update || brew install jq
         sudo apt-get install build-essential || echo "Maybe im on macor OS"
         pip3 install shiv
+        cd pygluu-compose
         make zipapp
 
     - name: Get project
@@ -62,7 +63,7 @@ jobs:
     - name: Get latest tag
       id: previoustag
       run: |
-        echo "::set-output name=tag::$(curl https://api.github.com/repos/${{ steps.project.outputs.gituser }}/${{ steps.project.outputs.gitproject }}/releases/latest -s | jq .name -r)"
+        echo "::set-output name=tag::$(curl https://api.github.com/repos/${{ steps.project.outputs.gituser }}/${{ steps.project.outputs.gitproject }}/releases/latest -s | grep "tag_name" | cut -d '"' -f 4)"
 
     - name: Print Version
       run: |
@@ -73,6 +74,6 @@ jobs:
       uses: svenstaro/upload-release-action@v2
       with:
         repo_token: ${{ secrets.MOWORKFLOWTOKEN }}
-        file: ${{ matrix.artifact_name }}
+        file: pygluu-compose/${{ matrix.artifact_name }}
         asset_name: ${{ matrix.asset_name }}
         tag: ${{ steps.previoustag.outputs.tag }}
