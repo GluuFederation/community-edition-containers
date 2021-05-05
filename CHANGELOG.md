@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.6.0](https://www.github.com/GluuFederation/community-edition-containers/compare/v1.5.0...v1.6.0) (2021-05-05)
+
+
+### Features
+
+* **image:** update tags for oxauth, oxtrust, scim, and oxshibboleth ([d469578](https://www.github.com/GluuFederation/community-edition-containers/commit/d469578b415fde4d60b8b60e434623089b9d381b))
+
 ## [1.5.0](https://www.github.com/GluuFederation/community-edition-containers/compare/v1.4.2...v1.5.0) (2021-03-19)
 
 
