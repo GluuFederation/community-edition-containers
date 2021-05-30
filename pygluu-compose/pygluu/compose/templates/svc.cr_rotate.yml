@@ -14,12 +14,22 @@ services:
       - GLUU_COUCHBASE_URL=${COUCHBASE_URL}
       - GLUU_COUCHBASE_USER=${COUCHBASE_USER}
       - GLUU_COUCHBASE_BUCKET_PREFIX=${COUCHBASE_BUCKET_PREFIX}
+      - GLUU_SQL_DB_DIALECT=${SQL_DB_DIALECT}
+      - GLUU_SQL_DB_NAME=${SQL_DB_NAME}
+      - GLUU_SQL_DB_HOST=${SQL_DB_HOST}
+      - GLUU_SQL_DB_PORT=${SQL_DB_PORT}
+      - GLUU_SQL_DB_USER=${SQL_DB_USER}
+      - GOOGLE_PROJECT_ID=${GOOGLE_PROJECT_ID}
+      - GLUU_GOOGLE_SPANNER_INSTANCE_ID=${GOOGLE_SPANNER_INSTANCE_ID}
+      - GLUU_GOOGLE_SPANNER_DATABASE_ID=${GOOGLE_SPANNER_DATABASE_ID}
     volumes:
       - ./vault_role_id.txt:/etc/certs/vault_role_id
       - ./vault_secret_id.txt:/etc/certs/vault_secret_id
       - /var/run/docker.sock:/var/run/docker.sock
       - ./couchbase.crt:/etc/certs/couchbase.crt
       - ./couchbase_password:/etc/gluu/conf/couchbase_password
+      - ./google-credentials.json:/etc/gluu/conf/google-credentials.json
+      - ./sql_password:/etc/gluu/conf/sql_password
     container_name: cr-rotate
     restart: unless-stopped
     mem_limit: 512M

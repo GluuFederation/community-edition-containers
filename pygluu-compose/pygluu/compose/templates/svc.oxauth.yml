@@ -17,6 +17,14 @@ services:
       - GLUU_JACKRABBIT_URL=http://jackrabbit:8080
       - GLUU_JACKRABBIT_ADMIN_ID=${JACKRABBIT_USER}
       - GLUU_JACKRABBIT_ADMIN_PASSWORD_FILE=/etc/gluu/conf/jackrabbit_admin_password
+      - GLUU_SQL_DB_DIALECT=${SQL_DB_DIALECT}
+      - GLUU_SQL_DB_NAME=${SQL_DB_NAME}
+      - GLUU_SQL_DB_HOST=${SQL_DB_HOST}
+      - GLUU_SQL_DB_PORT=${SQL_DB_PORT}
+      - GLUU_SQL_DB_USER=${SQL_DB_USER}
+      - GOOGLE_PROJECT_ID=${GOOGLE_PROJECT_ID}
+      - GLUU_GOOGLE_SPANNER_INSTANCE_ID=${GOOGLE_SPANNER_INSTANCE_ID}
+      - GLUU_GOOGLE_SPANNER_DATABASE_ID=${GOOGLE_SPANNER_DATABASE_ID}
     extra_hosts:
       - "${DOMAIN}:${HOST_IP}"
     container_name: oxauth
@@ -26,6 +34,8 @@ services:
       - ./couchbase.crt:/etc/certs/couchbase.crt
       - ./couchbase_password:/etc/gluu/conf/couchbase_password
       - ./jackrabbit_admin_password:/etc/gluu/conf/jackrabbit_admin_password
+      - ./google-credentials.json:/etc/gluu/conf/google-credentials.json
+      - ./sql_password:/etc/gluu/conf/sql_password
     mem_limit: 1536M
     restart: unless-stopped
     labels:

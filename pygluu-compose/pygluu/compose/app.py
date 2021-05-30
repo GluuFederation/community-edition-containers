@@ -218,6 +218,8 @@ class App(object):
             for k, v in self.settings.items():
                 if isinstance(v, bool):
                     v = f"{v}".lower()
+                if isinstance(v, int):
+                    v = str(v)
                 os.environ[k] = v
 
             env = Environment()
@@ -486,6 +488,8 @@ class App(object):
             "couchbase_password",
             "couchbase_superuser_password",
             "jackrabbit_admin_password",
+            "sql_password",
+            "google-credentials.json",
         ]
         for file_ in files:
             pathlib.Path(file_).touch()

@@ -46,9 +46,18 @@ DEFAULT_SETTINGS = {
     "SCIM_ENABLED": False,
     "SCIM_TEST_MODE": False,
     "ENABLE_OVERRIDE": False,
-    "PERSISTENCE_SKIP_EXISTING": True,
     "DOCUMENT_STORE_TYPE": "LOCAL",
     "JACKRABBIT_USER": "admin",
+    "SQL_DB_DIALECT": "mysql",
+    "SQL_DB_NAME": "gluu",
+    "SQL_DB_HOST": "localhost",
+    "SQL_DB_PORT": 3306,
+    "SQL_DB_USER": "gluu",
+    # "SQL_DB_PASSWORD_FILE": "/etc/gluu/conf/sql_password",
+    # "GOOGLE_APPLICATION_CREDENTIALS": "/etc/gluu/conf/google-credentials.json",
+    "GOOGLE_PROJECT_ID": "",
+    "GOOGLE_SPANNER_INSTANCE_ID": "",
+    "GOOGLE_SPANNER_DATABASE_ID": "",
 }
 
 COMPOSE_MAPPINGS = {
