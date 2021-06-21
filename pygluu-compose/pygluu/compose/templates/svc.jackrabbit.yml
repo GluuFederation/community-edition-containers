@@ -7,9 +7,13 @@ services:
     container_name: jackrabbit
     hostname: jackrabbit
     environment:
+      - GLUU_CONFIG_CONSUL_HOST=consul
+      - GLUU_SECRET_VAULT_HOST=vault
       - GLUU_JACKRABBIT_ADMIN_ID=${JACKRABBIT_USER}
       - GLUU_JACKRABBIT_ADMIN_PASSWORD_FILE=/etc/gluu/conf/jackrabbit_admin_password
     volumes:
+      - ./vault_role_id.txt:/etc/certs/vault_role_id
+      - ./vault_secret_id.txt:/etc/certs/vault_secret_id
       - ./volumes/jackrabbit/repository:/opt/jackrabbit/repository
       - ./volumes/jackrabbit/version:/opt/jackrabbit/version
       - ./volumes/jackrabbit/workspaces:/opt/jackrabbit/workspaces
