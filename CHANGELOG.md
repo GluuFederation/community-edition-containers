@@ -1,5 +1,12 @@
 # Changelog
 
+### [1.6.1](https://www.github.com/GluuFederation/community-edition-containers/compare/v1.6.0...v1.6.1) (2021-06-22)
+
+
+### Bug Fixes
+
+* **image:** update tag for cr-rotate, oxpassport, oxshibboleth, oxtrust, and scim ([86f7b94](https://www.github.com/GluuFederation/community-edition-containers/commit/86f7b945e517e2f339c91634d9cb78f305c09978))
+
 ## [1.6.0](https://www.github.com/GluuFederation/community-edition-containers/compare/v1.5.0...v1.6.0) (2021-05-05)
 
 
