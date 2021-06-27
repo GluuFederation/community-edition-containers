@@ -3,7 +3,7 @@ version: "2.4"
 
 services:
   cr_rotate:
-    image: gluufederation/cr-rotate:4.3.0_dev
+    image: gluufederation/cr-rotate:4.3.0_b1
     environment:
       - GLUU_CONFIG_CONSUL_HOST=consul
       - GLUU_SECRET_VAULT_HOST=vault
