@@ -9,7 +9,7 @@ services:
     environment:
       - CONSUL_BIND_INTERFACE=eth0
       - CONSUL_CLIENT_INTERFACE=eth0
-    container_name: consul
+    container_name: ${CONSUL_NAME}
     restart: unless-stopped
     volumes:
       - ./volumes/consul:/consul/data
@@ -17,7 +17,7 @@ services:
     mem_limit: 512M
 
   vault:
-    container_name: vault
+    container_name: ${VAULT_NAME}
     image: vault:1.0.1
     command: vault server -config=/vault/config
     volumes:
@@ -31,7 +31,7 @@ services:
       - VAULT_REDIRECT_INTERFACE=eth0
       - VAULT_CLUSTER_INTERFACE=eth0
       - VAULT_ADDR=http://0.0.0.0:8200
-      - VAULT_LOCAL_CONFIG={"backend":{"consul":{"address":"consul:8500","path":"vault/"}},"listener":{"tcp":{"address":"0.0.0.0:8200","tls_disable":1}}}
+      - VAULT_LOCAL_CONFIG={"backend":{"consul":{"address":"${CONSUL_NAME}:8500","path":"vault/"}},"listener":{"tcp":{"address":"0.0.0.0:8200","tls_disable":1}}}
     restart: unless-stopped
     depends_on:
       - consul
@@ -39,8 +39,8 @@ services:
 
   registrator:
     image: gliderlabs/registrator:master
-    command: -internal -cleanup -resync 30 -retry-attempts 5 -retry-interval 10 -explicit consul://consul:8500
-    container_name: registrator
+    command: -internal -cleanup -resync 30 -retry-attempts 5 -retry-interval 10 -explicit consul://${CONSUL_NAME}:8500
+    container_name: ${REGISTRATOR_NAME}
     volumes:
       - /var/run/docker.sock:/tmp/docker.sock
     restart: unless-stopped
@@ -51,12 +51,12 @@ services:
   nginx:
     image: gluufederation/nginx:4.2.3_01
     environment:
-      - GLUU_CONFIG_CONSUL_HOST=consul
-      - GLUU_SECRET_VAULT_HOST=vault
+      - GLUU_CONFIG_CONSUL_HOST=${CONSUL_NAME}
+      - GLUU_SECRET_VAULT_HOST=${VAULT_NAME}
     ports:
       - "80:80"
       - "443:443"
-    container_name: nginx
+    container_name: ${NGINX_NAME}
     restart: unless-stopped
     volumes:
       - ./vault_role_id.txt:/etc/certs/vault_role_id

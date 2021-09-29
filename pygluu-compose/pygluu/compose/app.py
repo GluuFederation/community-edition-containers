@@ -8,6 +8,7 @@ import re
 import shutil
 import socket
 import time
+import sys
 
 import click
 import click_spinner
@@ -30,9 +31,20 @@ EMAIL_RGX = re.compile(r"^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$")
 
 PASSWD_RGX = re.compile(r"^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*\W)[a-zA-Z0-9\S]{6,}$")
 
+PROJ_DIR = os.path.abspath(os.path.dirname(sys.argv[0]))
 
 class ContainerHelper(object):
     def __init__(self, name, docker_client):
+        containers = docker_client.containers(filters={ 'label': [
+            'com.docker.compose.service=' + name,
+            'com.docker.compose.project.working_dir=' + PROJ_DIR,
+        ]})
+        if containers:
+            names = containers[0]['Names']
+            if names:
+                # get first name of container and crop leading slash
+                name = names[0][1:]
+
         self.name = name
         self.docker = docker_client
 
@@ -221,8 +233,7 @@ class App(object):
                     v = f"{v}".lower()
                 os.environ[k] = v
 
-            env = Environment()
-            env.update(os.environ)
+            env = Environment.from_env_file(PROJ_DIR, env_file="docker.env")
 
             project = get_project(os.getcwd(), config_path, environment=env)
             tlc = TopLevelCommand(project)
@@ -567,14 +578,12 @@ class App(object):
                 return True
 
         with self.top_level_cmd() as tlc:
-            ngx_run = tlc.project.client.containers(
-                filters={"name": "nginx"}
-            )
-            if ngx_run:
+            ngx_svc = tlc.project.get_service("nginx")
+            if ngx_svc.containers():
                 return
 
-            # ports 80 and 443 must available if nginx has not run yet
-            for port in [80, 443]:
+            # published service ports must be available if nginx has not run yet
+            for port in [ sp.published for sp in ngx_svc.options["ports"] ]:
                 port_available = _check("0.0.0.0", port)
                 if not port_available:
                     print(f"[W] Required port {port} is bind to another process")

@@ -5,16 +5,16 @@ services:
   ldap:
     image: gluufederation/opendj:4.2.3_02
     environment:
-      - GLUU_CONFIG_CONSUL_HOST=consul
-      - GLUU_SECRET_VAULT_HOST=vault
+      - GLUU_CONFIG_CONSUL_HOST=${CONSUL_NAME}
+      - GLUU_SECRET_VAULT_HOST=${VAULT_NAME}
       # the value must match service name `ldap` because other containers
       # use this value as LDAP hostname
-      - GLUU_CERT_ALT_NAME=ldap
-      - GLUU_LDAP_ADVERTISE_ADDR=ldap
+      - GLUU_CERT_ALT_NAME=${LDAP_NAME}
+      - GLUU_LDAP_ADVERTISE_ADDR=${LDAP_NAME}
       - GLUU_PERSISTENCE_TYPE=${PERSISTENCE_TYPE}
       - GLUU_PERSISTENCE_LDAP_MAPPING=${PERSISTENCE_LDAP_MAPPING}
-    container_name: ldap
-    hostname: ldap
+    container_name: ${LDAP_NAME}
+    hostname: ${LDAP_NAME}
     volumes:
       - ./volumes/opendj/config:/opt/opendj/config
       - ./volumes/opendj/ldif:/opt/opendj/ldif

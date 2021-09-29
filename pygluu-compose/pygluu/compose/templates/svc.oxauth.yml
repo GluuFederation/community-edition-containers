@@ -5,11 +5,11 @@ services:
   oxauth:
     image: gluufederation/oxauth:4.2.3_07
     environment:
-      - GLUU_CONFIG_CONSUL_HOST=consul
-      - GLUU_SECRET_VAULT_HOST=vault
+      - GLUU_CONFIG_CONSUL_HOST=${CONSUL_NAME}
+      - GLUU_SECRET_VAULT_HOST=${VAULT_NAME}
       - GLUU_PERSISTENCE_TYPE=${PERSISTENCE_TYPE}
       - GLUU_PERSISTENCE_LDAP_MAPPING=${PERSISTENCE_LDAP_MAPPING}
-      - GLUU_LDAP_URL=ldap:1636
+      - GLUU_LDAP_URL=${LDAP_NAME}:1636
       - GLUU_COUCHBASE_URL=${COUCHBASE_URL}
       - GLUU_COUCHBASE_USER=${COUCHBASE_USER}
       - GLUU_COUCHBASE_BUCKET_PREFIX=${COUCHBASE_BUCKET_PREFIX}
@@ -19,7 +19,7 @@ services:
       - GLUU_JACKRABBIT_ADMIN_PASSWORD_FILE=/etc/gluu/conf/jackrabbit_admin_password
     extra_hosts:
       - "${DOMAIN}:${HOST_IP}"
-    container_name: oxauth
+    container_name: ${OXAUTH_NAME}
     volumes:
       - ./vault_role_id.txt:/etc/certs/vault_role_id
       - ./vault_secret_id.txt:/etc/certs/vault_secret_id
