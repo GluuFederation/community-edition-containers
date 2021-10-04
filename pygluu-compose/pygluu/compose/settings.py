@@ -42,7 +42,7 @@ DEFAULT_SETTINGS = {
     "CASA_ENABLED": False,
     "SAML_ENABLED": False,
     "SCIM_ENABLED": False,
-    "SCIM_TEST_MODE": False,
+    "SCIM_PROTECTION_MODE": "OAUTH",
     "ENABLE_OVERRIDE": False,
     "DOCUMENT_STORE_TYPE": "LOCAL",
     "JACKRABBIT_USER": "admin",
