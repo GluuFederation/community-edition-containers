@@ -3,7 +3,7 @@ version: "2.4"
 
 services:
   jackrabbit:
-    image: gluufederation/jackrabbit:4.3.0_b1
+    image: gluufederation/jackrabbit:4.3.0_01
     container_name: jackrabbit
     hostname: jackrabbit
     environment:

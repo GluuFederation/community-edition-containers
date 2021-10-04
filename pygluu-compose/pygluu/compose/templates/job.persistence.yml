@@ -2,7 +2,7 @@
 version: "2.4"
 services:
   persistence:
-    image: gluufederation/persistence:4.3.0_b1
+    image: gluufederation/persistence:4.3.0_01
     environment:
       - GLUU_CONFIG_CONSUL_HOST=consul
       - GLUU_SECRET_VAULT_HOST=vault
