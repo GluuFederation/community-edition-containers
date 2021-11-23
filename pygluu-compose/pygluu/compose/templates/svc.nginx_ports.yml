@@ -1,0 +1,8 @@
+# use v2.x API to allow `mem_limit` option
+version: "2.4"
+
+services:
+  nginx:
+    ports:
+      - "80:80"
+      - "443:443"

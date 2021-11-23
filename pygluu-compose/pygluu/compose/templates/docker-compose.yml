@@ -53,9 +53,6 @@ services:
     environment:
       - GLUU_CONFIG_CONSUL_HOST=consul
       - GLUU_SECRET_VAULT_HOST=vault
-    ports:
-      - "80:80"
-      - "443:443"
     container_name: nginx
     restart: unless-stopped
     volumes:

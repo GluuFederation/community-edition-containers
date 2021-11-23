@@ -15,6 +15,7 @@ DEFAULT_SETTINGS = {
     "STATE": "",
     "CITY": "",
     "SVC_LDAP": True,
+    "SVC_NGINX_PORTS": True,
     "SVC_OXAUTH": True,
     "SVC_OXTRUST": True,
     "SVC_OXPASSPORT": False,
@@ -60,6 +61,7 @@ DEFAULT_SETTINGS = {
 
 COMPOSE_MAPPINGS = {
     "SVC_LDAP": "svc.ldap.yml",
+    "SVC_NGINX_PORTS": "svc.nginx_ports.yml",
     "SVC_OXAUTH": "svc.oxauth.yml",
     "SVC_OXTRUST": "svc.oxtrust.yml",
     "SVC_OXPASSPORT": "svc.oxpassport.yml",
