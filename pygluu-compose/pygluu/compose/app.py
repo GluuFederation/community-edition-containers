@@ -32,7 +32,7 @@ PASSWD_RGX = re.compile(
 
 class ContainerHelper:
     def __init__(self, name, docker_client):
-        containers = docker_client.containers(filters={ 'label': [
+        containers = docker_client.containers(filters={'label': [
             'com.docker.compose.service=' + name,
             'com.docker.compose.project.working_dir=' + os.getcwd(),
         ]})
@@ -532,7 +532,7 @@ class App(object):
                 return
 
             # published service ports must be available if nginx has not run yet
-            for port in [ sp.published for sp in ngx_svc.options["ports"] ]:
+            for port in [sp.published for sp in ngx_svc.options["ports"]]:
                 port_available = _check("0.0.0.0", port)
                 if not port_available:
                     print(f"[W] Required port {port} is bind to another process")
