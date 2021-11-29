@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.8.0](https://www.github.com/GluuFederation/community-edition-containers/compare/v1.7.0...v1.8.0) (2021-11-29)
+
+
+### Features
+
+* introduce dynamic container configuration (Gluu 4.3) ([#33](https://www.github.com/GluuFederation/community-edition-containers/issues/33)) ([c2f1f6b](https://www.github.com/GluuFederation/community-edition-containers/commit/c2f1f6bcda4486288ae1a15ec14d2116ff07e753))
+
 ## [1.7.0](https://www.github.com/GluuFederation/community-edition-containers/compare/v1.6.1...v1.7.0) (2021-10-05)
 
 
