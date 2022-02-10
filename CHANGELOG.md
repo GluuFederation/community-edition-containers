@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.9.0](https://www.github.com/GluuFederation/community-edition-containers/compare/v1.8.0...v1.9.0) (2022-02-10)
+
+
+### Features
+
+* update image tags to Gluu 4.3.1 ([e943627](https://www.github.com/GluuFederation/community-edition-containers/commit/e943627d378fc28256e84aa08fc93a0c8d5e9206))
+
+
+### Miscellaneous Chores
+
+* update nginx image tag ([0beb6f0](https://www.github.com/GluuFederation/community-edition-containers/commit/0beb6f0260fc5ae894122015f2920c0d73200e91))
+
 ## [1.8.0](https://www.github.com/GluuFederation/community-edition-containers/compare/v1.7.0...v1.8.0) (2021-11-29)
 
 
