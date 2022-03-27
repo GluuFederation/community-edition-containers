@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.10.0](https://www.github.com/GluuFederation/community-edition-containers/compare/v1.9.0...v1.10.0) (2022-03-27)
+
+
+### Miscellaneous Chores
+
+* update oxauth, oxtrust, and jackrabbit tags ([6714148](https://www.github.com/GluuFederation/community-edition-containers/commit/67141480e3670d3ca62ecc908e3788d98eed7cfa))
+
 ## [1.9.0](https://www.github.com/GluuFederation/community-edition-containers/compare/v1.8.0...v1.9.0) (2022-02-10)
 
 
