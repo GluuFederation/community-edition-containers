@@ -22,6 +22,7 @@ services:
       - GOOGLE_PROJECT_ID=${GOOGLE_PROJECT_ID}
       - GLUU_GOOGLE_SPANNER_INSTANCE_ID=${GOOGLE_SPANNER_INSTANCE_ID}
       - GLUU_GOOGLE_SPANNER_DATABASE_ID=${GOOGLE_SPANNER_DATABASE_ID}
+      - SPANNER_EMULATOR_HOST=${SPANNER_EMULATOR_HOST}
     volumes:
       - ./vault_role_id.txt:/etc/certs/vault_role_id
       - ./vault_secret_id.txt:/etc/certs/vault_secret_id
