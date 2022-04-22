@@ -1,0 +1,19 @@
+# use v2.x API to allow `mem_limit` option
+version: "2.4"
+
+services:
+  mysql:
+    image: mysql:8.0.28
+    command: --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
+    environment:
+      - MYSQL_ROOT_PASSWORD_FILE=/run/secrets/sql_root_password
+      - MYSQL_USER=${SQL_DB_USER}
+      - MYSQL_PASSWORD_FILE=/run/secrets/sql_password
+      - MYSQL_DATABASE=${SQL_DB_NAME}
+    volumes:
+      - ./sql_root_password:/run/secrets/sql_root_password
+      - ./sql_password:/run/secrets/sql_password
+      - ./volumes/mysql:/var/lib/mysql
+    container_name: mysql
+    cap_add:
+      - SYS_NICE

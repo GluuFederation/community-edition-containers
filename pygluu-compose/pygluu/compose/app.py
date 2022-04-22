@@ -499,6 +499,7 @@ class App(object):
             "couchbase_superuser_password",
             "jackrabbit_admin_password",
             "sql_password",
+            "sql_root_password",
             "google-credentials.json",
         ]
         for file_ in files:
