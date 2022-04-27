@@ -1,7 +1,11 @@
-import click
+import warnings
 
-from .app import App
-from .version import __version__
+warnings.filterwarnings("ignore", module=".*paramiko.*")
+
+import click  # noqa: E402
+
+from .app import App  # noqa: E402
+from .version import __version__  # noqa: E402
 
 
 @click.group(context_settings={
