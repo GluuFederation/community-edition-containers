@@ -49,7 +49,7 @@ services:
     mem_limit: 512M
 
   nginx:
-    image: gluufederation/nginx:4.4.0_dev
+    image: gluufederation/nginx:4.4.0-1
     environment:
       - GLUU_CONFIG_CONSUL_HOST=consul
       - GLUU_SECRET_VAULT_HOST=vault
