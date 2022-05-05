@@ -1,5 +1,23 @@
 # Changelog
 
+## [1.11.0](https://www.github.com/GluuFederation/community-edition-containers/compare/v1.10.0...v1.11.0) (2022-05-05)
+
+
+### Features
+
+* add mysql service ([a92657d](https://www.github.com/GluuFederation/community-edition-containers/commit/a92657d44491c1d9aacfd2cd8eb4f517f0012945))
+* add SPANNER_EMULATOR_HOST config ([bbebfd8](https://www.github.com/GluuFederation/community-edition-containers/commit/bbebfd88e379e0f7f506b73c8a1ac9a2ac76f2c2))
+
+
+### Bug Fixes
+
+* versioning number ([3412a60](https://www.github.com/GluuFederation/community-edition-containers/commit/3412a607e04fe0c03593d2d7edea2c20b1547bbc))
+
+
+### Miscellaneous Chores
+
+* update image tags ([048de2c](https://www.github.com/GluuFederation/community-edition-containers/commit/048de2ce7dba89beca57227d1bb17ec43f7b4766))
+
 ## [1.10.0](https://www.github.com/GluuFederation/community-edition-containers/compare/v1.9.0...v1.10.0) (2022-03-27)
 
 
