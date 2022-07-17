@@ -1,0 +1,49 @@
+[build-system]
+requires = [
+    # The minimum setuptools version is specific to the PEP 517 backend,
+    # and may be stricter than the version required in `setup.cfg`
+    "setuptools>=40.6.0,!=60.9.0",
+    "wheel",
+]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "pygluu-compose"
+dynamic = ["version"]
+requires-python = ">=3.6"
+dependencies = [
+    "Click!=7.0,>=6.7",
+    "docker-compose>=1.25.0,<1.28",
+    "stdiomask>=0.0.4",
+    "click-spinner>=0.1.10",
+    # backward-compat for importlib.metadata
+    "importlib-metadata>=1.7.0; python_version < '3.8'",
+]
+readme = "README.md"
+description = "Manifest files for Gluu CE container packages"
+license = {text = "MIT License"}
+authors = [
+    {name = "Gluu Federation", email = "support@gluu.org"},
+]
+classifiers = [
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+    "Programming Language :: Python",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.6",
+    "Programming Language :: Python :: 3.7",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+]
+
+[project.scripts]
+pygluu-compose = "pygluu.compose.cli:cli"
+
+[tool.setuptools]
+include-package-data = true
+zip-safe = false
+
+[tool.setuptools.dynamic]
+version = {attr = "pygluu.compose.version.__version__"}
