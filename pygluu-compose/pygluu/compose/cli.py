@@ -32,7 +32,7 @@ def config(app):
     """Validate and view the Compose file
     """
     app.check_workdir()
-    click.echo(app.config())
+    app.config()
 
 
 @cli.command()
