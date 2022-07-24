@@ -1,5 +1,12 @@
 # Changelog
 
+### [1.11.1](https://www.github.com/GluuFederation/community-edition-containers/compare/v1.11.0...v1.11.1) (2022-07-24)
+
+
+### Documentation
+
+* add missing docstrings ([afe51a0](https://www.github.com/GluuFederation/community-edition-containers/commit/afe51a06404c41249ecf2bc1bd74c6f1018be4e4))
+
 ## [1.11.0](https://www.github.com/GluuFederation/community-edition-containers/compare/v1.10.0...v1.11.0) (2022-05-05)
 
 
