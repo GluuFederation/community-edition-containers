@@ -1,3 +1,5 @@
+"""Command-line interface (CLI) for the application."""
+
 import warnings
 
 warnings.filterwarnings("ignore", module=".*paramiko.*")
@@ -14,14 +16,14 @@ from .version import __version__  # noqa: E402
 @click.version_option(__version__, "-v", "--version")
 @click.pass_context
 def cli(ctx):
+    """Create groupped CLI commands."""
     ctx.obj = App()
 
 
 @cli.command()
 @click.pass_obj
 def init(app):
-    """Initialize working directory
-    """
+    """Initialize working directory."""
     app.touch_files()
     app.copy_templates()
 
@@ -29,8 +31,7 @@ def init(app):
 @cli.command()
 @click.pass_obj
 def config(app):
-    """Validate and view the Compose file
-    """
+    """Validate and view the Compose file."""
     app.check_workdir()
     app.config()
 
@@ -38,8 +39,7 @@ def config(app):
 @cli.command()
 @click.pass_obj
 def down(app):
-    """Stop and remove containers, networks, images, and volumes
-    """
+    """Stop and remove containers, networks, images, and volumes."""
     app.check_workdir()
     app.down()
 
@@ -50,8 +50,7 @@ def down(app):
 @click.argument("services", nargs=-1)
 @click.pass_obj
 def logs(app, follow, tail, services):
-    """View output from containers
-    """
+    """View output from containers."""
     app.check_workdir()
     app.logs(follow, tail, services)
 
@@ -59,7 +58,6 @@ def logs(app, follow, tail, services):
 @cli.command()
 @click.pass_obj
 def up(app):
-    """Create and start containers
-    """
+    """Create and start containers."""
     app.check_workdir()
     app.up()

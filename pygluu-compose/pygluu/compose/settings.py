@@ -1,3 +1,5 @@
+"""Default configuration for the application."""
+
 DEFAULT_SETTINGS = {
     "HOST_IP": "",
     "DOMAIN": "",
