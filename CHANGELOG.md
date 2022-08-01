@@ -2,6 +2,9 @@
 
 ## [1.12.0](https://www.github.com/GluuFederation/community-edition-containers/compare/v1.11.0...v1.12.0) (2022-08-01)
 
+### Features
+
+* update image tags to 4.4.1-1 (compatible with Gluu Server 4.4.1)([8f82ee9](https://github.com/GluuFederation/community-edition-containers/commit/8f82ee9608a2b0a7860ada6aa5cec1bf55b2294e))
 
 ### Documentation
 
