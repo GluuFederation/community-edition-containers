@@ -3,7 +3,7 @@ version: "2.4"
 
 services:
   scim:
-    image: gluufederation/scim:4.4.0-1
+    image: gluufederation/scim:4.4.1-1
     environment:
       - GLUU_CONFIG_CONSUL_HOST=consul
       - GLUU_SECRET_VAULT_HOST=vault
