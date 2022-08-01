@@ -1,5 +1,16 @@
 # Changelog
 
+## [1.12.0](https://www.github.com/GluuFederation/community-edition-containers/compare/v1.11.0...v1.12.0) (2022-08-01)
+
+### Features
+
+* update image tags to 4.4.1-1 (compatible with Gluu Server 4.4.1)([8f82ee9](https://github.com/GluuFederation/community-edition-containers/commit/8f82ee9608a2b0a7860ada6aa5cec1bf55b2294e))
+
+### Documentation
+
+* add compatibility matrix between pygluu-compose and Gluu Server ([209c20d](https://www.github.com/GluuFederation/community-edition-containers/commit/209c20d880f8999dc3df00ef2c53af66315c1157))
+* add missing docstrings ([afe51a0](https://www.github.com/GluuFederation/community-edition-containers/commit/afe51a06404c41249ecf2bc1bd74c6f1018be4e4))
+
 ## [1.11.0](https://www.github.com/GluuFederation/community-edition-containers/compare/v1.10.0...v1.11.0) (2022-05-05)
 
 
