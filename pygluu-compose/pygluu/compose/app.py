@@ -407,6 +407,9 @@ class App:
         def auto_detect_ip():
             # detect IP address automatically (if possible)
             ip = ""
+
+            socket.setdefaulttimeout(30.0)
+
             with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as sock:
                 sock.connect(("8.8.8.8", 80))
                 ip, _ = sock.getsockname()
@@ -607,6 +610,8 @@ class App:
         :returns: Ports availability as boolean.
         """
         def _check(host, port):
+            socket.setdefaulttimeout(30.0)
+
             with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as sock:
                 conn = sock.connect_ex((host, port))
                 if conn == 0:
