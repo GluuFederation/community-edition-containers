@@ -1,5 +1,22 @@
 # Changelog
 
+## [1.13.0](https://www.github.com/GluuFederation/community-edition-containers/compare/v1.12.0...v1.13.0) (2022-11-11)
+
+
+### Features
+
+* update image tags to v4.4.2-1 ([7a891fb](https://www.github.com/GluuFederation/community-edition-containers/commit/7a891fbcd8b188104b6e670350a669eaff726a3a))
+
+
+### Bug Fixes
+
+* set socket default timeout to avoid stale connection ([d892d20](https://www.github.com/GluuFederation/community-edition-containers/commit/d892d20be600e7e50ea6642da0fa5ae6e2692b68))
+
+
+### Miscellaneous Chores
+
+* bump version and compatibility matrix ([d3d8cc5](https://www.github.com/GluuFederation/community-edition-containers/commit/d3d8cc5346848af025308afc930eb9cd668a9b35))
+
 ## [1.12.0](https://www.github.com/GluuFederation/community-edition-containers/compare/v1.11.0...v1.12.0) (2022-08-01)
 
 ### Features
