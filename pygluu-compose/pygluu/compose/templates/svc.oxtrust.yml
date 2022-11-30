@@ -3,7 +3,7 @@ version: "2.4"
 
 services:
   oxtrust:
-    image: gluufederation/oxtrust:4.4.2-1
+    image: gluufederation/oxtrust:4.4.2-2
     environment:
       - GLUU_CONFIG_CONSUL_HOST=consul
       - GLUU_SECRET_VAULT_HOST=vault
