@@ -3,7 +3,7 @@ version: "2.4"
 
 services:
   oxtrust:
-    image: gluufederation/oxtrust:4.4.2-2
+    image: gluufederation/oxtrust:4.5.0_dev
     environment:
       - GLUU_CONFIG_CONSUL_HOST=consul
       - GLUU_SECRET_VAULT_HOST=vault
@@ -23,6 +23,7 @@ services:
       - GLUU_SQL_DB_HOST=${SQL_DB_HOST}
       - GLUU_SQL_DB_PORT=${SQL_DB_PORT}
       - GLUU_SQL_DB_USER=${SQL_DB_USER}
+      - GLUU_SQL_DB_SCHEMA=${SQL_DB_SCHEMA}
       - GOOGLE_PROJECT_ID=${GOOGLE_PROJECT_ID}
       - GLUU_GOOGLE_SPANNER_INSTANCE_ID=${GOOGLE_SPANNER_INSTANCE_ID}
       - GLUU_GOOGLE_SPANNER_DATABASE_ID=${GOOGLE_SPANNER_DATABASE_ID}
