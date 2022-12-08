@@ -2,7 +2,7 @@
 version: "2.4"
 services:
   casa:
-    image: gluufederation/casa:4.5.0_dev
+    image: gluufederation/casa:4.5.0-1
     environment:
       - GLUU_CONFIG_CONSUL_HOST=consul
       - GLUU_SECRET_VAULT_HOST=vault
