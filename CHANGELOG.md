@@ -1,5 +1,23 @@
 # Changelog
 
+### [1.13.1](https://www.github.com/GluuFederation/community-edition-containers/compare/v1.13.0...v1.13.1) (2022-12-08)
+
+
+### Bug Fixes
+
+* update tags to v4.2.2-2 ([e84e915](https://www.github.com/GluuFederation/community-edition-containers/commit/e84e915990f19457686be923a64068bce8c07836))
+
+
+### Miscellaneous Chores
+
+* bump version and compatibility matrix ([e522a3a](https://www.github.com/GluuFederation/community-edition-containers/commit/e522a3a645d0d5580557adc096035d653342ba1e))
+
+
+### Documentation
+
+* update changelog ([aadec04](https://www.github.com/GluuFederation/community-edition-containers/commit/aadec0446f633bdb9e0aa85ec302604283f1e00e))
+* update reference to branch 4.5 ([393dd58](https://www.github.com/GluuFederation/community-edition-containers/commit/393dd583f543416beedd8d11aa1bb92c1a7d01d1))
+
 ### [1.13.1](https://www.github.com/GluuFederation/community-edition-containers/compare/v1.13.0...v1.13.1) (2022-11-30)
 
 
