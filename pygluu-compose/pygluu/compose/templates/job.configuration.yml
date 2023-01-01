@@ -2,7 +2,7 @@
 version: "2.4"
 services:
   configuration:
-    image: gluufederation/config-init:4.5.0-1
+    image: gluufederation/config-init:4.5.0-2
     command: load
     environment:
       - GLUU_CONFIG_CONSUL_HOST=consul
@@ -17,3 +17,4 @@ services:
       - ./generate.json:/app/db/generate.json
     restart: on-failure
     mem_limit: 512M
+    user: "0"

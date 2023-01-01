@@ -3,7 +3,7 @@ version: "2.4"
 
 services:
   ldap:
-    image: gluufederation/opendj:4.5.0-1
+    image: gluufederation/opendj:4.5.0-2
     environment:
       - GLUU_CONFIG_CONSUL_HOST=consul
       - GLUU_SECRET_VAULT_HOST=vault
@@ -26,3 +26,4 @@ services:
       # - ./101-ox.ldif:/opt/opendj/config/schema/101-ox.ldif
     restart: unless-stopped
     mem_limit: 2048M
+    user: "0"
