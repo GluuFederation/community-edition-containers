@@ -1,5 +1,12 @@
 # Changelog
 
+### [1.14.1](https://www.github.com/GluuFederation/community-edition-containers/compare/v1.14.0...v1.14.1) (2023-01-01)
+
+
+### Miscellaneous Chores
+
+* bump version and compatibility matrix ([b06653b](https://www.github.com/GluuFederation/community-edition-containers/commit/b06653bdd2b2cd748bedd71e73428f0af0f04355))
+
 ## [1.14.0](https://www.github.com/GluuFederation/community-edition-containers/compare/v1.13.0...v1.14.0) (2022-12-08)
 
 
