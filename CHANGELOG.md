@@ -1,5 +1,19 @@
 # Changelog
 
+### [1.14.2](https://www.github.com/GluuFederation/community-edition-containers/compare/v1.14.1...v1.14.2) (2023-01-18)
+
+
+### Features
+
+* expose Vault port to host loopback interface ([084f430](https://www.github.com/GluuFederation/community-edition-containers/commit/084f430045253e580fa08abbfd9b6524d18622e3))
+* set consul client address and port for easy access ([8d50f70](https://www.github.com/GluuFederation/community-edition-containers/commit/8d50f703afcbd48a9a4aee1dcf891f151386eb84))
+
+
+### Miscellaneous Chores
+
+* bump version to 1.14.2 ([8caed3a](https://www.github.com/GluuFederation/community-edition-containers/commit/8caed3ace2fc1a556831788ede73e76e71844ad5))
+* update image tags to v4.5.0-3+ ([55ad2e2](https://www.github.com/GluuFederation/community-edition-containers/commit/55ad2e220ed55bd63ae57e007b65624d41ed8fb9))
+
 ### [1.14.1](https://www.github.com/GluuFederation/community-edition-containers/compare/v1.14.0...v1.14.1) (2023-01-01)
 
 
