@@ -9,12 +9,15 @@ services:
     environment:
       - CONSUL_BIND_INTERFACE=eth0
       - CONSUL_CLIENT_INTERFACE=eth0
+      - CONSUL_HTTP_ADDR=http://consul:8500
     container_name: consul
     restart: unless-stopped
     volumes:
       - ./volumes/consul:/consul/data
     restart: unless-stopped
     mem_limit: 512M
+    ports:
+      - "127.0.0.1:8500:8500"
 
   vault:
     container_name: vault
