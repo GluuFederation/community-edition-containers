@@ -39,6 +39,8 @@ services:
     depends_on:
       - consul
     mem_limit: 512M
+    ports:
+      - "127.0.0.1:8200:8200"
 
   registrator:
     image: gliderlabs/registrator:master
