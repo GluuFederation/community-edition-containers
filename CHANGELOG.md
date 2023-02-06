@@ -1,5 +1,12 @@
 # Changelog
 
+### [1.14.3](https://www.github.com/GluuFederation/community-edition-containers/compare/v1.14.2...v1.14.3) (2023-02-06)
+
+
+### Miscellaneous Chores
+
+* update image tags to v4.5.0-4+ ([3cd7b56](https://www.github.com/GluuFederation/community-edition-containers/commit/3cd7b56bca0debf25c7f5c2cc99ca3bec491405f))
+
 ### [1.14.2](https://www.github.com/GluuFederation/community-edition-containers/compare/v1.14.1...v1.14.2) (2023-01-18)
 
 
