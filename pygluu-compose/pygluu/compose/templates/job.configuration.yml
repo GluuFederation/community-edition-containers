@@ -2,7 +2,7 @@
 version: "2.4"
 services:
   configuration:
-    image: gluufederation/config-init:4.5.0-3
+    image: gluufederation/config-init:4.5.0-4
     command: load
     environment:
       - GLUU_CONFIG_CONSUL_HOST=consul
