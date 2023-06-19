@@ -18,6 +18,8 @@ dependencies = [
     "click-spinner>=0.1.10",
     # backward-compat for importlib.metadata
     "importlib-metadata>=1.7.0; python_version < '3.8'",
+    # handle urllib3 v2 incompatibility
+    "requests<2.29",
 ]
 readme = "README.md"
 description = "Manifest files for Gluu CE container packages"
