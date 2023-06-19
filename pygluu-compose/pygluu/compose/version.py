@@ -1,3 +1,3 @@
 """Contains metadata for versioning."""
 
-__version__ = "1.14.4"
+__version__ = "1.15.1"
