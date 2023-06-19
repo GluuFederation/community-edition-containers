@@ -1,5 +1,12 @@
 # Changelog
 
+### [1.14.5](https://www.github.com/GluuFederation/community-edition-containers/compare/v1.14.4...v1.14.5) (2023-06-19)
+
+
+### Bug Fixes
+
+* removed duplicate key restart ([#51](https://www.github.com/GluuFederation/community-edition-containers/issues/51)) ([3e98cda](https://www.github.com/GluuFederation/community-edition-containers/commit/3e98cdaa07c1d614862873c4d29cb0d8508addcc))
+
 ### [1.14.4](https://www.github.com/GluuFederation/community-edition-containers/compare/v1.14.3...v1.14.4) (2023-02-28)
 
 
