@@ -1,5 +1,19 @@
 # Changelog
 
+### [1.15.1](https://www.github.com/GluuFederation/community-edition-containers/compare/v1.14.4...v1.15.1) (2023-06-19)
+
+
+### Bug Fixes
+
+* error while fetching server API version in new installation ([03217ef](https://www.github.com/GluuFederation/community-edition-containers/commit/03217efb765f94c383251ffd4aa9b65cd5e8bc0a))
+* removed duplicate key restart ([#51](https://www.github.com/GluuFederation/community-edition-containers/issues/51)) ([3e98cda](https://www.github.com/GluuFederation/community-edition-containers/commit/3e98cdaa07c1d614862873c4d29cb0d8508addcc))
+
+
+### Miscellaneous Chores
+
+* bump version to 1.15.1 ([ed38b6d](https://www.github.com/GluuFederation/community-edition-containers/commit/ed38b6d6c73ec8ae94ef98082fe9a134506f69c0))
+* update image tags to v4.5.1-1 ([c72df5b](https://www.github.com/GluuFederation/community-edition-containers/commit/c72df5bfa51b6d6d686896e9b847b336b0c5d934))
+
 ### [1.14.4](https://www.github.com/GluuFederation/community-edition-containers/compare/v1.14.3...v1.14.4) (2023-02-28)
 
 
