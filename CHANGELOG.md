@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.16.0](https://www.github.com/GluuFederation/community-edition-containers/compare/v1.15.1...v1.16.0) (2023-08-31)
+
+
+### Miscellaneous Chores
+
+* bump version to 1.16.0 ([0091ab1](https://www.github.com/GluuFederation/community-edition-containers/commit/0091ab1372c97dbd6d1d5c6663c22cac2131098f))
+* update image tags to v4.5.2 ([0cbaeaf](https://www.github.com/GluuFederation/community-edition-containers/commit/0cbaeafbaff13b2acf5a4c1c52b9cefa0c6ce799))
+
 ### [1.15.1](https://www.github.com/GluuFederation/community-edition-containers/compare/v1.14.4...v1.15.1) (2023-06-19)
 
 
