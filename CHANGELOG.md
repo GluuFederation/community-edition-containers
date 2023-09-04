@@ -1,5 +1,12 @@
 # Changelog
 
+### [1.16.1](https://www.github.com/GluuFederation/community-edition-containers/compare/v1.16.0...v1.16.1) (2023-09-04)
+
+
+### Features
+
+* update persistence image tag ([a91a237](https://www.github.com/GluuFederation/community-edition-containers/commit/a91a237dab2ac0f3212d5ba351160d169e2250ac))
+
 ## [1.16.0](https://www.github.com/GluuFederation/community-edition-containers/compare/v1.15.1...v1.16.0) (2023-08-31)
 
 
