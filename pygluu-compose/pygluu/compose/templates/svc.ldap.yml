@@ -27,3 +27,9 @@ services:
     restart: unless-stopped
     mem_limit: 2048M
     user: "0"
+    healthcheck:
+      test: python3 /app/scripts/healthcheck.py
+      interval: 30s
+      timeout: 5s
+      retries: 20
+      start_period: 30s

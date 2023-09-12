@@ -45,5 +45,11 @@ services:
       - "APP_NAME=casa"
       - "SERVICE_8080_CHECK_HTTP=/casa/health-check"
       - "SERVICE_8080_CHECK_INTERVAL=30s"
-      - "SERVICE_8080_CHECK_TIMEOUT=30s"
+      - "SERVICE_8080_CHECK_TIMEOUT=5s"
     mem_limit: 1024M
+    healthcheck:
+      test: curl -f http://127.0.0.1:8080/casa/health-check || exit 1
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 30s
