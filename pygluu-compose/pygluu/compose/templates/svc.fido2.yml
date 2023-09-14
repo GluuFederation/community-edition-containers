@@ -40,6 +40,7 @@ services:
       - "SERVICE_8080_CHECK_HTTP=/fido2/restv1/fido2/configuration"
       - "SERVICE_8080_CHECK_INTERVAL=30s"
       - "SERVICE_8080_CHECK_TIMEOUT=5s"
+      - "autoheal=true"
     healthcheck:
       test: curl -f http://127.0.0.1:8080/fido2/restv1/fido2/configuration || exit 1
       interval: 30s
