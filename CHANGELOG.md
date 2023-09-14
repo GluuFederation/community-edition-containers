@@ -1,5 +1,18 @@
 # Changelog
 
+### [1.16.2](https://www.github.com/GluuFederation/community-edition-containers/compare/v1.16.1...v1.16.2) (2023-09-14)
+
+
+### Features
+
+* add autoheal support to restart unhealthy containers ([#61](https://www.github.com/GluuFederation/community-edition-containers/issues/61)) ([0b45a48](https://www.github.com/GluuFederation/community-edition-containers/commit/0b45a48144f49b7021ccf4f795a887f101ba9fbf))
+* add healthcheck directive in compose files ([#58](https://www.github.com/GluuFederation/community-edition-containers/issues/58)) ([3bd6f60](https://www.github.com/GluuFederation/community-edition-containers/commit/3bd6f606ba4076a014aef0b6f48bb0956c56576b))
+
+
+### Miscellaneous Chores
+
+* update oxauth and config-init image tag ([a5b3ab4](https://www.github.com/GluuFederation/community-edition-containers/commit/a5b3ab4bf4713e02b9ec6987053c080c89cf2e0e))
+
 ### [1.16.1](https://www.github.com/GluuFederation/community-edition-containers/compare/v1.16.0...v1.16.1) (2023-09-04)
 
 
