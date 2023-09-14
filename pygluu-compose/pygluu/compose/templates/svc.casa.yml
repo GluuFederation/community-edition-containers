@@ -46,6 +46,7 @@ services:
       - "SERVICE_8080_CHECK_HTTP=/casa/health-check"
       - "SERVICE_8080_CHECK_INTERVAL=30s"
       - "SERVICE_8080_CHECK_TIMEOUT=5s"
+      - "autoheal=true"
     mem_limit: 1024M
     healthcheck:
       test: curl -f http://127.0.0.1:8080/casa/health-check || exit 1

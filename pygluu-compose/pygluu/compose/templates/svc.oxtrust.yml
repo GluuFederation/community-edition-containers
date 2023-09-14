@@ -47,6 +47,7 @@ services:
       - "SERVICE_8080_CHECK_INTERVAL=30s"
       - "SERVICE_8080_CHECK_TIMEOUT=5s"
       - "APP_NAME=oxtrust"
+      - "autoheal=true"
     healthcheck:
       test: python3 /app/scripts/healthcheck.py
       interval: 30s

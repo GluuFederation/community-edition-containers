@@ -20,6 +20,7 @@ services:
       - "SERVICE_8090_CHECK_HTTP=/passport/health-check"
       - "SERVICE_8090_CHECK_INTERVAL=30s"
       - "SERVICE_8090_CHECK_TIMEOUT=5s"
+      - "autoheal=true"
     mem_limit: 1024M
     healthcheck:
       test: curl -f http://127.0.0.1:8090/passport/health-check || exit 1

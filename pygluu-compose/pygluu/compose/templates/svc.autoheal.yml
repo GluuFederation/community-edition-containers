@@ -1,0 +1,11 @@
+# use v2.x API to allow `mem_limit` option
+version: "2.4"
+
+services:
+  autoheal:
+    image: willfarrell/autoheal
+    container_name: autoheal
+    restart: unless-stopped
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    mem_limit: 512M
