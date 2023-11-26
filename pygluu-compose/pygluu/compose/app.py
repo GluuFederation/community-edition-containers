@@ -22,6 +22,7 @@ from compose.config.environment import Environment
 
 from .settings import DEFAULT_SETTINGS
 from .settings import COMPOSE_MAPPINGS
+from .version import __gluu_version__
 
 CONFIG_DIR = "volumes/config-init/db"
 EMAIL_RGX = re.compile(
@@ -322,6 +323,37 @@ class App:
         for svc, filename in COMPOSE_MAPPINGS.items():
             if all([svc in self.settings, self.settings.get(svc), os.path.isfile(filename)]):
                 files.append(filename)
+
+        # add dev override (if any)
+        if self.settings.get("ENABLE_DEV_OVERRIDE", False) is True:
+            dev_overrides = {"version": "2.4", "services": {}}
+
+            for file_ in files:
+                with open(file_) as f:
+                    data = yaml.safe_load(f)
+
+                for name, svc in data["services"].items():
+                    if "image" not in svc:
+                        continue
+
+                    if not svc["image"].startswith("gluufederation/"):
+                        continue
+
+                    try:
+                        image_name, _ = svc["image"].split(":")
+                    except ValueError:
+                        image_name = svc["image"]
+                    finally:
+                        dev_overrides["services"][name] = {"image": f"{image_name}:{__gluu_version__}_dev"}
+
+            with open("docker-compose.dev.yml", "w") as f:
+                yaml.dump(dev_overrides, f)
+            files.append("docker-compose.dev.yml")
+
+        # add custom override (if any)
+        if self.settings.get("ENABLE_OVERRIDE", False) is True and os.path.isfile("docker-compose.override.yml"):
+            files.append("docker-compose.override.yml")
+
         return ":".join(files)
 
     def logs(self, follow, tail, services=None):

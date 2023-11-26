@@ -58,12 +58,11 @@ DEFAULT_SETTINGS = {
     "SQL_DB_PORT": 3306,
     "SQL_DB_USER": "gluu",
     "SQL_DB_SCHEMA": "",
-    # "SQL_DB_PASSWORD_FILE": "/etc/gluu/conf/sql_password",
-    # "GOOGLE_APPLICATION_CREDENTIALS": "/etc/gluu/conf/google-credentials.json",
     "GOOGLE_PROJECT_ID": "",
     "GOOGLE_SPANNER_INSTANCE_ID": "",
     "GOOGLE_SPANNER_DATABASE_ID": "",
     "SPANNER_EMULATOR_HOST": "",
+    "ENABLE_DEV_OVERRIDE": False,
 }
 
 COMPOSE_MAPPINGS = {
@@ -86,5 +85,4 @@ COMPOSE_MAPPINGS = {
     "SVC_AUTOHEAL": "svc.autoheal.yml",
     "JOB_PERSISTENCE": "job.persistence.yml",
     "JOB_CONFIGURATION": "job.configuration.yml",
-    "ENABLE_OVERRIDE": "docker-compose.override.yml",
 }
