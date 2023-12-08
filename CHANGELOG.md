@@ -1,5 +1,23 @@
 # Changelog
 
+## [1.17.0](https://www.github.com/GluuFederation/community-edition-containers/compare/v1.16.2...v1.17.0) (2023-12-08)
+
+
+### Features
+
+* add dev mode to override images ([227ccde](https://www.github.com/GluuFederation/community-edition-containers/commit/227ccdefe81c0bc9053db1cbd5ceb93921041682)), closes [#62](https://www.github.com/GluuFederation/community-edition-containers/issues/62)
+
+
+### Bug Fixes
+
+* handle AttributeError: cython_sources caused by pyyaml builds ([74b7c60](https://www.github.com/GluuFederation/community-edition-containers/commit/74b7c60f2f484d455972152531c24395d66dabfb))
+* incorrect service name for postgresql ([5674803](https://www.github.com/GluuFederation/community-edition-containers/commit/5674803167cc836860ea5a51921cfae09c6d98d1))
+
+
+### Miscellaneous Chores
+
+* update image tags to v4.5.3 ([#63](https://www.github.com/GluuFederation/community-edition-containers/issues/63)) ([2676277](https://www.github.com/GluuFederation/community-edition-containers/commit/26762778291a1dfd4da6f7dbcbe22958080ce394))
+
 ### [1.16.2](https://www.github.com/GluuFederation/community-edition-containers/compare/v1.16.1...v1.16.2) (2023-09-14)
 
 
