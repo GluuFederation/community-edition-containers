@@ -50,7 +50,7 @@ jobs:
       run: |
         sudo apt-get update || brew install jq
         sudo apt-get install build-essential || echo "Maybe im on macor OS"
-        pip3 install shiv wheel
+        pip3 install -U shiv wheel setuptools
         cd pygluu-compose
         make zipapp
 
