@@ -1,5 +1,22 @@
 # Changelog
 
+### [1.18.1](https://www.github.com/GluuFederation/community-edition-containers/compare/v1.18.0...v1.18.1) (2024-05-30)
+
+
+### Continuous Integration
+
+* install wheel library ([687dc83](https://www.github.com/GluuFederation/community-edition-containers/commit/687dc8388dea86e23ce0b4ba00e8487c2fd68a1f))
+* update python version ([216e669](https://www.github.com/GluuFederation/community-edition-containers/commit/216e669e110397f95b74aba15f79d82c662b6208))
+* upgrade checkout and setup-python actions ([ae91983](https://www.github.com/GluuFederation/community-edition-containers/commit/ae919838ec33c3d50bce7c48c74edcf9dad9f36c))
+* upgrade checkout and setup-python actions for uploadrelease flow ([7b99246](https://www.github.com/GluuFederation/community-edition-containers/commit/7b9924672eff22383ed6268f543c5c6bdddc783c))
+* upgrade python libraries ([7cfb087](https://www.github.com/GluuFederation/community-edition-containers/commit/7cfb087217abbefa78e0f754d2f00f76ea2e59f7))
+* upgrade setuptools library ([23f0589](https://www.github.com/GluuFederation/community-edition-containers/commit/23f0589412593701b1a0e6635eb9d77d719969b9))
+
+
+### Documentation
+
+* mention about upgrading wheel and setuptools ([7e4d962](https://www.github.com/GluuFederation/community-edition-containers/commit/7e4d962fa5cafd1dbea947afb11678c1bd51b108))
+
 ## [1.18.0](https://www.github.com/GluuFederation/community-edition-containers/compare/v1.17.0...v1.18.0) (2024-05-30)
 
 
