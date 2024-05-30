@@ -34,7 +34,7 @@ Documentation is officially available at https://gluu.org/docs/gluu-server/insta
 1.  Install [shiv](https://shiv.readthedocs.io/) using `pip3`:
 
     ```sh
-    pip3 install shiv
+    pip3 install -U shiv wheel setuptools
     ```
 
 1.  Install the package:
