@@ -1,5 +1,12 @@
 # Changelog
 
+### [4.5.4-1](https://www.github.com/GluuFederation/community-edition-containers/compare/v1.17.0...v4.5.4-1) (2024-05-30)
+
+
+### Miscellaneous Chores
+
+* prepare assets for Gluu v4.5.4 ([#65](https://www.github.com/GluuFederation/community-edition-containers/issues/65)) ([c043dee](https://www.github.com/GluuFederation/community-edition-containers/commit/c043dee1557237f4e59d75ecae0d2de0a6cc70b1))
+
 ## [1.17.0](https://www.github.com/GluuFederation/community-edition-containers/compare/v1.16.2...v1.17.0) (2023-12-08)
 
 
