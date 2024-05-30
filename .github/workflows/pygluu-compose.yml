@@ -39,7 +39,7 @@ jobs:
       run: |
         sudo apt-get update
         sudo apt-get install build-essential
-        pip3 install shiv wheel
+        pip3 install shiv wheel setuptools
         mkdir /home/runner/work/test
         cp -r ./pygluu-compose/* /home/runner/work/test/
         cd /home/runner/work/test/
