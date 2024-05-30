@@ -8,13 +8,13 @@ jobs:
     strategy:
       max-parallel: 4
       matrix:
-        python-version: [3.7]
+        python-version: [3.9]
 
     steps:
     - name: Checkout code
-      uses: actions/checkout@master
+      uses: actions/checkout@v4
     - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v1
+      uses: actions/setup-python@v5.0.0
       with:
         python-version: ${{ matrix.python-version }}
 
@@ -33,13 +33,13 @@ jobs:
         flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
 
     - name: Checkout code
-      uses: actions/checkout@master
+      uses: actions/checkout@v4
 
     - name: Build Zipapp
       run: |
         sudo apt-get update
         sudo apt-get install build-essential
-        pip3 install shiv
+        pip3 install -U shiv wheel setuptools
         mkdir /home/runner/work/test
         cp -r ./pygluu-compose/* /home/runner/work/test/
         cd /home/runner/work/test/
