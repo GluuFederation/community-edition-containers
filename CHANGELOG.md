@@ -1,5 +1,12 @@
 # Changelog
 
+### [1.18.2](https://www.github.com/GluuFederation/community-edition-containers/compare/v1.18.1...v1.18.2) (2024-07-29)
+
+
+### Features
+
+* upgrade image tags ([c6e6ded](https://www.github.com/GluuFederation/community-edition-containers/commit/c6e6ded1e0ade263ea281b59c1641e9ff65a1a43))
+
 ### [1.18.1](https://www.github.com/GluuFederation/community-edition-containers/compare/v1.18.0...v1.18.1) (2024-05-30)
 
 
