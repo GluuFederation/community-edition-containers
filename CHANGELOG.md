@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.19.0](https://www.github.com/GluuFederation/community-edition-containers/compare/v1.18.2...v1.19.0) (2024-08-21)
+
+
+### Features
+
+* prepare assets for Gluu Cloud Native 4.5.5 ([#71](https://www.github.com/GluuFederation/community-edition-containers/issues/71)) ([134aac9](https://www.github.com/GluuFederation/community-edition-containers/commit/134aac949dcf5e69ba26327f6b6fa61e5e1ad6f5))
+
+
+### Documentation
+
+* update compatibility matrix ([cfa7595](https://www.github.com/GluuFederation/community-edition-containers/commit/cfa7595818388cba379786e33f570127a360f764))
+
 ### [1.18.2](https://www.github.com/GluuFederation/community-edition-containers/compare/v1.18.1...v1.18.2) (2024-07-29)
 
 
