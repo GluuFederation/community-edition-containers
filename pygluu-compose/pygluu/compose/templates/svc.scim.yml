@@ -3,7 +3,7 @@ version: "2.4"
 
 services:
   scim:
-    image: gluufederation/scim:4.5.4-1
+    image: gluufederation/scim:4.5.5-1
     environment:
       - GLUU_CONFIG_CONSUL_HOST=consul
       - GLUU_SECRET_VAULT_HOST=vault
@@ -37,12 +37,12 @@ services:
     restart: unless-stopped
     labels:
       - "SERVICE_NAME=scim"
-      - "SERVICE_8080_CHECK_HTTP=/scim/restv1/scim/v2/ServiceProviderConfig"
+      - "SERVICE_8080_CHECK_HTTP=/scim/restv1/health-check"
       - "SERVICE_8080_CHECK_INTERVAL=30s"
       - "SERVICE_8080_CHECK_TIMEOUT=5s"
       - "autoheal=true"
     healthcheck:
-      test: curl -f http://127.0.0.1:8080/scim/restv1/scim/v2/ServiceProviderConfig || exit 1
+      test: python3 /app/scripts/healthcheck.py
       interval: 30s
       timeout: 5s
       retries: 3
