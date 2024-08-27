@@ -1,5 +1,12 @@
 # Changelog
 
+### [1.19.1](https://www.github.com/GluuFederation/community-edition-containers/compare/v1.19.0...v1.19.1) (2024-08-27)
+
+
+### Bug Fixes
+
+* resolve unknown column doc.spLogoutRedirectUrl error ([fdc2c37](https://www.github.com/GluuFederation/community-edition-containers/commit/fdc2c371a1e1b0011c8fd5e39260cd046542c1a3))
+
 ## [1.19.0](https://www.github.com/GluuFederation/community-edition-containers/compare/v1.18.2...v1.19.0) (2024-08-21)
 
 
