@@ -1,5 +1,12 @@
 # Changelog
 
+### [1.19.2](https://www.github.com/GluuFederation/community-edition-containers/compare/v1.19.1...v1.19.2) (2024-10-14)
+
+
+### Documentation
+
+* move to monorepo ([6a55022](https://www.github.com/GluuFederation/community-edition-containers/commit/6a55022e7109998af1d540fe0ee9b1a50611dd45))
+
 ### [1.19.1](https://www.github.com/GluuFederation/community-edition-containers/compare/v1.19.0...v1.19.1) (2024-08-27)
 
 
