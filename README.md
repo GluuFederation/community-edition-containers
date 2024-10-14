@@ -1,3 +1,4 @@
+# Moved to [Gluu4 monorepo](https://github.com/GluuFederation/gluu4/tree/main/community-edition-containers)
 ![pygluu compose](https://github.com/GluuFederation/community-edition-containers/workflows/pygluu%20compose/badge.svg?branch=4.5)
 # Gluu Server Community Edition Containers
 
